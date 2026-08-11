@@ -90,8 +90,10 @@ public class PlayerController : MonoBehaviour
         pendingMoveDir = Quaternion.Euler(0f, camYaw, 0f) * inputDir;
 
         pendingSpeed = walkSpeed;
-        // 狗疾跑：仅分离状态(非联动)且操作狗时
-        if (characterType == CharacterType.Dog && !isTogether && !isLinkedMode && Input.GetKey(KeyCode.LeftShift))
+        // 提示镜头播放中：只能走路，禁用疾跑
+        bool hintPlaying = PlayerManager.Instance != null && PlayerManager.Instance.IsHintPlaying;
+        // 狗疾跑：仅分离状态(非联动)且操作狗时，且非提示镜头期间
+        if (characterType == CharacterType.Dog && !isTogether && !isLinkedMode && !hintPlaying && Input.GetKey(KeyCode.LeftShift))
             pendingSpeed = sprintSpeed;
 
         // 计算目标旋转，留给FixedUpdate用rb.MoveRotation执行
