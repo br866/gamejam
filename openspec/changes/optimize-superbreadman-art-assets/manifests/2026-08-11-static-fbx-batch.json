@@ -1,0 +1,1510 @@
+{
+  "summary": {
+    "scope": "Assets/SuperBreadMan/Scene Model static FBX assets",
+    "policy": "Performance-priority; visual degradation is permitted by project owner.",
+    "optimized_count": 73,
+    "skipped_low_triangle_count": 87,
+    "source_bytes_before": 690916380,
+    "optimized_bytes_after": 8700988,
+    "triangles_before": 339136,
+    "triangles_after": 162105,
+    "unity_reimported_fbx_count": 160,
+    "unity_missing_model_assets": 0,
+    "art_scene_renderer_count": 1363,
+    "art_scene_invalid_material_bindings": 0,
+    "unity_console_errors": 0,
+    "notes": [
+      "Every source FBX was copied to Art/BackUp and hashed before processing.",
+      "Models below 1500 triangles were backed up but not decimated.",
+      "Eligible 1500-7999 triangle models used a 0.5 Decimate ratio; 8000+ triangle models used 0.35.",
+      "The electro-medical cabinet was restored to its separately accepted 13,700-triangle candidate after Unicode path normalization caused an unintended second reduction; its record below reflects the accepted version."
+    ]
+  },
+  "assets": [
+  {
+    "path": "Level1/air‑vent +clock/air‑vent.fbx",
+    "status": "optimized",
+    "backup_sha256": "C655BE6FA4115B86977C9FDE0E47F5467D812891857BA8C6E5A9384AA4231ADA",
+    "source_bytes": 19989132,
+    "optimized_bytes": 73612,
+    "optimized_sha256": "467497016E7AFA79FA23A45475FD0A5D81BEDBCA2AA47F342BFA9011A8DDE252",
+    "triangles_before": 2368,
+    "triangles_after": 1184,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level1/air‑vent +clock/clock.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "234479516612193E022268C796B04F47FC5244815F8BDE8B25B84E8E1126D671",
+    "source_bytes": 19919740,
+    "triangles_before": 673
+  },
+  {
+    "path": "Level1/broken_wall/broken_wall.fbx",
+    "status": "optimized",
+    "backup_sha256": "0579367BFDD46D19C68064E50439630B2A1563C8E453B45B3EB203C3DA9ACB33",
+    "source_bytes": 6427532,
+    "optimized_bytes": 65964,
+    "optimized_sha256": "FB1B45AB6C63CBD206147FB472D6FF96EE8BF4FD1A7822A8EFB13B0F5FEA7929",
+    "triangles_before": 1657,
+    "triangles_after": 828,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level1/cabinet/cabinet.fbx",
+    "status": "optimized",
+    "backup_sha256": "8724D69DD7830583255FA10E03D0FACF25401EE2C73ED62368E66FD703C4B8D5",
+    "source_bytes": 7843196,
+    "optimized_bytes": 88348,
+    "optimized_sha256": "70EAD22C80C21C0D6CCF49F6254B0E5BD3376EFCBD2D70C50C1338C840171085",
+    "triangles_before": 2985,
+    "triangles_after": 1491,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level1/children's drawing+folded_files+old_clipboard/children's drawing.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "8C9B4B34D7289D39B2E9067256886801E4A1D00AA06EBACF70469E5DD9301913",
+    "source_bytes": 16960796,
+    "triangles_before": 251
+  },
+  {
+    "path": "Level1/children's drawing+folded_files+old_clipboard/folded_files.fbx",
+    "status": "optimized",
+    "backup_sha256": "1CC30A13B6E205A8BAAC11965EECD4AB38F41120DB13E079108A0BDEB9AEB488",
+    "source_bytes": 17069068,
+    "optimized_bytes": 87324,
+    "optimized_sha256": "CCA709A115A30A82C3EBC85CC68A4E8A43A47AD54041F9C77671C4CADF84E4E8",
+    "triangles_before": 2888,
+    "triangles_after": 1444,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level1/children's drawing+folded_files+old_clipboard/old_clipboard.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "F3111565E1C18992F5DB84453C47AB833A9B7A66CAC2A917C015DD6EE9F75021",
+    "source_bytes": 17008076,
+    "triangles_before": 1407
+  },
+  {
+    "path": "Level1/floor2/floor2.fbx",
+    "status": "optimized",
+    "backup_sha256": "58E22BD8D7AB67272C09CF60F290C489226127F2303FC441770AB0D1BF6BE1DE",
+    "source_bytes": 21569052,
+    "optimized_bytes": 158588,
+    "optimized_sha256": "66C6D0AD52CF09776FBB7FE732B38F79A4F6DCDE3EB206D0F01F877B3BDB252E",
+    "triangles_before": 8363,
+    "triangles_after": 2922,
+    "ratio": 0.35,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level1/hospital bed/hospital bed.fbx",
+    "status": "optimized",
+    "backup_sha256": "882FCB3FFB960705AEBA0CC2129B5B160E9C4AC1CA6F7DFC2CE4176A91B7D723",
+    "source_bytes": 12712508,
+    "optimized_bytes": 153676,
+    "optimized_sha256": "3FA813E02E1385233B3756CD2B63750ACC43EA1DDD2364F0F55A45DB426098BB",
+    "triangles_before": 9228,
+    "triangles_after": 3228,
+    "ratio": 0.35,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level1/level1 toys/jack‑in‑the‑box.fbx",
+    "status": "optimized",
+    "backup_sha256": "8FB40C3D9C92B2813B8C5E12F0539AA8E81C5B3BEFF7B98AE1C1A059D48F8927",
+    "source_bytes": 21227884,
+    "optimized_bytes": 67212,
+    "optimized_sha256": "33B3A1505BCBCB5DC3A2372A95658F72BEFC095AE7CF696B3658B5CC9486BE74",
+    "triangles_before": 2124,
+    "triangles_after": 1062,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level1/level1 toys/toy dice.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "B04BEB35B78E546F75EB3CF558065454C17E29283D5B531CD3E6F1046CF68B5F",
+    "source_bytes": 21177964,
+    "triangles_before": 816
+  },
+  {
+    "path": "Level1/level1 toys/toy horse.fbx",
+    "status": "optimized",
+    "backup_sha256": "B2BCDF57C7285C41716C394E959FF9259E5C25E09821577594648204478419F8",
+    "source_bytes": 21281324,
+    "optimized_bytes": 94460,
+    "optimized_sha256": "C722950C756121A5D4D1473D3B37DB30EF66B1361673F6C56E8C8D91CF12D8EB",
+    "triangles_before": 3623,
+    "triangles_after": 1811,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level1/low wooden stool/low wooden stool.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "1C25AF2FD81848A30D864DE7CA4BB85D35B3CB7AD639228B900BD1304D5722E4",
+    "source_bytes": 8531692,
+    "triangles_before": 516
+  },
+  {
+    "path": "Level1/medical cabinet/medical cabinet.fbx",
+    "status": "optimized",
+    "backup_sha256": "096038EEF9418D3E8BC7B3AFA09391B28C7220EDCA063A581EEEFEBEDFCDC3AB",
+    "source_bytes": 9293452,
+    "optimized_bytes": 186108,
+    "optimized_sha256": "6A5703455D0318E880CD0F8076AFFE856A5E24759878093D758F177926C1A172",
+    "triangles_before": 7468,
+    "triangles_after": 3734,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level1/medical privacy screen/medical privacy screen.fbx",
+    "status": "optimized",
+    "backup_sha256": "D4183C5E365E8F26BD8535569D81E0B06908C5BF6A01AF2ACF95B4147C8C1CAC",
+    "source_bytes": 8535068,
+    "optimized_bytes": 112956,
+    "optimized_sha256": "DB9391A241F34D5ACE5C1AFBD211745366334AA3EED8F2284F1EF343F7064943",
+    "triangles_before": 4182,
+    "triangles_after": 2090,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level1/medicine bottle/medicine bottle1.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "DBA054F494077991B60804637928CD7283F483C50B6CE688A63F3F8F72ECF9E0",
+    "source_bytes": 21985468,
+    "triangles_before": 578
+  },
+  {
+    "path": "Level1/medicine bottle/medicine bottle2.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "2DB6D6E648BD80A84074980975212460FC5F1CCEC54E10D0F99B3737689471D8",
+    "source_bytes": 21987340,
+    "triangles_before": 634
+  },
+  {
+    "path": "Level1/medicine bottle/medicine bottle3.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "15F4EE52EFD48328735B8D5AF401D791F9A8C11A7148D833643C3BA88BB76B58",
+    "source_bytes": 21990780,
+    "triangles_before": 722
+  },
+  {
+    "path": "Level1/medicine bottle/medicine bottle4.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "E3FBE5CA6BA9F5F1E62F9D1EB3132267069A49A7C0795EA2D4592A62FB44DE7A",
+    "source_bytes": 21984620,
+    "triangles_before": 548
+  },
+  {
+    "path": "Level1/medicine bottle/medicine bottle5.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "BD3BF3789D71A7CA044DF04F671B4DAD6C3DAFCABA86AC4595B972FB2D577A5E",
+    "source_bytes": 21993580,
+    "triangles_before": 788
+  },
+  {
+    "path": "Level1/medicine bottle/medicine bottle6.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "3B8EDD33D75E95D92F82B6ED20EC495B77CEF2307FF34A5C14AB4E89ADF0EA08",
+    "source_bytes": 21986924,
+    "triangles_before": 605
+  },
+  {
+    "path": "Level1/medicine bottle/medicine bottle7.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "F5A93F7287BD54534A23B9AF224B60BAD9166ABD27E8C5CB5031BD68A97A32B6",
+    "source_bytes": 21986188,
+    "triangles_before": 582
+  },
+  {
+    "path": "Level1/medicine bottle/medicine bottle8.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "2D4D65CAF00235AD3F69888660E6A1A51A77FD5816CA19DCC05458DB1B177C9A",
+    "source_bytes": 21976716,
+    "triangles_before": 324
+  },
+  {
+    "path": "Level1/medicine bottle/medicine bottle9.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "BE1DD03F039F6DBFFBC3217779792EE88C477A58E69030C3F8CC44BF2BF1DF1D",
+    "source_bytes": 21979964,
+    "triangles_before": 420
+  },
+  {
+    "path": "Level1/medicine‑box/medicine‑box.fbx",
+    "status": "optimized",
+    "backup_sha256": "E6200237E15A12F09C130A0B8A2970629120E21EE5D491E42975CB6F149E633B",
+    "source_bytes": 6581836,
+    "optimized_bytes": 68076,
+    "optimized_sha256": "2A08CA5EF106231C42E95A3F46E189B3ADBCC07E06A2C81974B5FDB7E3F1104F",
+    "triangles_before": 1935,
+    "triangles_after": 967,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level1/metal tray+needle/metal tray.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "924F0466A386CD9DDEEDC89F42578C818196F35BCBE5121BDB7AE1F8589AF7DB",
+    "source_bytes": 20041548,
+    "triangles_before": 436
+  },
+  {
+    "path": "Level1/metal tray+needle/needle.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "A6A984FF5FA5442EB2D4DF762E708BB5AAD0785E1497E8AA398A05A40DD14690",
+    "source_bytes": 20064204,
+    "triangles_before": 1030
+  },
+  {
+    "path": "Level1/old‑fashioned CRT monitor pc/old‑fashioned CRT monitor pc.fbx",
+    "status": "optimized",
+    "backup_sha256": "FA4051C75127295B25F96D2B23034970908275903306F1E3B2AB5DE1EB6DC1C9",
+    "source_bytes": 9238524,
+    "optimized_bytes": 153500,
+    "optimized_sha256": "80F44F688743948690A1114662A4D97E01B13BEA9AB3E002C697596A3B46B8C8",
+    "triangles_before": 5929,
+    "triangles_after": 2964,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level1/rubbish bin+stool/rubbish bin.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "8CB23DCC69014132DEE1DBEEC22917588CB905D80E21351CCC4BEA64093AB2A7",
+    "source_bytes": 20518108,
+    "triangles_before": 1136
+  },
+  {
+    "path": "Level1/rubbish bin+stool/stool.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "F9A96CE62DB7E833CF57AFD9733C08E15CF905C4F692C8CC26036A7ACF84800D",
+    "source_bytes": 20503388,
+    "triangles_before": 718
+  },
+  {
+    "path": "Level1/small+big  metal locker/big metal locker.fbx",
+    "status": "optimized",
+    "backup_sha256": "E20C9E145E07A1F47A340CE4E5105A2108021CC2EF1C96DA78D951F00F6827E8",
+    "source_bytes": 9006092,
+    "optimized_bytes": 95196,
+    "optimized_sha256": "4D47179775B784E30C38BD0426C6ED22ECBFAE43AEFF8A7C10C80D00B5978669",
+    "triangles_before": 3406,
+    "triangles_after": 1703,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level1/small+big  metal locker/small metal locker.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "567BF54E4B6F923DC27CA284FE15864B92B0F32BAA7EC1C84ADD340378F82518",
+    "source_bytes": 8925644,
+    "triangles_before": 1134
+  },
+  {
+    "path": "Level1/toy bear/toy bear.fbx",
+    "status": "optimized",
+    "backup_sha256": "B9AE7B300E570D45CDD8D7865FC748760B3718D74F72F7C9E64FD2C1690C9333",
+    "source_bytes": 19322364,
+    "optimized_bytes": 125916,
+    "optimized_sha256": "21BAE6FD00DC692E27F2D96ACCD342928EA7802F6280587B24699B6B4A5BD103",
+    "triangles_before": 5107,
+    "triangles_after": 2553,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level1/wall1/wall1.fbx",
+    "status": "optimized",
+    "backup_sha256": "A3F88B06F1FED4A7049754764C20906001B023906AC38C1B26546082DAA089D1",
+    "source_bytes": 7967612,
+    "optimized_bytes": 146172,
+    "optimized_sha256": "BA4E272A03C2DB0A55F0887461F2CA89A2C388DA540CBA4CA574C0BE514D5D54",
+    "triangles_before": 6244,
+    "triangles_after": 3122,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level1/wall2/wall2.fbx",
+    "status": "optimized",
+    "backup_sha256": "B2A8637CADA83C76DBB387FF6BEF5DAD011D1114FFEA27D7E236E477F3F856FA",
+    "source_bytes": 7964876,
+    "optimized_bytes": 95420,
+    "optimized_sha256": "C67D5C3655F277131004AE5F67008D71DA69D60922A1CBA3973F460A199D4439",
+    "triangles_before": 2969,
+    "triangles_after": 1484,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level1/wall3/wall3.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "BCCB85985B4A9485BF33D9B90561E173971155AE63FE23373C885C36DAFFBE92",
+    "source_bytes": 6432540,
+    "triangles_before": 971
+  },
+  {
+    "path": "Level1/wall4/wall4.fbx",
+    "status": "optimized",
+    "backup_sha256": "CDD41816FCF3381255B10B2A8413D76291D949A5608FC6CEAF461F3889650354",
+    "source_bytes": 8062924,
+    "optimized_bytes": 109068,
+    "optimized_sha256": "A6BD53536F1BF0B3C4B73BF270E159892AA6F4998EA23F9EAE2941A2B8FDDE16",
+    "triangles_before": 4162,
+    "triangles_after": 2080,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level1/wall5/wall5.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "BD1CA18763FE80DFD3E9D80B4DF4B0CE549DFC73B72EDFC1F66E5D3828444247",
+    "source_bytes": 7865340,
+    "triangles_before": 953
+  },
+  {
+    "path": "Level1/wheelchair/wheelchair.fbx",
+    "status": "optimized",
+    "backup_sha256": "E03959E3D6524FF8DBE3A536E68FA43C63D7DC6D0A1CAF1547E2769E8F7765F3",
+    "source_bytes": 9428396,
+    "optimized_bytes": 120188,
+    "optimized_sha256": "209F3F8CAB693F0C9E76D87F12DCAC996663E0700C7F5C3343CF6938158C1917",
+    "triangles_before": 4151,
+    "triangles_after": 2075,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level1/wooden_crate/wooden_crate.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "8C1A5523144E28D43A903D3F9C1605FA57FDD18FD1437BF2E4E9C8615825940E",
+    "source_bytes": 7478060,
+    "triangles_before": 500
+  },
+  {
+    "path": "Level2/door/door.fbx",
+    "status": "optimized",
+    "backup_sha256": "1F12D32D9781BFA261D1F3D9C14C067BFF55E4521BE8B53B5C2E6D4215D74CA3",
+    "source_bytes": 7761068,
+    "optimized_bytes": 107036,
+    "optimized_sha256": "6D29D79A80E2607EF8CAE36D7244D15BB116219FDEED1D0DBF52D1833A04BB22",
+    "triangles_before": 3856,
+    "triangles_after": 1927,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level2/drug_storage_shelf/drug_storage_shelf.fbx",
+    "status": "optimized",
+    "backup_sha256": "8F34E26AE1B291A78AD2D2C598EAF06D08AB24515922AAB305EBFB32412CE084",
+    "source_bytes": 7600956,
+    "optimized_bytes": 136172,
+    "optimized_sha256": "94C0B5BD64C3BFC035A6FFB685609571B31A96EA3C382FC49E7C25D323549791",
+    "triangles_before": 5335,
+    "triangles_after": 2667,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level2/electro‑medical_cabinet/electro‑medical_cabinet.fbx",
+    "status": "optimized",
+    "backup_sha256": "AAC23B7E8142EFFB8F17604C2AFBE5C641CD44F8ED32AA59DB752AE6AD33E0F5",
+    "source_bytes": 40510012,
+    "optimized_bytes": 530492,
+    "optimized_sha256": "9A3616BDB22FBF17620C969F5756571EE35D05D02745DC76F5C7310898FC5E50",
+    "triangles_before": 39254,
+    "triangles_after": 13700,
+    "ratio": 0.35,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level2/medical_drawer_cart/medical_drawer_cart.fbx",
+    "status": "optimized",
+    "backup_sha256": "C06A3985779AD71F6D1FF28C0BE6F1594774A47E6D13F4E2BB0D8BFB00091ACA",
+    "source_bytes": 8213772,
+    "optimized_bytes": 286940,
+    "optimized_sha256": "A9227D77A4A2C6319E8BD39B46E9623DCE589513D9D7D0BC33AAA653D9BEEB90",
+    "triangles_before": 14596,
+    "triangles_after": 5108,
+    "ratio": 0.35,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level2/medicine‑cart/medicine‑cart.fbx",
+    "status": "optimized",
+    "backup_sha256": "64310A5634425A5D6CE42C012469632DA3370FDBF91A9AB5D5F20867BD177E3C",
+    "source_bytes": 9532540,
+    "optimized_bytes": 111708,
+    "optimized_sha256": "E53A64A508AED3404FBCBB4B36D860AB905264FEBC9EAEAA97D1527F3BE9A5EC",
+    "triangles_before": 4238,
+    "triangles_after": 2118,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level2/sign/sign.fbx",
+    "status": "optimized",
+    "backup_sha256": "90EFF59B8C8C08945FD37E8533E52E0EB6C28891C79079350CD6080044DF62D8",
+    "source_bytes": 9448716,
+    "optimized_bytes": 86236,
+    "optimized_sha256": "56F506787847E2CFD3C3C964BA385EB877061939D875B8740BA0C5C5E22E6B80",
+    "triangles_before": 3114,
+    "triangles_after": 1557,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level2/toy‑car/Meshy_AI_Rusty_Iron_Pedal_Car_0801143638_texture.fbx",
+    "status": "optimized",
+    "backup_sha256": "0B209CFD74B2F888753866D1DA89B5B3E1A8CB4CF340AA315B13ACC90D15F954",
+    "source_bytes": 20428524,
+    "optimized_bytes": 143932,
+    "optimized_sha256": "B2F08140A7B8B22103F18E39B7545C1F26BB33F031A169779442C5FEB959F0A4",
+    "triangles_before": 8213,
+    "triangles_after": 2873,
+    "ratio": 0.35,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level2/triage desk/triage desk.fbx",
+    "status": "optimized",
+    "backup_sha256": "3773E17043641D3CB319CEE4267CB9D0912B367C8680C9E9B308D8ABDCFC3902",
+    "source_bytes": 8910348,
+    "optimized_bytes": 151852,
+    "optimized_sha256": "69D0F2D42AFB1B650DD1CA6028938942A7980D522E867E292CB240C4264C7784",
+    "triangles_before": 8154,
+    "triangles_after": 2852,
+    "ratio": 0.35,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level2/waiting‑room chairs/waiting‑room chairs.fbx",
+    "status": "optimized",
+    "backup_sha256": "975B4F688B6A5B3713B83EFB6BE59FDFE1696CB38D767EFA743B7A2AD0309E18",
+    "source_bytes": 21171452,
+    "optimized_bytes": 175692,
+    "optimized_sha256": "9F454A4A35BAD9C5CB09CE72E594249B20DA28BA0BB8978B0276203758F99AF9",
+    "triangles_before": 7017,
+    "triangles_after": 3507,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level3/all picture/all picture.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "5C7FD0845BDF41C85BB7F4BAD7EF55C033D4189263B2656CB17F28480E84FE8A",
+    "source_bytes": 7933788,
+    "triangles_before": 158
+  },
+  {
+    "path": "Level3/all picture/picture1.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "4AB6FDAA7692E81403AF33C70395BAAF98234582A894226A36ECC7FD0106649C",
+    "source_bytes": 7927004,
+    "triangles_before": 18
+  },
+  {
+    "path": "Level3/all picture/picture2.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "1495CAD38D273A2285395323125BE5AFAF65B9EEFB03A969DB7AE1E7EFAE96EE",
+    "source_bytes": 7927212,
+    "triangles_before": 20
+  },
+  {
+    "path": "Level3/all picture/picture3.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "6200E159B34457F413EEA4A24DF9D59510A9D596390A81800FD99C9E4579F6CC",
+    "source_bytes": 7927324,
+    "triangles_before": 20
+  },
+  {
+    "path": "Level3/all picture/picture4.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "CB304C7A650FA177A9628A352062B05A3731FADDF3FE11C386E71ABFD09C1434",
+    "source_bytes": 7927196,
+    "triangles_before": 20
+  },
+  {
+    "path": "Level3/all picture/picture5.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "9D16D61F83B8B7640526DE5601BB7384446CCD91D88DA21FCF7335E643AAB19D",
+    "source_bytes": 7927260,
+    "triangles_before": 20
+  },
+  {
+    "path": "Level3/all picture/picture6.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "CEA603C6ACDBB8ED037E84B473FE1E68E680C5283BEA130FA1C200C81C63538C",
+    "source_bytes": 7927196,
+    "triangles_before": 20
+  },
+  {
+    "path": "Level3/all picture/picture7.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "8B6B33E3908E1032499771E32DFB902925F6D081ABC7808971C906DC0A3743DF",
+    "source_bytes": 7927100,
+    "triangles_before": 20
+  },
+  {
+    "path": "Level3/all picture/picture8.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "2ADB20089AFBD324C28406E73E0DFF0FA3C909F37B02554C76E6433A4DF4AF9E",
+    "source_bytes": 7927116,
+    "triangles_before": 20
+  },
+  {
+    "path": "Level3/door2/door2.fbx",
+    "status": "optimized",
+    "backup_sha256": "993AF2A0AF529A8A6E05BD1EF7AD459C814772D843F1823EC3AFD66336D6B0A2",
+    "source_bytes": 8507372,
+    "optimized_bytes": 68444,
+    "optimized_sha256": "C252E0B63E8EC53438EA1C47CE2A7ADCA79080800441D00C1EB8809E0E67B58F",
+    "triangles_before": 2004,
+    "triangles_after": 1001,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level3/metal_grille_door/metal_grille_door.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "7DECFB6D377BAADC18D2BF6207FA7F6F9149D06707A72197105173DA7B39D39C",
+    "source_bytes": 8682444,
+    "triangles_before": 526
+  },
+  {
+    "path": "Level3/metal_grille_window/metal_grille_window.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "EC2C89FF81B706D106F32F1A3DE6B1DB864554BABBC08954BEE7513AB84A0EAF",
+    "source_bytes": 6672668,
+    "triangles_before": 524
+  },
+  {
+    "path": "Level3/metal_slide/metal_slide.fbx",
+    "status": "optimized",
+    "backup_sha256": "7F712F29C2241D5B3BE20586E8013A322DAE68D3069D88EEF7F39711941E51D9",
+    "source_bytes": 8536892,
+    "optimized_bytes": 90620,
+    "optimized_sha256": "C4CFD53241BB468914A7EA09D910A5063D092BB9C999629B5BBF832868F37001",
+    "triangles_before": 3104,
+    "triangles_after": 1552,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level3/metal_stairs/metal_stairs.fbx",
+    "status": "optimized",
+    "backup_sha256": "AA05895A9D439ED9E12580769AF48359DDE0E1D9D99D02BBFB3EF19483EAC0BD",
+    "source_bytes": 8417292,
+    "optimized_bytes": 89468,
+    "optimized_sha256": "162DCECA6D809120C85BF0E60402A18DCE3CB71C3AE4711EC9A963F017D22903",
+    "triangles_before": 2875,
+    "triangles_after": 1437,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level3/old_window/old_window.fbx",
+    "status": "optimized",
+    "backup_sha256": "E0BC6A4A91D1414831D7ACFC36A58F65846987E466445925FCB753D5177D1869",
+    "source_bytes": 2455596,
+    "optimized_bytes": 66620,
+    "optimized_sha256": "6A06A569838972F146B332BD6DB68D3F997039C0835FF2427F172E3206ABE0D2",
+    "triangles_before": 1930,
+    "triangles_after": 964,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level3/polluted‑privacy_curtain/polluted‑privacy_curtain.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "6311F75F4E1E8BF92FD857C7F6E5D9BEB7A3277402CF7E10BE6FA4912032744E",
+    "source_bytes": 7803596,
+    "triangles_before": 901
+  },
+  {
+    "path": "Level3/table_and_chairs/table_and_chairs.fbx",
+    "status": "optimized",
+    "backup_sha256": "16A7A84A95ABAAA9D58983089D7298343FB4A9448C6C8B70A49A3040FC8723E8",
+    "source_bytes": 9421244,
+    "optimized_bytes": 134684,
+    "optimized_sha256": "3A0754D2F61B0409F2778B7AAECE3005DAA03A47D174834B04F88796FC1A9CAD",
+    "triangles_before": 4764,
+    "triangles_after": 2382,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level3/toy1/toy1.fbx",
+    "status": "optimized",
+    "backup_sha256": "7B72C4532DBB32FCA5B776C900649B72E3F3C14C8F8D44B13A0455236BB2AAA4",
+    "source_bytes": 7253260,
+    "optimized_bytes": 87884,
+    "optimized_sha256": "98AD40ADEC1A5EB176707A0EFBFD68080B75EBF48FC8C1A56DF6F23B9A4D9E08",
+    "triangles_before": 3286,
+    "triangles_after": 1642,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level3/toy2/toy2.fbx",
+    "status": "optimized",
+    "backup_sha256": "0FFAD8B486DC821186F6CFFDF8E694304DF71C583A3751F930E2883FB14FF422",
+    "source_bytes": 7270092,
+    "optimized_bytes": 89148,
+    "optimized_sha256": "A491BC8D276C6D912C4FAC4480305C0F0D8F08275FA4A7D7893F3B355BFF756F",
+    "triangles_before": 3010,
+    "triangles_after": 1505,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level3/toy3/toy3.fbx",
+    "status": "optimized",
+    "backup_sha256": "C6762774D24BFED84490C17431B95BF7E1F5921CA04733F55F69482FB1B56818",
+    "source_bytes": 6688428,
+    "optimized_bytes": 65932,
+    "optimized_sha256": "500D99652B81AD88C294825005EE8CFDE2E8EB493E28C86BC83A22E093D1AD8D",
+    "triangles_before": 2053,
+    "triangles_after": 1025,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level3/wooden_chair/wooden_chair.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "529D1C5A69DD57170E02E9AB78F7E5887BA9D7BDFF638B3A327F3CA020CDC510",
+    "source_bytes": 7231852,
+    "triangles_before": 1040
+  },
+  {
+    "path": "Level4/all  kids_paintings/all  kids_paintings.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "DC5CF6E0FA07C76E733206ECB10A836B01EF7615CD53547A506A4B40413969DE",
+    "source_bytes": 8665180,
+    "triangles_before": 468
+  },
+  {
+    "path": "Level4/all  kids_paintings/all  kids_paintings1.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "EA58F61CBCA29786F5C85BE436FB833DC05DD78C1A058B9066A5474987707580",
+    "source_bytes": 8645244,
+    "triangles_before": 24
+  },
+  {
+    "path": "Level4/all  kids_paintings/all  kids_paintings2.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "3F28ED72365867410BB84AEC0836E7A24A35928BDD36EB20B7E9D85EE390BF2D",
+    "source_bytes": 8645260,
+    "triangles_before": 24
+  },
+  {
+    "path": "Level4/all  kids_paintings/all  kids_paintings3.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "F59F13EA3858A0A80D73334FCA0A9201AB00CE745D3E762F4023666758CE99A6",
+    "source_bytes": 8645292,
+    "triangles_before": 24
+  },
+  {
+    "path": "Level4/all  kids_paintings/all  kids_paintings4.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "B9B6432DB13E873AE80E580764FC861FD181A4966DD34BAF1ADEB3F8F60F83B6",
+    "source_bytes": 8645260,
+    "triangles_before": 24
+  },
+  {
+    "path": "Level4/all  kids_paintings/all  kids_paintings5.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "7966F3EAD668E4E231E8BC3B30B2EFF1C2214DE80C58162E03D56CF644E4A872",
+    "source_bytes": 8645404,
+    "triangles_before": 28
+  },
+  {
+    "path": "Level4/all  kids_paintings/all  kids_paintings6.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "F50B5C66B2768007F9C25D97E62D65024137A612868B3C1596ECFDF453F8C11C",
+    "source_bytes": 8645276,
+    "triangles_before": 24
+  },
+  {
+    "path": "Level4/all  kids_paintings/all  kids_paintings7.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "7E24F461557D44BA2A2908532165683FAD9019111C9503FC9F6757F0F6BDA991",
+    "source_bytes": 8645228,
+    "triangles_before": 24
+  },
+  {
+    "path": "Level4/all  kids_paintings/all  kids_paintings8.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "7447F8F9B1D6E8E012BE9667B637E5737081BB405F178C633CE76426D8459B35",
+    "source_bytes": 8647308,
+    "triangles_before": 67
+  },
+  {
+    "path": "Level4/bed/bed.fbx",
+    "status": "optimized",
+    "backup_sha256": "4301CEA51373F4409645C9FB50A9F6F94E0D408AF9516E8F2A91BC35EA5ADDB5",
+    "source_bytes": 14768412,
+    "optimized_bytes": 164940,
+    "optimized_sha256": "0668CD965F824E106D3CC057D9FC1F8975FFCD1E956AFE3CAD4D912BDA5E180A",
+    "triangles_before": 9468,
+    "triangles_after": 3313,
+    "ratio": 0.35,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level4/desk/desk.fbx",
+    "status": "optimized",
+    "backup_sha256": "0B5AFA329F7FA410CE5C9B776899531F0ACA91AD7314B1BE08CF20860EC15B83",
+    "source_bytes": 7577116,
+    "optimized_bytes": 112764,
+    "optimized_sha256": "73F6C6E3566BF8E1E124D26882D42D450F22802C97570B91A289BF56B60E49EF",
+    "triangles_before": 3834,
+    "triangles_after": 1916,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level4/dining_table+chair/dining_table chair.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "8CA14B1A73555DDF9EC8A24507F2AD6B906AC789107A6276735692DD79CD57B2",
+    "source_bytes": 8155644,
+    "triangles_before": 672
+  },
+  {
+    "path": "Level4/dining_table+chair/dining_table.fbx",
+    "status": "optimized",
+    "backup_sha256": "57CE27545A9E9F0828984B88D2EEB9952F69373D6AA256053AE4D634C0441263",
+    "source_bytes": 8402636,
+    "optimized_bytes": 182492,
+    "optimized_sha256": "0FCEB57FC097326B58FB8306375FE103D93123DF4A781924B877B3C597ECA026",
+    "triangles_before": 7149,
+    "triangles_after": 3574,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level4/medical_trolley/medical_trolley.fbx",
+    "status": "optimized",
+    "backup_sha256": "7A55D07C9DAA6B54AABD0B924173A82CCD03178359F56766750F617103E9DD93",
+    "source_bytes": 8430700,
+    "optimized_bytes": 88716,
+    "optimized_sha256": "EDB575E22700B5C025BFF3F3B87E9E2766C2C9FDDC0E24A0DF908339F8E13DB8",
+    "triangles_before": 3147,
+    "triangles_after": 1572,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level4/restraint_chair/restraint_chair.fbx",
+    "status": "optimized",
+    "backup_sha256": "362F9448F0181CCBE62FE2B61499C1E635643BA7419AE626DE69644F1AF68487",
+    "source_bytes": 10379244,
+    "optimized_bytes": 120444,
+    "optimized_sha256": "F411AD8D332A11B478E817A9F94FAF548A826A8B9C55F3CBCE9487653AF8FC0A",
+    "triangles_before": 3783,
+    "triangles_after": 1890,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level4/screen/screen.fbx",
+    "status": "optimized",
+    "backup_sha256": "5054C1DFCD6F06C4FD77E92CA32B3998048AF1F7F14B2CB12C44D9B38680F89E",
+    "source_bytes": 8306540,
+    "optimized_bytes": 90156,
+    "optimized_sha256": "96DC624B78998B8854E8E24191B26F2475AEF7155A0BA2546840B565BFA64879",
+    "triangles_before": 3145,
+    "triangles_after": 1571,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level4/sink/sink.fbx",
+    "status": "optimized",
+    "backup_sha256": "9434ED2E66E97AA49472BD0F6FEFBE5119F42B62A049913289CE5C434EC57711",
+    "source_bytes": 8241868,
+    "optimized_bytes": 68796,
+    "optimized_sha256": "444BFFC6599F286E794AE3C9B73307AD563A962ECEC7ADA3C22FED5802FFDF53",
+    "triangles_before": 2167,
+    "triangles_after": 1082,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level4/stretcher/stretcher.fbx",
+    "status": "optimized",
+    "backup_sha256": "F209510ABBBDAFD845F6C59C10E476F4CB59C6B12DC22424F522A9ACAB9FB7B3",
+    "source_bytes": 8872220,
+    "optimized_bytes": 110668,
+    "optimized_sha256": "577AA5A868D9F9C477D28A9E071719A649C27BFE82614FE5FEBEAD90BE47FE6C",
+    "triangles_before": 3938,
+    "triangles_after": 1968,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level4/weight_scale/weight_scale.fbx",
+    "status": "optimized",
+    "backup_sha256": "0A87F5D5F4D9C6C6334B8DDAF6DA6CF2AEB6492F88CA2370E978491F582EAD69",
+    "source_bytes": 9185884,
+    "optimized_bytes": 65100,
+    "optimized_sha256": "1E85FBDFD6EB38CDDEE2DD07CBA6276998AFCBE55B17783155DE4BFC2F942AFA",
+    "triangles_before": 2096,
+    "triangles_after": 1047,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level4/window/window.fbx",
+    "status": "optimized",
+    "backup_sha256": "CFB7A6C2A0554BAE3B2E53E5829778B944E665B5BE4E9631F4158C690A9A5B70",
+    "source_bytes": 8932636,
+    "optimized_bytes": 95916,
+    "optimized_sha256": "7BD3D18BD41F2794D38547AE24D33EB8196EE55A1AAD35E17EA9A87F76A23C4D",
+    "triangles_before": 2999,
+    "triangles_after": 1498,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level5/bookcase_wooden/bookcase_wooden.fbx",
+    "status": "optimized",
+    "backup_sha256": "7DA8E0726A11F9C01D0E4DDA2DD6516222694FFA330DB0B01CE55EC24A81EF49",
+    "source_bytes": 6924236,
+    "optimized_bytes": 283084,
+    "optimized_sha256": "DD74E4CAB0BC5C05573061C3304AA10754F267E1AB5DEF6DB4DA7BA56F376ED5",
+    "triangles_before": 15583,
+    "triangles_after": 5453,
+    "ratio": 0.35,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level5/chair2/chair2.fbx",
+    "status": "optimized",
+    "backup_sha256": "3267E9545ECD2A37BCBFFAE7753A07F1C7337846CCBD3123240E07E26EA1A085",
+    "source_bytes": 7204220,
+    "optimized_bytes": 132684,
+    "optimized_sha256": "42FCE45BDFBBFB58E2E092AADF0B21A31DA232BB5E8A91C322AC4D1E5B029EA0",
+    "triangles_before": 5243,
+    "triangles_after": 2621,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level5/chair_side_table/chair_side_table.fbx",
+    "status": "optimized",
+    "backup_sha256": "D8A5A6E80EC6DBB638C5838903E1CD3F5E1F83FA605C503B9491FC4ECB38391A",
+    "source_bytes": 7137644,
+    "optimized_bytes": 183548,
+    "optimized_sha256": "1138DB705C8275B37D64198C0739A4DC775327F5FF5B4E06B2CD1A74D554A08F",
+    "triangles_before": 10806,
+    "triangles_after": 3782,
+    "ratio": 0.35,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level5/desk2/desk2.fbx",
+    "status": "optimized",
+    "backup_sha256": "FCDCBEB4088005EF03A979C79BCE320BE7D28CFE4B4C8CE245BEA1D60F906182",
+    "source_bytes": 6142460,
+    "optimized_bytes": 124684,
+    "optimized_sha256": "9DE0451243E964F0F0FF92C89BE15DD4B1410C95EAA3F791E56334EE66DBC8C6",
+    "triangles_before": 4426,
+    "triangles_after": 2213,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level5/door3/door3.fbx",
+    "status": "optimized",
+    "backup_sha256": "EBCE578E7E1349715A547856A00015FFCCF8274337A5872D30B0314D06B77BD5",
+    "source_bytes": 7251724,
+    "optimized_bytes": 60892,
+    "optimized_sha256": "0DD2AFC1A4FC2820C3407DFF0E9B2E376E24B924E8DDCECAB4F3EFDC301BC6B8",
+    "triangles_before": 1722,
+    "triangles_after": 860,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level5/floor_tile_blue/floor_tile_blue.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "B5C804E85476FF64E1A99D98A8F8CCE227AD5C9B841FB986D7812AF85E01586E",
+    "source_bytes": 7265260,
+    "triangles_before": 1088
+  },
+  {
+    "path": "Level5/honor_flag/honor_flag.fbx",
+    "status": "optimized",
+    "backup_sha256": "18681598CD319926260CD186F169E62E60AE1670AAB81DBB95A3EAC8AAB841DB",
+    "source_bytes": 7613036,
+    "optimized_bytes": 91100,
+    "optimized_sha256": "8D7C49E949211AB653B19813BD7FBFC3196F265F47D28F207D339FCA12B73FCE",
+    "triangles_before": 2982,
+    "triangles_after": 1491,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level5/mesh_metal_grid/mesh_metal_grid.fbx",
+    "status": "optimized",
+    "backup_sha256": "8D7F658265F655B6722C12656CFB51DA226A3F0D81EBD4A8137F18A4A6D2B57F",
+    "source_bytes": 10388524,
+    "optimized_bytes": 206956,
+    "optimized_sha256": "8E540F6A07DFAF4328386C39E7B579874220DDD3BB5BF38D1CA1FE2CF2006037",
+    "triangles_before": 10657,
+    "triangles_after": 3729,
+    "ratio": 0.35,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level5/metal_grille/metal_grille.fbx",
+    "status": "optimized",
+    "backup_sha256": "19EC0D98E45094F1EFF5C86C8056406F15CBF7692165C0EA65CF21EDF2D9F40A",
+    "source_bytes": 6824540,
+    "optimized_bytes": 85500,
+    "optimized_sha256": "950F271A7D85DB8E1BF7AE11B46C387EBF437064690F7F5B2FA6D3F24300F997",
+    "triangles_before": 2724,
+    "triangles_after": 1362,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level5/pendant_lamp/pendant_lamp.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "0930E4B93B46E71EC42ACC28E026C012E6BB9F8EE5FE4D6CED1525427E694FA0",
+    "source_bytes": 6616252,
+    "triangles_before": 981
+  },
+  {
+    "path": "Level5/sign2/sign2.fbx",
+    "status": "optimized",
+    "backup_sha256": "27FE143E5DB14F3E4A73896F143FA4A8A26513D72F66B277672B282F85510872",
+    "source_bytes": 8963852,
+    "optimized_bytes": 83724,
+    "optimized_sha256": "C39311818A4931421FBD9E02C190CD7920A1233F5B818DF15D3B4C0C65C5C5DD",
+    "triangles_before": 2920,
+    "triangles_after": 1460,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "Level5/wall_lamp/wall_lamp.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "941D9E294D079A5C5628D2F27A3A59CC90184B64143A2D07AD55B83DAEB9233A",
+    "source_bytes": 6734876,
+    "triangles_before": 885
+  },
+  {
+    "path": "Level5/wall_tile/wall_tile.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "4AB37958E6ED23F554C78DBADBF9F337565B52D9A4291E285BB1AA64C7CA238A",
+    "source_bytes": 8617500,
+    "triangles_before": 1070
+  },
+  {
+    "path": "Level5/window_curtain/window_curtain.fbx",
+    "status": "optimized",
+    "backup_sha256": "88B0E9F18F11A0818504DAF3A9979F5C7883C5040C4071B506AE9E2E3D1647CF",
+    "source_bytes": 7985996,
+    "optimized_bytes": 132556,
+    "optimized_sha256": "DCFCC5BB5DA8F5FDEB8F5E0C334FB690940DAAB5D918BD1C9CDC5CBB58C21AF9",
+    "triangles_before": 4684,
+    "triangles_after": 2342,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "add model/Bookshelf2/Bookshelf2.fbx",
+    "status": "optimized",
+    "backup_sha256": "03FD9FB1A20BB54D7077F88AC93CE03AD9591D926F4C73536A8BF3FA64193552",
+    "source_bytes": 156540,
+    "optimized_bytes": 106588,
+    "optimized_sha256": "28F4DE7835F49CE15380E146F60E704C0C857299A9E4F8F15BE2503FCA740DEF",
+    "triangles_before": 4452,
+    "triangles_after": 2225,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "add model/Carpet2/Carpet2.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "BF6CB48D368D30ED36C0B1CC3328DA3FAAD59D8A83038B55F0D1E27DF90C7C7D",
+    "source_bytes": 7592380,
+    "triangles_before": 457
+  },
+  {
+    "path": "add model/DirtyLinenTrolley/DirtyLinenTrolley.fbx",
+    "status": "optimized",
+    "backup_sha256": "F79BA0909FB06AD24A46E7AD225EEA9FAC52E22B4B5CC0EF5532B8314F0B5224",
+    "source_bytes": 9000252,
+    "optimized_bytes": 70172,
+    "optimized_sha256": "D2666131F9DB3CDEB1B2A02B62C6B55A8F36B4E713B4874D14609D0F58ED6AFF",
+    "triangles_before": 2058,
+    "triangles_after": 1028,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "add model/EmergencyButton/EmergencyButton.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "EE867405A0C7C5D39772317BFA175D9A134761970CA9B70681FFC0281E9E27D5",
+    "source_bytes": 54748,
+    "triangles_before": 794
+  },
+  {
+    "path": "add model/FloorLamp/FloorLamp.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "92EFB7FDC0B0D96F49F8EDE8DEAC582F30268D7285BFDBEC6462A2D0C150D047",
+    "source_bytes": 7154540,
+    "triangles_before": 1050
+  },
+  {
+    "path": "add model/InjectionCart/InjectionCart.fbx",
+    "status": "optimized",
+    "backup_sha256": "D57B58A74DF8E7AE4C0B783FC8A267CDF8DD7F3EEE2CE876361F641F1B9CE645",
+    "source_bytes": 9424524,
+    "optimized_bytes": 114236,
+    "optimized_sha256": "1410A95017077DCE97B691A87B12820566D3A685EDBDC894CDD0A7A33CC7FA43",
+    "triangles_before": 4232,
+    "triangles_after": 2115,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "add model/J‑Box/J‑Box.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "C0694CD2E2A4C101063EF403CA66F5EFFDCC737EF1EBBFB09C8CF8402BC1E749",
+    "source_bytes": 7832844,
+    "triangles_before": 999
+  },
+  {
+    "path": "add model/MedCart/MedCart.fbx",
+    "status": "optimized",
+    "backup_sha256": "569A12B42FBE14CCCA0F8975F1853EC24E54E5D3364B3B16495DFEA3C5655E50",
+    "source_bytes": 6424044,
+    "optimized_bytes": 70684,
+    "optimized_sha256": "28057B38D39D60FFF60DD8ACC6636D201CFD92FFFAC446DCC92F7E0EEB3E374A",
+    "triangles_before": 2145,
+    "triangles_after": 1072,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "add model/MedicalCabinet/MedicalCabinet.fbx",
+    "status": "optimized",
+    "backup_sha256": "39F577EB87D6662E464066EAADCC5059C859896F1BCADFFC86C60722A1AC726D",
+    "source_bytes": 9037708,
+    "optimized_bytes": 143868,
+    "optimized_sha256": "E9232AA22305EC25477240A5E3CFB4094078D389EA91B4333418F0E562EEBE88",
+    "triangles_before": 5044,
+    "triangles_after": 2522,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "add model/Medical‑Cart/Medical‑Cart.fbx",
+    "status": "optimized",
+    "backup_sha256": "306763F2F9C4BD0E7EAE448547D2FC287FA68DF84578EED8484B27A90DD76E69",
+    "source_bytes": 8409244,
+    "optimized_bytes": 138700,
+    "optimized_sha256": "8D4B5D242DBA218267B619438E1F96969D2CC8E226890E237C79EAB72D4121C2",
+    "triangles_before": 5194,
+    "triangles_after": 2597,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "add model/MedicineCabinet/MedicineCabinet.fbx",
+    "status": "optimized",
+    "backup_sha256": "76B20BEB0E2056F41D698A2F79E4A8AF402A0A68F275ACD6FC9616327A1C41A8",
+    "source_bytes": 8997692,
+    "optimized_bytes": 73036,
+    "optimized_sha256": "7F380FD90224397ED37335D77BA9530721907D74534C1CB3D7B1B4A7DA32523E",
+    "triangles_before": 1890,
+    "triangles_after": 945,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "add model/MedicineShelfCabinet/MedicineShelfCabinet.fbx",
+    "status": "optimized",
+    "backup_sha256": "AD7A817F7E93C2D5A09F78A4D0A51FAFCBC95B73D1E309E06381E8E7AB1E06A1",
+    "source_bytes": 7726140,
+    "optimized_bytes": 88652,
+    "optimized_sha256": "255FD926A156BEDD3583F2D4BB2F8D1A3B3F77CF8CD247C110D4B1C2561932B6",
+    "triangles_before": 3083,
+    "triangles_after": 1541,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "add model/NursingTrolley/NursingTrolley.fbx",
+    "status": "optimized",
+    "backup_sha256": "746F8712726AAAAFCE1DCBF25331AE9244965DA93B8FBBB3D2E7C19BB802271E",
+    "source_bytes": 9163548,
+    "optimized_bytes": 92028,
+    "optimized_sha256": "8C05AD7ACC216AFFB1333FCB06578E6F6D0C5454568133D3A39A0B01CA6F0D7D",
+    "triangles_before": 3097,
+    "triangles_after": 1548,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "add model/OfficeFileCabinet/OfficeFileCabinet.fbx",
+    "status": "optimized",
+    "backup_sha256": "46C78AE05FFECD37D9AE3BD6BFC7F7478B35B96D16CAFE0BE261195B9CE4BDEB",
+    "source_bytes": 145564,
+    "optimized_bytes": 100028,
+    "optimized_sha256": "2D78C6A90EEE28170154D55FDB8C9D666985B5E7E25AE9F858DAD27C09635030",
+    "triangles_before": 4573,
+    "triangles_after": 2285,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "add model/Pedal1/Pedal1.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "6B25ECC6183E2CCB3E31BCC586752CDF6E000EA7C91DB258CBF4714501A4BFCA",
+    "source_bytes": 9652780,
+    "triangles_before": 1066
+  },
+  {
+    "path": "add model/Pedal2/Pedal2.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "5748000078F4C63799A1DDE901218AC43EFE480C8F4CFA0160E2F01880B185A6",
+    "source_bytes": 8827004,
+    "triangles_before": 352
+  },
+  {
+    "path": "add model/Restroom/Restroom1.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "942D725675EEA9409E71FEBF97F50C800860F6535A472B4C68E75D912595F8D3",
+    "source_bytes": 36380,
+    "triangles_before": 341
+  },
+  {
+    "path": "add model/Restroom/Restroom2.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "783E7C9620D76ACF9D63207298054C15196206E8189EC4D84347292B6803105B",
+    "source_bytes": 38540,
+    "triangles_before": 380
+  },
+  {
+    "path": "add model/Restroom/Restroom3.fbx",
+    "status": "optimized",
+    "backup_sha256": "E09CFC5FB14F2C167F432232DE24F51DE766C6BA8F8E6F50644AEBFCE498A0F1",
+    "source_bytes": 107068,
+    "optimized_bytes": 72076,
+    "optimized_sha256": "2B0A86F4166E02AC1843CD5BD0E6BF6B79D32ACB9099DA461726FF2D69BF40E6",
+    "triangles_before": 2301,
+    "triangles_after": 1150,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "add model/Restroom/Restroom4.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "E9A0E6C15C22CC3CF68C1CBC78D6DB6DC9465CEA08B7894124C24184E7CF6FBC",
+    "source_bytes": 71756,
+    "triangles_before": 1296
+  },
+  {
+    "path": "add model/Restroom/Restroom5.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "D39731094CB5ACC325E73078ECDF78443B15F4D0433DE36246EB145DEE9FC164",
+    "source_bytes": 53372,
+    "triangles_before": 857
+  },
+  {
+    "path": "add model/RoomNumber/RoomNumber1.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "D95C317D1BE8E5B445341FE2511138562811B94C573722D9907FE1E86CCD7804",
+    "source_bytes": 41532,
+    "triangles_before": 504
+  },
+  {
+    "path": "add model/RoomNumber/RoomNumber2.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "135807715165AEA0BD2780F0D3083C2E42DE12A6ADB61B0E32332C8A197D4888",
+    "source_bytes": 41740,
+    "triangles_before": 510
+  },
+  {
+    "path": "add model/RoomNumber/RoomNumber3.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "FCD15A48F8D4BD62DBD977062651BBDC0ED9A1F1D964790E21E40DDB7755A99C",
+    "source_bytes": 44444,
+    "triangles_before": 566
+  },
+  {
+    "path": "add model/RoomNumber/RoomNumber4.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "F0A7658A001D2A8AEE92921778A4B0F7B2A1BD994224829293500240565861EF",
+    "source_bytes": 44412,
+    "triangles_before": 558
+  },
+  {
+    "path": "add model/RoomNumber/RoomNumber5.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "5EA050E9C8D96AC63E1717E7389BF33E4D06BE7AD2DF161EB9C617153C4BA7F2",
+    "source_bytes": 43612,
+    "triangles_before": 560
+  },
+  {
+    "path": "add model/RoomNumber/RoomNumber6.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "C595F59F4C1EBB60664DD30E7A1F2BA02FA35CEB8E431A43996C9D0523739A0F",
+    "source_bytes": 41548,
+    "triangles_before": 510
+  },
+  {
+    "path": "add model/RustyMetalMedicalCabinet/RustyMetalMedicalCabinet.fbx",
+    "status": "optimized",
+    "backup_sha256": "E15F61D66C5B58C3D84DD321F1A3001003FA5C5C9495016D13FB03694007307A",
+    "source_bytes": 145996,
+    "optimized_bytes": 100220,
+    "optimized_sha256": "CAF002216FF8A224169BA9CD4B1E9B5A07434D7C7D806CF2A387892792D639BC",
+    "triangles_before": 4643,
+    "triangles_after": 2321,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "add model/StretcherTrolley/StretcherTrolley.fbx",
+    "status": "optimized",
+    "backup_sha256": "BA75270BD872F11616D52D75FC8C3B34056B546933D7DC6C3FDB109FC97F64A6",
+    "source_bytes": 8823004,
+    "optimized_bytes": 95308,
+    "optimized_sha256": "E65B639EBE85A038058AA5520E986C1215E97C3980422F8C4F8FBA77CFF18E91",
+    "triangles_before": 2908,
+    "triangles_after": 1453,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "add model/TriageHallSign/TriageHallSign.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "949D20259B247EE3823EAA6233CD2D7B2C9B2B9DECDF6A1830125A862229DA96",
+    "source_bytes": 7961708,
+    "triangles_before": 536
+  },
+  {
+    "path": "add model/VintageApothecaryCabinet/VintageApothecaryCabinet.fbx",
+    "status": "optimized",
+    "backup_sha256": "A54275234FB03A7F9205962663A4661E0C4AEF0C0CEDD5A7E29F120C87E6A593",
+    "source_bytes": 153484,
+    "optimized_bytes": 104076,
+    "optimized_sha256": "296B9ED539CED6F044ECD8284048877428D86F5E605750772177C59441A0DC30",
+    "triangles_before": 4317,
+    "triangles_after": 2158,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "add model/VintageWoodenBookCabinet/VintageWoodenBookCabinet.fbx",
+    "status": "optimized",
+    "backup_sha256": "853D530EFF50122D5C2616275943E5F3389FC7C905A590C413385FDA18295B56",
+    "source_bytes": 155132,
+    "optimized_bytes": 103340,
+    "optimized_sha256": "CED3F948E5635B99302288E7FFAE1D6D5CA9432F66113EBF21A16AB27EEC3AF6",
+    "triangles_before": 4334,
+    "triangles_after": 2166,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "add model/big door jamb/big door jamb.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "E4D9331DD7489BB36F4FD263BDB3ED06CA3B5874709367C94B86531489847236",
+    "source_bytes": 6662524,
+    "triangles_before": 142
+  },
+  {
+    "path": "add model/big door1/big door1.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "4AFC25927CC60FF9331CA227B30A64B024507F003F661DA33FDF665C3029F958",
+    "source_bytes": 7536748,
+    "triangles_before": 733
+  },
+  {
+    "path": "add model/big door2/big door2.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "F65BC47CDE82C828A9939DD3F1AC29C4F5D134DE6CC2A6CCABE4C7087E2D116F",
+    "source_bytes": 7310908,
+    "triangles_before": 820
+  },
+  {
+    "path": "add model/carpet/carpet.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "6FE72C0B0580EED80C4A44E8469F782A6607F1D74BD2D0181B2F4BB373CCA41A",
+    "source_bytes": 7925468,
+    "triangles_before": 948
+  },
+  {
+    "path": "add model/door4  jamb/door4  jamb.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "CEBB54C0B1D7138642A36C1ADE1581F8676D81ABEC60BDED607466EC3752AA3C",
+    "source_bytes": 6021004,
+    "triangles_before": 1004
+  },
+  {
+    "path": "add model/door4/door4.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "EF4DA52AB4733B9B8918807E9F8E729C9D9776086CCE8DA8527A7EF8DC6BE8D0",
+    "source_bytes": 6685708,
+    "triangles_before": 934
+  },
+  {
+    "path": "add model/door5  jamb/door5  jamb.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "F3838B53BD602D87AD0121097CAE9139BF3E192B0BD9A5F10315C85C73BC2756",
+    "source_bytes": 4905612,
+    "triangles_before": 940
+  },
+  {
+    "path": "add model/door5/door5.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "E16128D7E88FA858119265FC0A0B8B92A02B1C1E2B076DA84EA576A6DB1833A4",
+    "source_bytes": 7473740,
+    "triangles_before": 1022
+  },
+  {
+    "path": "add model/hospital sign891011/WallLamp2.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "571648B82A949CB18C5B91DC1EE10AA6B5E0DB2634A0613D1540E72E304D2601",
+    "source_bytes": 68652,
+    "triangles_before": 1250
+  },
+  {
+    "path": "add model/hospital sign891011/hospital sign10.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "E9F35971599F82DF5F7A97F148FEC2BC2F2F51D462B12C9B537530D822E50021",
+    "source_bytes": 33532,
+    "triangles_before": 270
+  },
+  {
+    "path": "add model/hospital sign891011/hospital sign11.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "BBB91F167B33448CA7FCA1C716F8CA5C1BF05E4D9192806C1DF9740EA525AC8D",
+    "source_bytes": 35772,
+    "triangles_before": 289
+  },
+  {
+    "path": "add model/hospital sign891011/hospital sign8.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "2EE4F6986FE69B61F159EF4917EDF5B187CC2AA9FA03F81C8B760E6C33D709CB",
+    "source_bytes": 28988,
+    "triangles_before": 121
+  },
+  {
+    "path": "add model/hospital sign891011/hospital sign9.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "9010B38FD4C78337E574F8C6D3C172CB10BBA6ADB8148DA3D7F7705E0144C530",
+    "source_bytes": 28396,
+    "triangles_before": 114
+  },
+  {
+    "path": "add model/hospital sign/hospital sign1.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "F15386A50918932C2784393702D406E516908109455D9ED3EC67B6D82B5A38E2",
+    "source_bytes": 29500,
+    "triangles_before": 150
+  },
+  {
+    "path": "add model/hospital sign/hospital sign2.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "82D30914807C266D61900BE232CC9BE4DBDB1E397CCC95258F464FF4D492361D",
+    "source_bytes": 28972,
+    "triangles_before": 142
+  },
+  {
+    "path": "add model/hospital sign/hospital sign3.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "388542881933D6B41F491B89B4DE58D272EE37FC87B6DD5ABE71B3E996F890E5",
+    "source_bytes": 29868,
+    "triangles_before": 154
+  },
+  {
+    "path": "add model/hospital sign/hospital sign4.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "0C399719AF4376C1EE5CB2E9DA634CF882CB3EA2455E0845ED17625A7D5C4D61",
+    "source_bytes": 29484,
+    "triangles_before": 152
+  },
+  {
+    "path": "add model/hospital sign/hospital sign5.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "28A4DFFC80DE7139102B27D78B6D118E6A9CD0A10D06455F6C479576A2E2940F",
+    "source_bytes": 31916,
+    "triangles_before": 212
+  },
+  {
+    "path": "add model/hospital sign/hospital sign6.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "262EADD325A53A929C7E2A23C6A6AE732F9E49C30E9744824263D1C3558499B7",
+    "source_bytes": 59740,
+    "triangles_before": 1032
+  },
+  {
+    "path": "add model/hospital sign/hospital sign7.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "7C9ED221F83AE237FED87F397F180C3F2EFDDF60D45A68FB6014CF0792DC232A",
+    "source_bytes": 29132,
+    "triangles_before": 145
+  },
+  {
+    "path": "add model/key/key.fbx",
+    "status": "optimized",
+    "backup_sha256": "682E364DDA2E067AFE368A595F49D97119DEBC0D84ACEE66719D304F4B1CE77F",
+    "source_bytes": 9294172,
+    "optimized_bytes": 108300,
+    "optimized_sha256": "A92D4D750D0C1AE0265A7609028C5D21A1917FCD6527ED9B1E26A0C972A4FEF7",
+    "triangles_before": 4264,
+    "triangles_after": 2132,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "add model/pipe/pipe.fbx",
+    "status": "optimized",
+    "backup_sha256": "5972038647883A7906DEF3A66303C4686E00EE809277F4519001FA43374F5E7B",
+    "source_bytes": 9527420,
+    "optimized_bytes": 86412,
+    "optimized_sha256": "2881DE08357E2ABF1185470FC740827087C257BFFBD54928103416A62A7A3C35",
+    "triangles_before": 2883,
+    "triangles_after": 1441,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "add model/restraint bed2/restraint bed2.fbx",
+    "status": "optimized",
+    "backup_sha256": "5D8874A0ACC8BAA456443B383969E6CF7C18AD3BE36E1D44DD9DAC05E6964687",
+    "source_bytes": 9042956,
+    "optimized_bytes": 123900,
+    "optimized_sha256": "E97CDAD218D677E439EAE4A3C4BE52A9D1E82CC00834A1D9BDADCC2852E2C71C",
+    "triangles_before": 4207,
+    "triangles_after": 2103,
+    "ratio": 0.5,
+    "mesh_count": 1
+  },
+  {
+    "path": "add model/room‑sign/room‑sign.fbx",
+    "status": "skipped-low-triangle-count",
+    "backup_sha256": "076D5706DB4F8BCC80913A7C46500FDF0A34CB0C75D231E55207E1D6BF32D584",
+    "source_bytes": 6686668,
+    "triangles_before": 550
+  }
+]
+}
