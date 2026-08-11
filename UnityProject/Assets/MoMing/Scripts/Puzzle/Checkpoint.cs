@@ -10,6 +10,10 @@ public class Checkpoint : MonoBehaviour
     [Tooltip("狗的复活偏移（相对存档点中心）")]
     public Vector3 dogOffset = new Vector3(1.5f, 0f, 0f);
 
+    [Header("Hint 提示镜头（可选）")]
+    [Tooltip("踩到存档点时，镜头扫一眼这个目标（下一步要去的机关/方向）。不填则不播放。")]
+    public Transform hintTarget;
+
     [Header("Visual")]
     public Renderer indicatorRenderer;
     public Material inactiveMaterial;
@@ -56,6 +60,10 @@ public class Checkpoint : MonoBehaviour
 
             GameManager.Instance.SetCheckpoint(humanPos, dogPos);
         }
+
+        // 可选：踩到存档点扫一眼下一步
+        if (hintTarget != null && PlayerManager.Instance != null && PlayerManager.Instance.CameraFollow != null)
+            PlayerManager.Instance.CameraFollow.PlayHint(hintTarget);
 
         Debug.Log("[Checkpoint] Activated! Respawn point saved.");
     }
