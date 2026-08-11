@@ -1,0 +1,12 @@
+# 音乐表 music_table.csv —— 策划/音效只改这张表，程序按 Id 播放
+# 规则：第一行是表头（列名可调顺序，别改列名）；# 开头是注释；字段里不要用英文逗号。
+# ClipName = 放在 Assets/MoMing/Resources/Audio/ 下的音频文件名（不带扩展名）。
+# 原型阶段没有音频文件也没关系，程序会静默跳过。
+Id,ClipName,Volume,Loop,FadeIn,FadeOut,Note
+bgm_puzzle,bgm_puzzle,0.7,true,2,2,安全解谜房底噪 / 在一起时的基础OST
+bgm_patrol,bgm_patrol,0.7,true,1.5,1.5,危险巡逻房氛围
+bgm_separated_transition,bgm_sep_transition,0.6,true,1,1,刚分离的过渡桥段(subtle)
+bgm_separated,bgm_separated,0.7,true,2,2,分离状态OST
+bgm_anxiety,bgm_anxiety,0.8,true,1,1,焦虑氛围/心跳层
+amb_upground,amb_upground,0.5,true,3,3,地上诊疗病区环境音(电流/风)
+amb_underground,amb_underground,0.5,true,3,3,地下收容监区环境音(水滴/低频轰鸣)
