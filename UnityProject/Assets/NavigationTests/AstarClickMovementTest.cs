@@ -10,7 +10,7 @@ public class AstarClickMovementTest : MonoBehaviour
 
     private GridGraph graph;
     private Transform obstacle;
-    private Collider obstacleCollider;
+    private DynamicObstacle dynamicObstacle;
     private Vector3 initialObstaclePosition;
     private bool obstacleMoved;
 
@@ -24,25 +24,27 @@ public class AstarClickMovementTest : MonoBehaviour
             testCamera = Camera.main;
 
         agent.enabled = false;
-        agent.transform.position = new Vector3(-10f, 0f, 0f);
+        agent.transform.position = new Vector3(-10f, 1f, 0f);
         var controller = agent.GetComponent<CharacterController>();
         controller.radius = 0.5f;
         controller.height = 2f;
-        controller.center = new Vector3(0f, 1f, 0f);
+        controller.center = Vector3.zero;
 
         obstacle = GameObject.Find("AstarTestObstacle").transform;
-        obstacleCollider = obstacle.GetComponent<Collider>();
+        dynamicObstacle = obstacle.GetComponent<DynamicObstacle>();
         initialObstaclePosition = obstacle.position;
 
         graph = AstarPath.active.data.AddGraph<GridGraph>();
-        // Keep the graph above the ground collider so only raised obstacles block nodes.
+        // Keep the graph above the ground collider and scan only the obstacle's layer.
         graph.center = new Vector3(0f, 1f, 0f);
         graph.SetDimensions(60, 40, 0.5f);
-        graph.collision.collisionCheck = false;
+        graph.collision.collisionCheck = true;
+        graph.collision.type = Pathfinding.Graphs.Grid.ColliderType.Capsule;
+        graph.collision.diameter = 2f;
+        graph.collision.height = 2f;
+        graph.collision.mask = 1 << obstacle.gameObject.layer;
         graph.collision.heightCheck = false;
         AstarPath.active.Scan();
-
-        UpdateObstacleWalkability(obstacleCollider.bounds, false);
 
         agent.enabled = true;
         SetDestination(targetMarker.position);
@@ -67,26 +69,13 @@ public class AstarClickMovementTest : MonoBehaviour
 
     private void ToggleObstacle()
     {
-        var oldBounds = obstacleCollider.bounds;
-        UpdateObstacleWalkability(oldBounds, true);
-
         obstacleMoved = !obstacleMoved;
         obstacle.position = obstacleMoved
             ? initialObstaclePosition + new Vector3(0f, 0f, 5f)
             : initialObstaclePosition;
 
-        UpdateObstacleWalkability(obstacleCollider.bounds, false);
-        agent.SearchPath();
-    }
-
-    private static void UpdateObstacleWalkability(Bounds bounds, bool walkable)
-    {
-        var update = new GraphUpdateObject(bounds)
-        {
-            modifyWalkability = true,
-            setWalkability = walkable
-        };
-        AstarPath.active.UpdateGraphs(update);
+        dynamicObstacle.DoUpdateGraphs();
         AstarPath.active.FlushGraphUpdates();
+        agent.SearchPath();
     }
 }
