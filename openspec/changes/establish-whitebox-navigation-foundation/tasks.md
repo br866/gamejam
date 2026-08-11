@@ -30,7 +30,8 @@
 - [x] 5.1 Add a focused monster navigation movement component that manages destination requests, path following, arrival, path failure, and repath cadence.
 - [x] 5.2 Configure the Level2 monster in the target whitebox with required navigation movement, actor-clearance, and assigned-level settings.
 - [x] 5.3 Update `MonsterPatrol` to retain patrol/chase state, bounds, detection, capture, reset, and audio ownership while delegating physical movement to the navigation component and rejecting targets outside its assigned level.
-- [ ] 5.4 Validate patrol around static blockers, chase around dynamic blockers, player door traversal, monster no-cross-level behavior, unreachable chase targets, capture, reset, and resumed patrol behavior.
+- [x] 5.4 Validate Level2 waypoint patrol and view-cone pursuit in the target whitebox.
+- [ ] 5.5 Validate patrol around static blockers, chase around dynamic blockers, player door traversal, monster no-cross-level behavior, unreachable chase targets, capture, reset, and resumed patrol behavior.
 
 ### Level2 Detection Adjustment
 
