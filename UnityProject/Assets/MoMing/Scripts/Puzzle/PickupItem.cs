@@ -66,11 +66,21 @@ public class PickupItem : MonoBehaviour
 
         isHeld = false;
         Vector3 dropPos = holder.position + holder.forward * 1f;
-        dropPos.y = 0.5f;
-        transform.position = dropPos;
+        dropPos.y = holder.position.y;
+        if (rb != null)
+        {
+            rb.isKinematic = false;
+            rb.useGravity = true;
+            rb.position = dropPos;
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+        else
+        {
+            transform.position = dropPos;
+        }
         holder = null;
 
-        if (rb != null) { rb.isKinematic = false; rb.useGravity = true; }
         if (col != null) col.enabled = true;
 
         PlayAudio(dropClip);
