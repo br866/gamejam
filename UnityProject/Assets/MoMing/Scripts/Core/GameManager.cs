@@ -54,6 +54,11 @@ public class GameManager : MonoBehaviour
     [Header("Scene Transition")]
     public string nextSceneName = "";
 
+    [Header("Debug Commands")]
+    public KeyCode teleportToLevel2Key = KeyCode.F2;
+    public Vector3 debugLevel2HumanPosition = new Vector3(15.7f, 12.6f, -5.98f);
+    public Vector3 debugLevel2DogPosition = new Vector3(17.2f, 12.6f, -5.98f);
+
     private float currentAnxiety = 0f;
     private bool isSeparated = false;
     private bool levelComplete = false;
@@ -314,6 +319,11 @@ public class GameManager : MonoBehaviour
     {
         if (levelComplete) return;
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if (Input.GetKeyDown(teleportToLevel2Key))
+            TeleportPlayersToLevel2ForDebug();
+#endif
+
         if (isSeparated)
             currentAnxiety += anxietyIncreaseRate * Time.deltaTime;
         else
@@ -491,6 +501,21 @@ public class GameManager : MonoBehaviour
             Debug.Log("[GameManager] Loading next scene: " + nextSceneName);
             SceneManager.LoadScene(nextSceneName);
         }
+    }
+
+    [ContextMenu("Teleport Players To Level2 (Debug)")]
+    public void TeleportPlayersToLevel2ForDebug()
+    {
+        if (humanPlayer == null || dogPlayer == null)
+        {
+            Debug.LogWarning("[GameManager] Debug teleport requires both player references.");
+            return;
+        }
+
+        ResetPlayerPositions(debugLevel2HumanPosition, debugLevel2DogPosition);
+        currentAnxiety = 0f;
+        isSeparated = false;
+        Debug.Log("[GameManager] Debug teleport: Human and Dog moved to Level2.");
     }
 
     void ResetPlayerPositions(Vector3 humanPos, Vector3 dogPos)

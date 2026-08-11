@@ -20,7 +20,6 @@ public class MonsterPatrol : MonoBehaviour
     [Header("Detection")]
     public float detectionRange = 8f;
     public float fieldOfView = 60f;
-    public float hearingRadius = 4f;
     public float catchRadius = 1.2f;
     public float loseTargetTime = 3f;
 
@@ -33,9 +32,14 @@ public class MonsterPatrol : MonoBehaviour
     [SerializeField] private AudioClip catchClip;
     [SerializeField] private AudioClip detectClip;
 
+    [Header("Detection Gizmos")]
+    public bool showDetectionGizmos = true;
+    public Color fieldOfViewGizmoColor = new Color(1f, 0.85f, 0f, 0.9f);
+
     private State currentState = State.Patrol;
     private int currentWaypoint = 0;
     private AudioSource audioSource;
+    private LevelMonsterNavigation navigation;
     private Vector3 startPos;
     private Transform chaseTarget;
     private float lastSeenTime;
@@ -43,6 +47,7 @@ public class MonsterPatrol : MonoBehaviour
     void Awake()
     {
         audioSource = GetComponent<AudioSource>();
+        navigation = GetComponent<LevelMonsterNavigation>();
         startPos = transform.position;
     }
 
@@ -60,16 +65,13 @@ public class MonsterPatrol : MonoBehaviour
 
     void Update()
     {
-        if (waypoints.Length == 0 && currentState == State.Patrol) return;
-
-        switch (currentState)
+        if (currentState == State.Patrol && waypoints != null && waypoints.Length > 0)
         {
-            case State.Patrol:
-                Patrol();
-                break;
-            case State.Chase:
-                Chase();
-                break;
+            Patrol();
+        }
+        else if (currentState == State.Chase)
+        {
+            Chase();
         }
 
         CheckForPlayers();
@@ -98,6 +100,16 @@ public class MonsterPatrol : MonoBehaviour
     {
         Transform wp = waypoints[currentWaypoint];
         Vector3 targetPos = new Vector3(wp.position.x, startPos.y, wp.position.z);
+
+        if (navigation != null)
+        {
+            navigation.SetMoveSpeed(patrolSpeed);
+            navigation.SetDestination(targetPos);
+            if (navigation.HasArrived)
+                currentWaypoint = (currentWaypoint + 1) % waypoints.Length;
+            return;
+        }
+
         Vector3 dir = (targetPos - transform.position);
         dir.y = 0f;
         dir.Normalize();
@@ -136,6 +148,15 @@ public class MonsterPatrol : MonoBehaviour
         Vector3 targetPos = new Vector3(chaseTarget.position.x, startPos.y, chaseTarget.position.z);
         float dist = Vector3.Distance(transform.position, targetPos);
 
+        if (navigation != null)
+        {
+            navigation.SetMoveSpeed(chaseSpeed);
+            navigation.SetDestination(targetPos);
+            if (dist <= chaseStopDistance)
+                navigation.ClearDestination();
+            return;
+        }
+
         if (dist > chaseStopDistance)
         {
             Vector3 dir = (targetPos - transform.position).normalized;
@@ -167,7 +188,7 @@ public class MonsterPatrol : MonoBehaviour
             if (TryCatch(GameManager.Instance.dogPlayer)) return;
         }
 
-        // 2. 检测玩家：必须同时满足(在房间内) AND (锥形视野内 或 听觉范围内)
+        // 2. 检测玩家：必须同时满足(在房间内) AND (在锥形视野内)
         Collider[] detectionHits = Physics.OverlapSphere(transform.position, detectionRange);
         foreach (var hit in detectionHits)
         {
@@ -188,9 +209,8 @@ public class MonsterPatrol : MonoBehaviour
                 float angle = Vector3.Angle(flatForward, dirToPlayer);
 
                 bool inSight = angle <= fieldOfView * 0.5f;
-                bool inHearing = distToPlayer <= hearingRadius;
 
-                if (inSight || inHearing)
+                if (inSight)
                 {
                     bool wasChasing = currentState == State.Chase;
                     chaseTarget = hit.transform;
@@ -200,8 +220,7 @@ public class MonsterPatrol : MonoBehaviour
                     if (!wasChasing)
                     {
                         PlayAudio(detectClip);
-                        string reason = inHearing ? "heard" : "saw";
-                        Debug.Log("[Monster] " + reason + " " + hit.gameObject.name + " in room! Chasing!");
+                        Debug.Log("[Monster] saw " + hit.gameObject.name + " in room! Chasing!");
                     }
                     return;
                 }
@@ -239,8 +258,11 @@ public class MonsterPatrol : MonoBehaviour
         transform.position = startPos;
     }
 
-    void OnDrawGizmosSelected()
+    void OnDrawGizmos()
     {
+        if (!showDetectionGizmos)
+            return;
+
         // 房间范围
         Gizmos.color = new Color(0f, 0.5f, 1f, 0.15f);
         Gizmos.DrawCube(roomCenter, roomSize);
@@ -251,20 +273,28 @@ public class MonsterPatrol : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, catchRadius);
 
-        // 听觉范围
-        Gizmos.color = new Color(0.5f, 0f, 0.5f, 0.3f);
-        Gizmos.DrawWireSphere(transform.position, hearingRadius);
+        // 视野锥和最大检测范围
+        Gizmos.color = fieldOfViewGizmoColor;
+        Vector3 origin = transform.position + Vector3.up * 0.1f;
+        Vector3 flatForward = transform.forward;
+        flatForward.y = 0f;
+        flatForward.Normalize();
+        Vector3 leftDir = Quaternion.Euler(0f, -fieldOfView * 0.5f, 0f) * flatForward;
+        Vector3 rightDir = Quaternion.Euler(0f, fieldOfView * 0.5f, 0f) * flatForward;
+        Gizmos.DrawRay(origin, leftDir * detectionRange);
+        Gizmos.DrawRay(origin, rightDir * detectionRange);
 
-        // 视野锥
-        Gizmos.color = Color.yellow;
-        Vector3 leftDir = Quaternion.Euler(0, -fieldOfView * 0.5f, 0) * transform.forward;
-        Vector3 rightDir = Quaternion.Euler(0, fieldOfView * 0.5f, 0) * transform.forward;
-        Gizmos.DrawRay(transform.position, leftDir * detectionRange);
-        Gizmos.DrawRay(transform.position, rightDir * detectionRange);
-        Gizmos.DrawRay(transform.position, transform.forward * detectionRange);
+        const int arcSegments = 16;
+        Vector3 previous = origin + leftDir * detectionRange;
+        for (int i = 1; i <= arcSegments; i++)
+        {
+            float angle = Mathf.Lerp(-fieldOfView * 0.5f, fieldOfView * 0.5f, i / (float)arcSegments);
+            Vector3 point = origin + Quaternion.Euler(0f, angle, 0f) * flatForward * detectionRange;
+            Gizmos.DrawLine(previous, point);
+            previous = point;
+        }
 
-        // 检测范围
-        Gizmos.color = new Color(1f, 0.5f, 0f, 0.2f);
+        Gizmos.color = new Color(fieldOfViewGizmoColor.r, fieldOfViewGizmoColor.g, fieldOfViewGizmoColor.b, 0.25f);
         Gizmos.DrawWireSphere(transform.position, detectionRange);
     }
 }
