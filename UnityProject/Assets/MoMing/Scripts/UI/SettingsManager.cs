@@ -21,6 +21,9 @@ public class SettingsManager : MonoBehaviour
     private static float sfxVolume = 1f;
     private static bool initialized = false;
 
+    // 记录打开菜单前的时间流速，关闭时恢复（避免和暂停菜单叠加时冲突）
+    private float prevTimeScale = 1f;
+
     public static float MusicVolume => musicVolume;
     public static float SfxVolume => sfxVolume;
 
@@ -36,6 +39,10 @@ public class SettingsManager : MonoBehaviour
 
     private void OnEnable()
     {
+        // 打开菜单 = 暂停游戏（记录原时间流速，关闭时恢复）
+        prevTimeScale = Time.timeScale;
+        Time.timeScale = 0f;
+
         if (musicSlider != null)
         {
             musicSlider.value = musicVolume;
@@ -54,6 +61,9 @@ public class SettingsManager : MonoBehaviour
 
     private void OnDisable()
     {
+        // 关闭菜单 = 恢复到打开前的时间流速
+        Time.timeScale = prevTimeScale;
+
         if (musicSlider != null)
             musicSlider.onValueChanged.RemoveListener(OnMusicChanged);
         if (sfxSlider != null)
