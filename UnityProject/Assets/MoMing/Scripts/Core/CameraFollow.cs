@@ -122,6 +122,9 @@ public class CameraFollow : MonoBehaviour
     {
         if (target == null) return;
 
+        // 暂停时（菜单打开，timeScale=0）冻结镜头：不响应鼠标、不跟随
+        if (Time.timeScale == 0f) return;
+
         HandleMouseInput();
 
         Vector3 desiredFocus = GetDesiredFocus();
