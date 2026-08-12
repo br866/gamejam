@@ -30,6 +30,13 @@ public class PlayerManager : MonoBehaviour
 
     public bool IsActiveDog => activePlayer == dog;
 
+    // 提示镜头播放中：由 CameraFollow 设置，PlayerController 据此禁用疾跑（只能走路）
+    public bool IsHintPlaying { get; private set; }
+    public void SetHintActive(bool active) { IsHintPlaying = active; }
+
+    // 对外暴露相机引用，方便 HintTrigger / Checkpoint 播放提示镜头
+    public CameraFollow CameraFollow => camFollow;
+
     void Awake()
     {
         Instance = this;
