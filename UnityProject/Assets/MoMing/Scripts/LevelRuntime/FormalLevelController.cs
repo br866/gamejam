@@ -22,6 +22,11 @@ public class FormalLevelController : MonoBehaviour
 
     void Start()
     {
+        PlacePlayersAtSpawn();
+    }
+
+    public void PlacePlayersAtSpawn()
+    {
         MovePlayer(FormalPlayerActors.Instance != null ? FormalPlayerActors.Instance.Human : null, humanSpawn != null ? humanSpawn.position : Vector3.zero);
         MovePlayer(FormalPlayerActors.Instance != null ? FormalPlayerActors.Instance.Dog : null, dogSpawn != null ? dogSpawn.position : Vector3.zero);
     }

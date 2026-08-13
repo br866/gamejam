@@ -41,6 +41,7 @@ public class FormalGameFlowController : MonoBehaviour
 
         currentLevelScene = initialLevelScene;
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentLevelScene));
+        PlacePlayersAtLoadedLevelSpawn();
     }
 
     IEnumerator LoadSuccessorRoutine(string sceneName)
@@ -49,6 +50,7 @@ public class FormalGameFlowController : MonoBehaviour
         pendingUnloadScene = currentLevelScene;
         currentLevelScene = sceneName;
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentLevelScene));
+        PlacePlayersAtLoadedLevelSpawn();
     }
 
     IEnumerator UnloadPriorLevel()
@@ -57,5 +59,12 @@ public class FormalGameFlowController : MonoBehaviour
         pendingUnloadScene = null;
         if (!string.IsNullOrEmpty(sceneToUnload) && SceneManager.GetSceneByName(sceneToUnload).isLoaded)
             yield return SceneManager.UnloadSceneAsync(sceneToUnload);
+    }
+
+    void PlacePlayersAtLoadedLevelSpawn()
+    {
+        FormalLevelController level = FormalLevelActors.FindLevelController(SceneManager.GetSceneByName(currentLevelScene));
+        if (level != null)
+            level.PlacePlayersAtSpawn();
     }
 }
