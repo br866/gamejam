@@ -27,12 +27,12 @@ public static class FormalLevelActors
 
     public static bool IsHuman(Collider other)
     {
-        PlayerController player = other.GetComponentInParent<PlayerController>();
-        return player != null && player.characterType == PlayerController.CharacterType.Human;
+        FormalPlayerActor player = other.GetComponentInParent<FormalPlayerActor>();
+        return player != null && player.Role == FormalPlayerActor.ActorRole.Human;
     }
 
     public static bool IsPlayer(Collider other)
     {
-        return other.GetComponentInParent<PlayerController>() != null;
+        return other.GetComponentInParent<FormalPlayerActor>() != null;
     }
 }

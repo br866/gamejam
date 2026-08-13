@@ -37,3 +37,9 @@
 
 - [ ] 6.1 Record any future dog cooperation for the Level 1 crate puzzle as a separate design change; do not add it to this vertical slice.
 - [ ] 6.2 Defer Level 2 through Level 5 art migration and all unresolved Level 5 checkpoint, safe-space, camera, and completion decisions to subsequent scoped work.
+
+## 7. Current Implementation Boundary
+
+- [x] 7.1 Record the Level 1 source manifest, including explicit late additions, and use a `L01_Content` prefab instance for the formal scene's art assembly.
+- [x] 7.2 Replace the formal path's legacy player-system dependency with runtime-spawned formal player actors and separate runtime-loaded human and dog visual prefabs.
+- [ ] 7.3 Resume collision, navigation, and playable Level 1 logic only after the formal content prefab and runtime player visual scale have been reviewed in the Unity Editor.

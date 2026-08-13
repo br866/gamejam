@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class FormalPlayerVisualLoader : MonoBehaviour
 {
-    [SerializeField] private PlayerController human;
-    [SerializeField] private PlayerController dog;
+    [SerializeField] private FormalPlayerActor human;
+    [SerializeField] private FormalPlayerActor dog;
     [SerializeField] private GameObject humanVisualPrefab;
     [SerializeField] private GameObject dogVisualPrefab;
 
@@ -13,13 +13,10 @@ public class FormalPlayerVisualLoader : MonoBehaviour
         LoadVisual(dog, dogVisualPrefab, "FormalDogVisual");
     }
 
-    static void LoadVisual(PlayerController player, GameObject prefab, string instanceName)
+    static void LoadVisual(FormalPlayerActor player, GameObject prefab, string instanceName)
     {
         if (player == null || prefab == null || player.transform.Find(instanceName) != null)
             return;
-
-        foreach (MeshRenderer renderer in player.GetComponentsInChildren<MeshRenderer>(true))
-            renderer.enabled = false;
 
         GameObject visual = Instantiate(prefab, player.transform);
         visual.name = instanceName;

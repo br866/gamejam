@@ -107,6 +107,18 @@ The formal Level 1 architecture prefab contains the selected walls, floors, brok
 
 The selected `PlayerSystem`, `boy`, and `dog` objects are not Level 1 content despite appearing in the selected set. They remain persistent-scene content and must survive Level 1 scene unloading. The selected `Level3/door2` source object is excluded from Level 1 migration.
 
+### Preserve source selections and split formal prefab ownership
+
+The formal Level 1 migration records its concrete source selection in `Assets/MoMing/FormalLevels/Level01SourceManifest.md`; subsequent source objects selected during review are deliberate additions rather than implicit omissions. `wall3 (3)` and `door2` are recorded additions. Although `door2` originated below a legacy Level 3 root, the later explicit selection makes it a Level 1 art exception.
+
+The formal Level 1 scene owns level configuration only: controller, spawn points, and the `L01_Content` prefab instance. `L01_Content` is the level-wide art assembly and contains architecture, set dressing, and Level 1 gameplay visuals. Independent door, key, crate, pedal, checkpoint, human visual, dog visual, and player-actor prefabs remain separate because they have distinct interaction, reuse, or runtime-loading lifecycles. Decorative fragments do not receive individual prefabs without such a need.
+
+### Use runtime-loaded formal player actors
+
+The formal path does not use the legacy `PlayerSystem`, `PlayerManager`, `PlayerController`, or `GameManager` as player runtime dependencies. `FormalPersistent` owns a player spawner that instantiates `FormalPlayerActors` at runtime. The actor prefab owns the human and dog physics/control shells, while `FormalHumanVisual` and `FormalDogVisual` are independent visual prefabs loaded beneath those actors at runtime.
+
+During art assembly review, formal actor gravity remains disabled because final ground collision has not yet been authored. Re-enable gravity only after the formal collision layer is validated; do not use legacy whitebox collision as a substitute.
+
 ## Risks / Trade-offs
 
 - [A temporary key resets while a permanent door requires it] -> Ensure a door only becomes permanent after its key interaction has successfully completed, and reset key state without re-blocking an opened route.
@@ -118,6 +130,8 @@ The selected `PlayerSystem`, `boy`, and `dog` objects are not Level 1 content de
 - [Level unload leaves persistent systems pointing at destroyed objects] -> Clear or replace all prior-level references before calling Unity scene unload.
 - [Art changes silently alter traversal] -> Review collision proxies and navigation after art-prefab geometry changes; do not couple collision directly to every render mesh.
 - [Dynamic prefab content survives its level] -> Instantiate level-local content under a root owned by that level scene and avoid parenting it under persistent objects.
+- [Source selection changes during review] -> Record each explicit late addition in the source manifest and update the affected formal prefab rather than rerunning an untracked bulk migration.
+- [Player presentation leaks prototype dependencies] -> Keep actor physics/control shells separate from runtime-loaded art visual prefabs and do not add legacy player scripts to the formal path.
 
 ## Migration Plan
 
