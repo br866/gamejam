@@ -42,4 +42,4 @@
 
 - [x] 7.1 Record the Level 1 source manifest, including explicit late additions, and use a `L01_Content` prefab instance for the formal scene's art assembly.
 - [x] 7.2 Replace the formal path's legacy player-system dependency with runtime-spawned formal player actors and separate runtime-loaded human and dog visual prefabs.
-- [ ] 7.3 Resume collision, navigation, and playable Level 1 logic only after the formal content prefab and runtime player visual scale have been reviewed in the Unity Editor.
+- [ ] 7.3 Resume collision, navigation, and playable Level 1 logic only after the formal content prefab and runtime player visual scale have been reviewed in the Unity Editor. (Formal player movement, switching, linked movement, and camera bootstrap are now ready for this review.)
