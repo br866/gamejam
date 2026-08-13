@@ -22,8 +22,8 @@ public class FormalLevelController : MonoBehaviour
 
     void Start()
     {
-        MovePlayer(PlayerManager.Instance != null ? PlayerManager.Instance.human : null, humanSpawn != null ? humanSpawn.position : Vector3.zero);
-        MovePlayer(PlayerManager.Instance != null ? PlayerManager.Instance.dog : null, dogSpawn != null ? dogSpawn.position : Vector3.zero);
+        MovePlayer(FormalPlayerActors.Instance != null ? FormalPlayerActors.Instance.Human : null, humanSpawn != null ? humanSpawn.position : Vector3.zero);
+        MovePlayer(FormalPlayerActors.Instance != null ? FormalPlayerActors.Instance.Dog : null, dogSpawn != null ? dogSpawn.position : Vector3.zero);
     }
 
     public void RegisterTemporaryState(IFormalLevelTemporaryState state)
@@ -48,8 +48,8 @@ public class FormalLevelController : MonoBehaviour
         if (!hasCheckpoint)
             return;
 
-        MovePlayer(PlayerManager.Instance != null ? PlayerManager.Instance.human : null, checkpointHuman);
-        MovePlayer(PlayerManager.Instance != null ? PlayerManager.Instance.dog : null, checkpointDog);
+        MovePlayer(FormalPlayerActors.Instance != null ? FormalPlayerActors.Instance.Human : null, checkpointHuman);
+        MovePlayer(FormalPlayerActors.Instance != null ? FormalPlayerActors.Instance.Dog : null, checkpointDog);
     }
 
     void RegisterChildren()
@@ -63,17 +63,11 @@ public class FormalLevelController : MonoBehaviour
         }
     }
 
-    static void MovePlayer(PlayerController player, Vector3 position)
+    static void MovePlayer(FormalPlayerActor player, Vector3 position)
     {
         if (player == null)
             return;
 
-        Rigidbody body = player.GetComponent<Rigidbody>();
-        player.transform.position = position;
-        if (body != null)
-        {
-            body.velocity = Vector3.zero;
-            body.angularVelocity = Vector3.zero;
-        }
+        player.SetPosition(position);
     }
 }

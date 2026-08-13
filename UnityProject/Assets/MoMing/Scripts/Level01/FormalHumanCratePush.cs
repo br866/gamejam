@@ -1,21 +1,21 @@
 using UnityEngine;
 
-[RequireComponent(typeof(PlayerController))]
+[RequireComponent(typeof(FormalPlayerActor))]
 public class FormalHumanCratePush : MonoBehaviour
 {
     [SerializeField] private float range = 1.5f;
     [SerializeField] private float force = 18f;
 
-    private PlayerController player;
+    private FormalPlayerActor player;
 
     void Awake()
     {
-        player = GetComponent<PlayerController>();
+        player = GetComponent<FormalPlayerActor>();
     }
 
     void FixedUpdate()
     {
-        if (player == null || player.characterType != PlayerController.CharacterType.Human || !Input.GetKey(KeyCode.F))
+        if (player == null || player.Role != FormalPlayerActor.ActorRole.Human || !Input.GetKey(KeyCode.F))
             return;
 
         Collider[] hits = Physics.OverlapSphere(transform.position + transform.forward * 0.8f, range);
