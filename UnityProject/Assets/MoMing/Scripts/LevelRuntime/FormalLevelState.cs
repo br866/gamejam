@@ -1,0 +1,38 @@
+using UnityEngine;
+
+public interface IFormalLevelTemporaryState
+{
+    void ResetTemporaryState();
+}
+
+public interface IFormalLevelPermanentState
+{
+    bool IsComplete { get; }
+}
+
+public static class FormalLevelActors
+{
+    public static FormalLevelController FindLevelController(UnityEngine.SceneManagement.Scene scene)
+    {
+        GameObject[] roots = scene.GetRootGameObjects();
+        foreach (GameObject root in roots)
+        {
+            FormalLevelController controller = root.GetComponentInChildren<FormalLevelController>(true);
+            if (controller != null)
+                return controller;
+        }
+
+        return null;
+    }
+
+    public static bool IsHuman(Collider other)
+    {
+        PlayerController player = other.GetComponentInParent<PlayerController>();
+        return player != null && player.characterType == PlayerController.CharacterType.Human;
+    }
+
+    public static bool IsPlayer(Collider other)
+    {
+        return other.GetComponentInParent<PlayerController>() != null;
+    }
+}
