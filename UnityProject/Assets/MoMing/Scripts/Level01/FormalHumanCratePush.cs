@@ -32,7 +32,10 @@ public class FormalHumanCratePush : MonoBehaviour
             Vector3 direction = crate.transform.position - transform.position;
             direction.y = 0f;
             if (direction.sqrMagnitude > 0.01f)
+            {
+                player.SetPushing(true);
                 body.AddForce(direction.normalized * force, ForceMode.Force);
+            }
             return;
         }
     }

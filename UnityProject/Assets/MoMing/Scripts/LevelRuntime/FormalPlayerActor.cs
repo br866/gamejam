@@ -4,7 +4,7 @@ using UnityEngine;
 public class FormalPlayerActor : MonoBehaviour
 {
     public enum ActorRole { Human, Dog }
-    public enum ActorState { Idle, Walking, Sprinting, Jumping, Linked }
+    public enum ActorState { Idle, Walking, Sprinting, Jumping, Linked, Pushing }
 
     [SerializeField] private ActorRole role;
     [SerializeField] private float walkSpeed = 4f;
@@ -16,6 +16,9 @@ public class FormalPlayerActor : MonoBehaviour
     private CapsuleCollider capsule;
     private Animator animator;
     private ActorState state;
+    private bool animationInitialized;
+    private float nextIdleVariationTime;
+    private bool idleVariation;
 
     public ActorRole Role => role;
     public ActorState State => state;
@@ -32,9 +35,23 @@ public class FormalPlayerActor : MonoBehaviour
     void Update()
     {
         if (animator == null)
+        {
             animator = GetComponentInChildren<Animator>();
+            if (animator != null)
+            {
+                animationInitialized = true;
+                PlayAnimationForState();
+            }
+        }
 
         ApplyAnimationState();
+
+        if (state == ActorState.Idle && role == ActorRole.Human && Time.time >= nextIdleVariationTime)
+        {
+            idleVariation = !idleVariation;
+            nextIdleVariationTime = Time.time + 4f;
+            PlayAnimationForState();
+        }
     }
 
     public void Move(Vector3 direction, bool sprint)
@@ -72,13 +89,33 @@ public class FormalPlayerActor : MonoBehaviour
         SetState(isMoving ? ActorState.Linked : ActorState.Idle);
     }
 
+    public void SetPushing(bool isPushing)
+    {
+        SetState(isPushing ? ActorState.Pushing : ActorState.Idle);
+    }
+
     void SetState(ActorState nextState)
     {
         if (state == nextState)
             return;
 
         state = nextState;
+        PlayAnimationForState();
         ApplyAnimationState();
+    }
+
+    void PlayAnimationForState()
+    {
+        if (!animationInitialized || animator == null || role != ActorRole.Human)
+            return;
+
+        string stateName = state == ActorState.Jumping ? "Jump" :
+            state == ActorState.Pushing ? "PushBack" :
+            state == ActorState.Linked ? "Walk" :
+            state == ActorState.Walking || state == ActorState.Sprinting ? "Walk" :
+            idleVariation ? "Idle2" : "Idle1";
+        float blendTime = state == ActorState.Jumping ? 0.08f : 0.15f;
+        animator.CrossFadeInFixedTime(stateName, blendTime, 0, 0f);
     }
 
     void ApplyAnimationState()
