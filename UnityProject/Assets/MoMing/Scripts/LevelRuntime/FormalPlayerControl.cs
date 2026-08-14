@@ -61,6 +61,8 @@ public class FormalPlayerControl : MonoBehaviour
         {
             dog.SetPosition(human.transform.position + linkedDogOffset);
             dog.transform.rotation = human.transform.rotation;
+            human.SetLinked(direction.sqrMagnitude > 0.01f);
+            dog.SetLinked(direction.sqrMagnitude > 0.01f);
         }
     }
 
@@ -80,6 +82,7 @@ public class FormalPlayerControl : MonoBehaviour
 
         linked = true;
         activeActor = human;
+        dog.SetLinked(false);
         SetCameraTarget();
     }
 
