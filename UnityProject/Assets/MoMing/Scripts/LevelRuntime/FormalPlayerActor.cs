@@ -9,15 +9,18 @@ public class FormalPlayerActor : MonoBehaviour
     [SerializeField] private float walkSpeed = 4f;
     [SerializeField] private float sprintSpeed = 7f;
     [SerializeField] private float turnSpeed = 12f;
+    [SerializeField] private float jumpHeight = 1.5f;
 
     private Rigidbody body;
+    private CapsuleCollider capsule;
 
     public ActorRole Role => role;
 
     void Awake()
     {
         body = GetComponent<Rigidbody>();
-        body.useGravity = false;
+        capsule = GetComponent<CapsuleCollider>();
+        body.useGravity = true;
         body.constraints = RigidbodyConstraints.FreezeRotation;
         body.interpolation = RigidbodyInterpolation.Interpolate;
     }
@@ -25,7 +28,7 @@ public class FormalPlayerActor : MonoBehaviour
     public void Move(Vector3 direction, bool sprint)
     {
         float speed = sprint && role == ActorRole.Dog ? sprintSpeed : walkSpeed;
-        body.velocity = direction * speed;
+        body.velocity = new Vector3(direction.x * speed, body.velocity.y, direction.z * speed);
 
         if (direction.sqrMagnitude > 0.01f)
             body.MoveRotation(Quaternion.Slerp(body.rotation, Quaternion.LookRotation(direction), turnSpeed * Time.fixedDeltaTime));
@@ -33,7 +36,38 @@ public class FormalPlayerActor : MonoBehaviour
 
     public void Stop()
     {
-        body.velocity = Vector3.zero;
+        body.velocity = new Vector3(0f, body.velocity.y, 0f);
+    }
+
+    public void Jump()
+    {
+        if (!IsGrounded())
+            return;
+
+        float jumpVelocity = Mathf.Sqrt(2f * Mathf.Abs(Physics.gravity.y) * jumpHeight);
+        body.velocity = new Vector3(body.velocity.x, jumpVelocity, body.velocity.z);
+    }
+
+    bool IsGrounded()
+    {
+        if (capsule == null)
+            return false;
+
+        Bounds bounds = capsule.bounds;
+        RaycastHit[] hits = Physics.RaycastAll(
+            bounds.center,
+            Vector3.down,
+            bounds.extents.y + 0.08f,
+            Physics.DefaultRaycastLayers,
+            QueryTriggerInteraction.Ignore);
+
+        foreach (RaycastHit hit in hits)
+        {
+            if (hit.collider != capsule && !hit.transform.IsChildOf(transform))
+                return true;
+        }
+
+        return false;
     }
 
     public void SetPosition(Vector3 position)

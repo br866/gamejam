@@ -21,6 +21,7 @@ public class FormalPlayerControl : MonoBehaviour
             cameraObject.tag = "MainCamera";
             cameraObject.AddComponent<Camera>();
             cameraFollow = cameraObject.AddComponent<CameraFollow>();
+            cameraFollow.enableMouseRotation = true;
         }
 
         SetCameraTarget();
@@ -39,6 +40,9 @@ public class FormalPlayerControl : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Q))
             ToggleLinkedMode();
+
+        if (Input.GetKeyDown(KeyCode.Space) && !linked)
+            activeActor.Jump();
     }
 
     void FixedUpdate()

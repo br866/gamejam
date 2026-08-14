@@ -13,18 +13,18 @@
 
 ## 3. Level 1 Collision and Navigation
 
-- [ ] 3.1 Author art-aligned primitive or compound collision for Level 1 floors, walls, the broken-wall route, and both doorways.
-- [ ] 3.2 Add blocking collision to the selected decorative stools, cabinets, medical cabinets, and metal lockers; leave small decorative props non-blocking unless playtesting identifies a traversal need.
-- [ ] 3.3 Configure the wooden crate as a human-pushable temporary physics object with stable collision, reset anchor, and no non-convex dynamic mesh collider.
+- [x] 3.1 Author art-aligned primitive or compound collision for Level 1 floors, walls, the broken-wall route, and both doorways.
+- [x] 3.2 Add blocking collision to the selected decorative stools, cabinets, medical cabinets, and metal lockers; leave small decorative props non-blocking unless playtesting identifies a traversal need.
+- [x] 3.3 Configure the wooden crate as a human-pushable temporary physics object with stable collision, reset anchor, and no non-convex dynamic mesh collider.
 - [ ] 3.4 Bake or author Level 1 monster navigation against the formal collision proxies and validate the intended player and monster access boundaries.
 
 ## 4. Level 1 Gameplay Vertical Slice
 
 - [ ] 4.1 Implement the human-only crate-to-broken-wall step flow and verify the dog cannot use the resulting route to reach the key area.
-- [ ] 4.2 Implement human-only key collection and configure the key as temporary progress that resets after death.
-- [ ] 4.3 Configure `door5 (1)` as the permanent mechanism-controlled door and `door4 (1)` as the permanent key-controlled exit door.
-- [ ] 4.4 Configure `Pedal1 (1)` as the formal mechanism visual with its explicit interaction boundary and required actor eligibility.
-- [ ] 4.5 Configure the Level 1 checkpoint so either character establishes the shared respawn position and it persists through death.
+- [x] 4.2 Implement human-only key collection and configure the key as temporary progress that resets after death.
+- [x] 4.3 Configure `door5 (1)` as the permanent mechanism-controlled door and `door4 (1)` as the permanent key-controlled exit door.
+- [x] 4.4 Configure `Pedal1 (1)` as the formal mechanism visual with its explicit interaction boundary and required actor eligibility.
+- [x] 4.5 Configure the Level 1 checkpoint so either character establishes the shared respawn position and it persists through death.
 - [ ] 4.6 Verify death resets temporary Level 1 state while preserving the checkpoint, completed mechanism, and opened doors.
 
 ## 5. Lifecycle Validation
@@ -42,4 +42,4 @@
 
 - [x] 7.1 Record the Level 1 source manifest, including explicit late additions, and use a `L01_Content` prefab instance for the formal scene's art assembly.
 - [x] 7.2 Replace the formal path's legacy player-system dependency with runtime-spawned formal player actors and separate runtime-loaded human and dog visual prefabs.
-- [ ] 7.3 Resume collision, navigation, and playable Level 1 logic only after the formal content prefab and runtime player visual scale have been reviewed in the Unity Editor. (Formal player movement, switching, linked movement, and camera bootstrap are now ready for this review.)
+- [x] 7.3 Resume collision, navigation, and playable Level 1 logic only after the formal content prefab and runtime player visual scale have been reviewed in the Unity Editor. (Formal player movement, switching, linked movement, and camera bootstrap are now ready for this review.)
