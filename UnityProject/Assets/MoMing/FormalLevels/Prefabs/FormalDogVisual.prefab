@@ -41,12 +41,12 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 9a472b1c35581c445a45413866f00592,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9a472b1c35581c445a45413866f00592,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.7071068
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9a472b1c35581c445a45413866f00592,
         type: 3}
@@ -78,6 +78,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: FormalDogVisual
       objectReference: {fileID: 0}
+    - target: {fileID: 8111781155169087978, guid: 9a472b1c35581c445a45413866f00592,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: f755046344c43264ab840c684a567c35, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
