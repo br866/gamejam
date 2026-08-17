@@ -37,11 +37,14 @@ public class FormalLevelController : MonoBehaviour
             temporaryStates.Add(state);
     }
 
-    public void SetCheckpoint(Transform activatingPlayer)
+    public void SetCheckpoint(Transform humanAnchor, Transform dogAnchor)
     {
-        Vector3 spawn = activatingPlayer.position;
-        checkpointHuman = humanSpawn != null ? humanSpawn.position : spawn;
-        checkpointDog = dogSpawn != null ? dogSpawn.position : spawn;
+        checkpointHuman = humanAnchor != null
+            ? humanAnchor.position
+            : humanSpawn != null ? humanSpawn.position : Vector3.zero;
+        checkpointDog = dogAnchor != null
+            ? dogAnchor.position
+            : dogSpawn != null ? dogSpawn.position : checkpointHuman;
         hasCheckpoint = true;
     }
 
@@ -51,7 +54,10 @@ public class FormalLevelController : MonoBehaviour
             state.ResetTemporaryState();
 
         if (!hasCheckpoint)
+        {
+            PlacePlayersAtSpawn();
             return;
+        }
 
         MovePlayer(FormalPlayerActors.Instance != null ? FormalPlayerActors.Instance.Human : null, checkpointHuman);
         MovePlayer(FormalPlayerActors.Instance != null ? FormalPlayerActors.Instance.Dog : null, checkpointDog);

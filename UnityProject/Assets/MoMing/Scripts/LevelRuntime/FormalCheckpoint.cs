@@ -4,6 +4,8 @@ public class FormalCheckpoint : MonoBehaviour, IFormalLevelPermanentState
 {
     [SerializeField] private FormalLevelController level;
     [SerializeField] private string successorScene;
+    [SerializeField] private Transform humanRespawnAnchor;
+    [SerializeField] private Transform dogRespawnAnchor;
 
     public bool IsComplete { get; private set; }
 
@@ -13,7 +15,7 @@ public class FormalCheckpoint : MonoBehaviour, IFormalLevelPermanentState
             return;
 
         IsComplete = true;
-        level.SetCheckpoint(other.transform);
+        level.SetCheckpoint(humanRespawnAnchor, dogRespawnAnchor);
 
         FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
         if (flow != null)

@@ -53,6 +53,12 @@ public class MonsterPatrol : MonoBehaviour
 
     void Awake()
     {
+        if (!HasAssignedWaypoints())
+        {
+            enabled = false;
+            return;
+        }
+
         audioSource = GetComponent<AudioSource>();
         navigation = GetComponent<LevelMonsterNavigation>();
         selfCol = GetComponent<CapsuleCollider>();
@@ -74,7 +80,7 @@ public class MonsterPatrol : MonoBehaviour
 
     void Update()
     {
-        if (currentState == State.Patrol && waypoints != null && waypoints.Length > 0)
+        if (currentState == State.Patrol)
         {
             Patrol();
         }
@@ -85,6 +91,20 @@ public class MonsterPatrol : MonoBehaviour
 
         CheckForPlayers();
         HandleFootsteps();
+    }
+
+    bool HasAssignedWaypoints()
+    {
+        if (waypoints == null || waypoints.Length == 0)
+            return false;
+
+        foreach (Transform waypoint in waypoints)
+        {
+            if (waypoint == null)
+                return false;
+        }
+
+        return true;
     }
 
     // 判断某点是否在房间范围内
