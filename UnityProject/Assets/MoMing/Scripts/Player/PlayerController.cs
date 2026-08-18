@@ -17,6 +17,10 @@ public class PlayerController : MonoBehaviour
     public float sprintSpeed = 8f;
     public float rotationSpeed = 10f;
     public float jumpHeight = 2f;
+    [Tooltip("上升时的重力倍率：越大跳得越干脆、滞空越短（峰值仍保持 jumpHeight）")]
+    public float riseGravityMultiplier = 2f;
+    [Tooltip("下落时的重力倍率：通常比上升更大，落得比升得快，消除“月球”飘感")]
+    public float fallGravityMultiplier = 3f;
     public float groundCheckDistance = 0.15f;
 
     [Header("Interaction")]
@@ -74,6 +78,15 @@ public class PlayerController : MonoBehaviour
         {
             float checkDist = col.bounds.extents.y + groundCheckDistance;
             isGrounded = Physics.Raycast(transform.position, Vector3.down, checkDist);
+        }
+
+        // 额外重力：让跳跃更干脆、下落更快，消除“月球”飘感。
+        // Physics.gravity 已施加 1 倍，这里补上 (倍率-1) 倍：上升用 riseGravityMultiplier，
+        // 下落用更大的 fallGravityMultiplier，所以落得比升得快，顶点不再拖沓。
+        if (!isGrounded && rb != null)
+        {
+            float mult = (rb.velocity.y < 0f) ? fallGravityMultiplier : riseGravityMultiplier;
+            rb.velocity += Vector3.up * Physics.gravity.y * (mult - 1f) * Time.fixedDeltaTime;
         }
 
         if (!isActive) return;
@@ -148,8 +161,9 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
-            float g = Physics.gravity.y;
-            float jumpVel = Mathf.Sqrt(2f * Mathf.Abs(g) * jumpHeight);
+            // 用“上升有效重力”反推初速，保证跳跃峰值≈jumpHeight
+            float gUp = Mathf.Abs(Physics.gravity.y) * riseGravityMultiplier;
+            float jumpVel = Mathf.Sqrt(2f * gUp * jumpHeight);
             rb.velocity = new Vector3(rb.velocity.x, jumpVel, rb.velocity.z);
         }
     }
