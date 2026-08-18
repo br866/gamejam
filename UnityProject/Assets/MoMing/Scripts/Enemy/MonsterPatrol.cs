@@ -32,6 +32,9 @@ public class MonsterPatrol : MonoBehaviour
     [SerializeField] private AudioClip catchClip;
     [SerializeField] private AudioClip detectClip;
 
+    [Tooltip("怪物走多远算一步")]
+    public float footstepDistance = 1.6f;
+
     [Header("Detection Gizmos")]
     public bool showDetectionGizmos = true;
     public Color fieldOfViewGizmoColor = new Color(1f, 0.85f, 0f, 0.9f);
@@ -43,12 +46,14 @@ public class MonsterPatrol : MonoBehaviour
     private Vector3 startPos;
     private Transform chaseTarget;
     private float lastSeenTime;
+    private Vector3 lastStepPos;
 
     void Awake()
     {
         audioSource = GetComponent<AudioSource>();
         navigation = GetComponent<LevelMonsterNavigation>();
         startPos = transform.position;
+        lastStepPos = transform.position;
     }
 
     void Start()
@@ -75,6 +80,7 @@ public class MonsterPatrol : MonoBehaviour
         }
 
         CheckForPlayers();
+        HandleFootsteps();
     }
 
     // 判断某点是否在房间范围内
@@ -226,6 +232,22 @@ public class MonsterPatrol : MonoBehaviour
                 }
             }
         }
+    }
+
+    /// <summary>怪物移动时的脚步声，按移动距离触发。</summary>
+    void HandleFootsteps()
+    {
+        Vector3 a = transform.position; a.y = 0f;
+        Vector3 b = lastStepPos;        b.y = 0f;
+        if ((a - b).sqrMagnitude < footstepDistance * footstepDistance) return;
+        lastStepPos = transform.position;
+
+        if (footstepClip != null)
+        {
+            PlayAudio(footstepClip);
+            return;
+        }
+        SfxManager.PlayRandom(Sfx.FootstepFolder, Sfx.MonsterStep, transform.position);
     }
 
     void PlayAudio(AudioClip clip)

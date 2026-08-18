@@ -7,6 +7,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public enum CharacterType { Human, Dog }
+    public enum GroundSurface { WaxedTile, LowPileCarpet }
 
     [Header("Character")]
     public CharacterType characterType = CharacterType.Human;
@@ -22,7 +23,14 @@ public class PlayerController : MonoBehaviour
     public float interactRange = 1.5f;
 
     [Header("Audio")]
+    [Tooltip("留空即可：留空时自动用 Resources/SFX/Footsteps 里的多变体素材随机播放")]
     [SerializeField] private AudioClip footstepClip;
+
+    [Tooltip("脚下是什么地面，决定用哪一组脚步声")]
+    public GroundSurface footstepSurface = GroundSurface.WaxedTile;
+
+    [Tooltip("走多远算一步。越小步子越密；疾跑时自然会变密")]
+    public float footstepDistance = 1.2f;
 
     private Rigidbody rb;
     private Collider col;
@@ -36,6 +44,7 @@ public class PlayerController : MonoBehaviour
     private float pendingSpeed;
     private Quaternion pendingRot;
     private bool hasPendingRot;
+    private Vector3 lastStepPos;
 
     void Awake()
     {
@@ -43,10 +52,14 @@ public class PlayerController : MonoBehaviour
         col = GetComponent<Collider>();
         rb.constraints = RigidbodyConstraints.FreezeRotation;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
+        lastStepPos = transform.position;
     }
 
     void Update()
     {
+        // 放在 isActive 判断之前：跟随中的狗在移动时也该有脚步声
+        HandleFootsteps();
+
         if (!isActive) return;
 
         HandleMovementInput();
@@ -103,6 +116,32 @@ public class PlayerController : MonoBehaviour
             pendingRot = Quaternion.LookRotation(pendingMoveDir);
             hasPendingRot = true;
         }
+    }
+
+    /// <summary>按移动距离触发脚步声。用距离而不是计时，疾跑时步频自动变密。</summary>
+    void HandleFootsteps()
+    {
+        if (!isGrounded) return;
+
+        Vector3 a = transform.position; a.y = 0f;
+        Vector3 b = lastStepPos;        b.y = 0f;
+        if ((a - b).sqrMagnitude < footstepDistance * footstepDistance) return;
+        lastStepPos = transform.position;
+
+        // Inspector 里拖了单个素材就用它，否则走 Resources 里的多变体随机
+        if (footstepClip != null)
+        {
+            SfxManager.PlayClipAt(footstepClip, transform.position);
+            return;
+        }
+
+        string prefix;
+        if (characterType == CharacterType.Dog)
+            prefix = (footstepSurface == GroundSurface.WaxedTile) ? Sfx.DogTile : Sfx.DogCarpet;
+        else
+            prefix = (footstepSurface == GroundSurface.WaxedTile) ? Sfx.HumanTile : Sfx.HumanCarpet;
+
+        SfxManager.PlayRandom(Sfx.FootstepFolder, prefix, transform.position);
     }
 
     void HandleJump()
