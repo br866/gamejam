@@ -7,7 +7,7 @@
 
 - [x] 1.1 Add a serialized formal route catalog with stable level ids, scene names, shared additive scene names, and route ordering, replacing the current adjacent-level hardcoding.
 - [ ] 1.2 Implement synchronous and callback-based asynchronous load/unload APIs for named formal levels with one ownership reconciliation path. The current public synchronous methods still start coroutines and need a Unity-safe synchronous completion path.
-- [x] 1.3 Implement next-level, previous-level, and direct-jump navigation, retaining only the target level and its direct predecessor during transitions; unload all other loaded formal levels.
+- [x] 1.3 Implement next-level, previous-level, and direct-jump navigation, retaining only the target level after a transition and unloading all other loaded formal levels.
 - [x] 1.4 Add development keyboard commands: keypad 2 loads the next level, keypad 8 loads the previous level, keypad 5 resets the current level, and keypad 6 opens doors in the current level plus its shared scene with the next level. Inspector commands and direct configured-jump shortcuts remain deferred.
 - [x] 1.5 Retain shared additive art scenes by explicit route references and unload them only when their reference count reaches zero.
 

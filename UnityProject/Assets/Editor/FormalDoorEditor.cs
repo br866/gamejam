@@ -29,7 +29,8 @@ public class FormalDoorEditor : Editor
         EditorGUILayout.Space();
         EditorGUILayout.HelpBox(
             "Close is DoorPivot local rotation 0, 0, 0. Open is DoorPivot local rotation 0, Open Angle, 0. " +
-            "Use a negative Open Angle to rotate the other way. Preview animation remains at its final state.",
+            "Opening Direction selects the sign: Inward uses +Open Angle and Outward uses -Open Angle. " +
+            "Preview animation remains at its final state.",
             MessageType.Info);
 
         using (new EditorGUILayout.HorizontalScope())
@@ -49,22 +50,6 @@ public class FormalDoorEditor : Editor
             if (GUILayout.Button("Set Closed Immediately"))
                 SetImmediate(door, false);
         }
-    }
-
-    void OnSceneGUI()
-    {
-        FormalDoor door = (FormalDoor)target;
-        Transform pivot = door.VisualPivot;
-        if (pivot == null)
-            return;
-
-        Handles.color = Color.green;
-        Handles.ArrowHandleCap(0, pivot.position, Quaternion.LookRotation(pivot.up), 0.7f, EventType.Repaint);
-
-        Handles.color = door.OpenAngle >= 0f ? Color.cyan : Color.magenta;
-        Vector3 openDirection = Quaternion.AngleAxis(door.OpenAngle, pivot.up) * pivot.forward;
-        Handles.ArrowHandleCap(0, pivot.position, Quaternion.LookRotation(openDirection), 0.9f, EventType.Repaint);
-        Handles.Label(pivot.position + pivot.up * 0.45f, "Open");
     }
 
     void StartPreview(FormalDoor door, bool opening)

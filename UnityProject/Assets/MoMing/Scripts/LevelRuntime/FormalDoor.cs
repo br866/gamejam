@@ -23,8 +23,9 @@ public class FormalDoor : MonoBehaviour, IFormalLevelPermanentState, IFormalLeve
     public OpeningDirection Direction => openingDirection;
     public float OpenAngle => openAngle;
     public float OpenSpeed => openSpeed;
-    public Quaternion OpenRotation => Quaternion.Euler(0f, openAngle, 0f);
+    public Quaternion OpenRotation => Quaternion.Euler(0f, SignedOpenAngle, 0f);
     public Quaternion ClosedRotation => Quaternion.identity;
+    public float SignedOpenAngle => openingDirection == OpeningDirection.Inward ? openAngle : -openAngle;
 
     void Awake()
     {
@@ -82,8 +83,8 @@ public class FormalDoor : MonoBehaviour, IFormalLevelPermanentState, IFormalLeve
             visualPivot = transform;
 
         IsComplete = isOpen;
-        visualPivot.localRotation = isOpen ? OpenRotation : ClosedRotation;
+        visualPivot.localRotation = IsComplete ? OpenRotation : ClosedRotation;
         if (blockingCollider != null)
-            blockingCollider.enabled = !isOpen;
+            blockingCollider.enabled = !IsComplete;
     }
 }

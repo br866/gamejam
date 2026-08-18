@@ -324,43 +324,4 @@ public class MonsterPatrol : MonoBehaviour
         transform.position = startPos;
     }
 
-    void OnDrawGizmos()
-    {
-        if (!showDetectionGizmos)
-            return;
-
-        // 房间范围
-        Gizmos.color = new Color(0f, 0.5f, 1f, 0.15f);
-        Gizmos.DrawCube(roomCenter, roomSize);
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireCube(roomCenter, roomSize);
-
-        // 抓捕范围
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, catchRadius);
-
-        // 视野锥和最大检测范围
-        Gizmos.color = fieldOfViewGizmoColor;
-        Vector3 origin = transform.position + Vector3.up * 0.1f;
-        Vector3 flatForward = transform.forward;
-        flatForward.y = 0f;
-        flatForward.Normalize();
-        Vector3 leftDir = Quaternion.Euler(0f, -fieldOfView * 0.5f, 0f) * flatForward;
-        Vector3 rightDir = Quaternion.Euler(0f, fieldOfView * 0.5f, 0f) * flatForward;
-        Gizmos.DrawRay(origin, leftDir * detectionRange);
-        Gizmos.DrawRay(origin, rightDir * detectionRange);
-
-        const int arcSegments = 16;
-        Vector3 previous = origin + leftDir * detectionRange;
-        for (int i = 1; i <= arcSegments; i++)
-        {
-            float angle = Mathf.Lerp(-fieldOfView * 0.5f, fieldOfView * 0.5f, i / (float)arcSegments);
-            Vector3 point = origin + Quaternion.Euler(0f, angle, 0f) * flatForward * detectionRange;
-            Gizmos.DrawLine(previous, point);
-            previous = point;
-        }
-
-        Gizmos.color = new Color(fieldOfViewGizmoColor.r, fieldOfViewGizmoColor.g, fieldOfViewGizmoColor.b, 0.25f);
-        Gizmos.DrawWireSphere(transform.position, detectionRange);
-    }
 }

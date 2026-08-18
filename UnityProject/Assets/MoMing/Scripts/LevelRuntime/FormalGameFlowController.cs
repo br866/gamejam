@@ -171,10 +171,8 @@ public class FormalGameFlowController : MonoBehaviour
         if (!alreadyLoaded)
             yield return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
 
-        if (!string.IsNullOrEmpty(currentLevelScene) && currentLevelScene != sceneName)
-            pendingUnloadScene = currentLevelScene;
-
         currentLevelScene = sceneName;
+        pendingUnloadScene = null;
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentLevelScene));
         PlacePlayersAtLoadedLevelSpawn();
         yield return UnloadIrrelevantLevels(priorPendingScene);
@@ -229,7 +227,7 @@ public class FormalGameFlowController : MonoBehaviour
         foreach (FormalRouteEntry entry in routeCatalog)
         {
             if (entry == null || string.IsNullOrEmpty(entry.sceneName) ||
-                entry.sceneName == currentLevelScene || entry.sceneName == pendingUnloadScene)
+                entry.sceneName == currentLevelScene)
                 continue;
 
             Scene scene = SceneManager.GetSceneByName(entry.sceneName);
@@ -237,10 +235,9 @@ public class FormalGameFlowController : MonoBehaviour
                 yield return SceneManager.UnloadSceneAsync(scene);
         }
 
-        // A new transition replaces an older checkpoint fallback scene.
+        // A new transition replaces any older checkpoint fallback scene.
         if (!string.IsNullOrEmpty(priorPendingScene) &&
-            priorPendingScene != currentLevelScene &&
-            priorPendingScene != pendingUnloadScene)
+            priorPendingScene != currentLevelScene)
         {
             Scene priorPending = SceneManager.GetSceneByName(priorPendingScene);
             if (priorPending.isLoaded)
