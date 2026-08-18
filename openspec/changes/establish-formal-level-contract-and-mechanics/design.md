@@ -2,6 +2,8 @@
 
 See `proposal.md` for motivation. The formal route already owns a persistent Human/Dog pair and additively loads route scenes through `FormalGameFlowController`. Each scene provides a `FormalLevelController`, paired spawn anchors, visual content, and collision geometry, but the structure is not fully consistent or automatically verified. The route also needs explicit navigation APIs and a way to retain art scenes shared by adjacent levels.
 
+The implementation scope is governed by `capability-matrix.md`. Shared infrastructure is implemented first when at least two levels already provide evidence for it. Level 01 and Level 02 are the first two consumers and therefore serve as the minimum proof that a proposed abstraction is genuinely reusable. Level 03 through Level 05 receive business-specific implementation only after their behavior has been recorded.
+
 The repository also contains a prototype mechanic stack (`Puzzle/*`, `GameManager`, `PlayerManager`) built around a single loaded scene, `Player` tags, and a global reset event. Formal Level 01 instead has a small parallel set of formal scripts. The two lifecycles cannot safely share mechanics unchanged.
 
 ## Goals / Non-Goals
@@ -103,5 +105,7 @@ The first GM surface is intentionally small: public methods usable by an existin
 4. Wire Level 01 key, pedal, door, and crate to the shared contracts; verify reset and human-only activation in play mode.
 5. Normalize formal scene roots and add the contract/catalog validation suite for all six route scenes.
 6. Run edit-mode validation and the existing traversal suite before adopting the new components for later level mechanics.
+
+The common-layer implementation order is: route lifecycle and shared-scene ownership, formal role-aware trigger occupancy, reset/progress policies, actuators and resettable physics, then validation. Level 01 and Level 02 are wired as separate consumers; their puzzle graphs are not merged into the common layer.
 
 Rollback is limited to removing the new common components and restoring the Level 01 script references from version control; no data migration or external save format is involved.

@@ -26,12 +26,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3778527369370405655}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 41.635822, y: 13.680399, z: -0.3762741}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 41.623253, y: 13.691734, z: -0.3753949}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1467105591927030895}
+  - {fileID: 1467105591927030896}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &4058971846388730829
@@ -53,8 +53,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.2, y: 4, z: 3}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 3.45, y: 7, z: 0.25}
+  m_Center: {x: -1.4, y: 0, z: 0}
 --- !u!114 &7870395973305010199
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68,9 +68,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockingCollider: {fileID: 4058971846388730829}
-  visual: {fileID: 1467105591927030895}
-  openOffset: {x: 0, y: 3, z: 0}
-  openSpeed: 3
+  visualPivot: {fileID: 1467105591927030896}
+  openingDirection: 0
+  openAngle: 90
+  openSpeed: 180
 --- !u!1 &6640411285384708875
 GameObject:
   m_ObjectHideFlags: 0
@@ -97,13 +98,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6640411285384708875}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -1.678, y: 0.002163912, z: -0.0026243583}
   m_LocalScale: {x: 647.0167, y: 1097.0657, z: 700.7191}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 940742715872962198}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Father: {fileID: 1467105591927030896}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!33 &2403600748511695006
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -154,3 +155,35 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &6640411285384708876
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1467105591927030896}
+  m_Layer: 0
+  m_Name: DoorPivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1467105591927030896
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6640411285384708876}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.27, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1467105591927030895}
+  m_Father: {fileID: 940742715872962198}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

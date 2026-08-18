@@ -16,6 +16,7 @@ Establish a fast, explicit formal level runtime before adding more level-specifi
 - Migrate the existing Level 01 formal key, pedal, door, and pushable crate behavior to the common contracts without changing their player-visible behavior.
 - Add editor validation for the common formal-level scene contract.
 - Keep prototype `Puzzle/*`, `GameManager`, and `PlayerManager` operational but outside the formal route; do not migrate anxiety, UI, monsters, audio, or navigation in this change.
+- Treat `capability-matrix.md` as the scope authority: implement infrastructure used by at least two formal levels first, then consume it from Level 01 and Level 02 before adding later-level business mechanics.
 
 ## Capabilities
 

@@ -148,13 +148,45 @@ MonoBehaviour:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 395853250}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58e9393a17fd2584faea47c9e908efec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialLevelScene: FormalLevel02
-  level01Level02SharedArtScene: FormalSharedArt_L01_L02
-  level02Level03SharedArtScene: FormalSharedArt_L02_L03
+   m_EditorHideFlags: 0
+   m_Script: {fileID: 11500000, guid: 58e9393a17fd2584faea47c9e908efec, type: 3}
+   m_Name:
+   m_EditorClassIdentifier:
+   initialLevelScene: FormalLevel02
+   routeCatalog:
+   - levelId: Level01
+     sceneName: FormalLevel01
+     sharedArtScenes:
+     - FormalSharedArt_L01_L02
+   - levelId: Level02
+     sceneName: FormalLevel02
+     sharedArtScenes:
+     - FormalSharedArt_L01_L02
+     - FormalSharedArt_L02_L03
+   - levelId: Level03
+     sceneName: FormalLevel03
+     sharedArtScenes:
+     - FormalSharedArt_L02_L03
+     - FormalSharedArt_L03_L04
+   - levelId: Level04
+     sceneName: FormalLevel04
+     sharedArtScenes:
+     - FormalSharedArt_L03_L04
+     - FormalSharedArt_L04_L045
+   - levelId: Level04.5
+     sceneName: FormalLevel045
+     sharedArtScenes:
+     - FormalSharedArt_L04_L045
+     - FormalSharedArt_L045_L05
+   - levelId: Level05
+     sceneName: FormalLevel05
+     sharedArtScenes:
+     - FormalSharedArt_L045_L05
+   level01Level02SharedArtScene: FormalSharedArt_L01_L02
+   level02Level03SharedArtScene: FormalSharedArt_L02_L03
+   level03Level04SharedArtScene: FormalSharedArt_L03_L04
+   level04Level045SharedArtScene: FormalSharedArt_L04_L045
+   level045Level05SharedArtScene: FormalSharedArt_L045_L05
 --- !u!4 &395853252
 Transform:
   m_ObjectHideFlags: 0

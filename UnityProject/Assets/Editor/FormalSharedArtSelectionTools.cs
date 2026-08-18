@@ -642,7 +642,7 @@ public static class FormalSharedArtSelectionTools
         var entries = new List<SelectionEntry>();
         foreach (GameObject selected in Selection.gameObjects)
         {
-            if (selected == null || selected.scene.name != "FormalSharedArtSelectionOverview")
+            if (selected == null || !selected.scene.name.StartsWith("Formal"))
                 continue;
 
             Renderer renderer = selected.GetComponent<Renderer>();

@@ -1,10 +1,23 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class FormalGameFlowController : MonoBehaviour
 {
+    [Serializable]
+    public class FormalRouteEntry
+    {
+        public string levelId;
+        public string sceneName;
+        public string[] sharedArtScenes;
+    }
+
     [SerializeField] private string initialLevelScene = "FormalLevel01";
+    [SerializeField] private FormalRouteEntry[] routeCatalog;
+
+    // Kept as serialized migration inputs for existing FormalPersistent scenes.
     [SerializeField] private string level01Level02SharedArtScene = "FormalSharedArt_L01_L02";
     [SerializeField] private string level02Level03SharedArtScene = "FormalSharedArt_L02_L03";
     [SerializeField] private string level03Level04SharedArtScene = "FormalSharedArt_L03_L04";
@@ -13,22 +26,122 @@ public class FormalGameFlowController : MonoBehaviour
 
     private string currentLevelScene;
     private string pendingUnloadScene;
+    private bool operationInProgress;
+
+    public string CurrentLevelScene => currentLevelScene;
+    public IReadOnlyList<FormalRouteEntry> RouteCatalog => routeCatalog;
 
     void Awake()
     {
         DontDestroyOnLoad(gameObject);
+        EnsureRouteCatalog();
     }
 
     void Start()
     {
         if (!string.IsNullOrEmpty(initialLevelScene))
-            StartCoroutine(LoadInitialLevel());
+            LoadLevelAsync(initialLevelScene, null);
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Keypad2))
+            GoToNextLevel();
+        else if (Input.GetKeyDown(KeyCode.Keypad8))
+            GoToPreviousLevel();
+        else if (Input.GetKeyDown(KeyCode.Keypad5))
+            ResetCurrentLevel();
+        else if (Input.GetKeyDown(KeyCode.Keypad6))
+            OpenDoorsInCurrentLevelScope();
     }
 
     public void LoadSuccessor(string sceneName)
     {
-        if (!string.IsNullOrEmpty(sceneName) && SceneManager.GetSceneByName(sceneName).isLoaded == false)
-            StartCoroutine(LoadSuccessorRoutine(sceneName));
+        LoadLevelAsync(sceneName, null);
+    }
+
+    public void LoadLevel(string sceneName)
+    {
+        if (operationInProgress)
+            return;
+
+        StartCoroutine(LoadLevelRoutine(sceneName, null));
+    }
+
+    public void LoadLevelAsync(string sceneName, Action<bool> completed)
+    {
+        if (operationInProgress)
+        {
+            completed?.Invoke(false);
+            return;
+        }
+
+        StartCoroutine(LoadLevelRoutine(sceneName, completed));
+    }
+
+    public void UnloadLevel(string sceneName)
+    {
+        if (operationInProgress || string.IsNullOrEmpty(sceneName) || sceneName == currentLevelScene)
+            return;
+
+        StartCoroutine(UnloadLevelRoutine(sceneName, null));
+    }
+
+    public void UnloadLevelAsync(string sceneName, Action<bool> completed)
+    {
+        if (operationInProgress || string.IsNullOrEmpty(sceneName) || sceneName == currentLevelScene)
+        {
+            completed?.Invoke(false);
+            return;
+        }
+
+        StartCoroutine(UnloadLevelRoutine(sceneName, completed));
+    }
+
+    public void GoToNextLevel()
+    {
+        int index = FindRouteIndex(currentLevelScene);
+        if (index >= 0 && index + 1 < routeCatalog.Length)
+            LoadSuccessor(routeCatalog[index + 1].sceneName);
+    }
+
+    public void GoToPreviousLevel()
+    {
+        int index = FindRouteIndex(currentLevelScene);
+        if (index > 0)
+            LoadLevel(routeCatalog[index - 1].sceneName);
+    }
+
+    public void JumpToLevel(string levelId)
+    {
+        FormalRouteEntry entry = FindRouteEntry(levelId);
+        if (entry != null)
+            LoadLevel(entry.sceneName);
+    }
+
+    public void ResetCurrentLevel()
+    {
+        if (string.IsNullOrEmpty(currentLevelScene))
+            return;
+
+        FormalLevelController level = FormalLevelActors.FindLevelController(SceneManager.GetSceneByName(currentLevelScene));
+        if (level != null)
+            level.ResetLevel();
+    }
+
+    public void OpenDoorsInCurrentLevelScope()
+    {
+        foreach (Scene scene in GetCurrentLevelDoorScenes())
+        {
+            if (!scene.isLoaded)
+                continue;
+
+            foreach (GameObject root in scene.GetRootGameObjects())
+            {
+                foreach (FormalDoor door in root.GetComponentsInChildren<FormalDoor>(true))
+                    door.Open();
+            }
+        }
     }
 
     public void NotifySuccessorCheckpointActivated(string sceneName)
@@ -36,126 +149,193 @@ public class FormalGameFlowController : MonoBehaviour
         if (sceneName != currentLevelScene || string.IsNullOrEmpty(pendingUnloadScene))
             return;
 
-        StartCoroutine(UnloadPriorLevel());
+        string priorScene = pendingUnloadScene;
+        pendingUnloadScene = null;
+        UnloadLevelAsync(priorScene, null);
     }
 
-    IEnumerator LoadInitialLevel()
+    IEnumerator LoadLevelRoutine(string sceneName, Action<bool> completed)
     {
-        yield return LoadSharedArtForLevel(initialLevelScene);
+        FormalRouteEntry target = FindRouteEntryByScene(sceneName);
+        if (target == null)
+        {
+            completed?.Invoke(false);
+            yield break;
+        }
 
-        if (!SceneManager.GetSceneByName(initialLevelScene).isLoaded)
-            yield return SceneManager.LoadSceneAsync(initialLevelScene, LoadSceneMode.Additive);
+        operationInProgress = true;
+        string priorPendingScene = pendingUnloadScene;
+        yield return LoadSharedArtForEntries(currentLevelScene, pendingUnloadScene, sceneName);
 
-        currentLevelScene = initialLevelScene;
-        SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentLevelScene));
-        PlacePlayersAtLoadedLevelSpawn();
-    }
+        bool alreadyLoaded = SceneManager.GetSceneByName(sceneName).isLoaded;
+        if (!alreadyLoaded)
+            yield return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
 
-    IEnumerator LoadSuccessorRoutine(string sceneName)
-    {
-        yield return LoadSharedArtForLevel(sceneName);
+        if (!string.IsNullOrEmpty(currentLevelScene) && currentLevelScene != sceneName)
+            pendingUnloadScene = currentLevelScene;
 
-        yield return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
-        pendingUnloadScene = currentLevelScene;
         currentLevelScene = sceneName;
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentLevelScene));
         PlacePlayersAtLoadedLevelSpawn();
+        yield return UnloadIrrelevantLevels(priorPendingScene);
+        yield return UnloadUnusedSharedArt();
+        operationInProgress = false;
+        completed?.Invoke(true);
     }
 
-    IEnumerator UnloadPriorLevel()
+    IEnumerator UnloadLevelRoutine(string sceneName, Action<bool> completed)
     {
-        string sceneToUnload = pendingUnloadScene;
-        pendingUnloadScene = null;
-        if (!string.IsNullOrEmpty(sceneToUnload) && SceneManager.GetSceneByName(sceneToUnload).isLoaded)
-            yield return SceneManager.UnloadSceneAsync(sceneToUnload);
+        operationInProgress = true;
+        bool loaded = SceneManager.GetSceneByName(sceneName).isLoaded;
+        if (loaded)
+            yield return SceneManager.UnloadSceneAsync(sceneName);
 
         yield return UnloadUnusedSharedArt();
+        operationInProgress = false;
+        completed?.Invoke(loaded);
     }
 
-    IEnumerator LoadSharedArtForLevel(string sceneName)
+    IEnumerator LoadSharedArtForEntries(string activeScene, string transitionalScene, string targetScene)
     {
-        if (UsesLevel01Level02SharedArt(sceneName) &&
-            !string.IsNullOrEmpty(level01Level02SharedArtScene) &&
-            !SceneManager.GetSceneByName(level01Level02SharedArtScene).isLoaded)
-            yield return SceneManager.LoadSceneAsync(level01Level02SharedArtScene, LoadSceneMode.Additive);
-
-        if (UsesLevel02Level03SharedArt(sceneName) &&
-            !string.IsNullOrEmpty(level02Level03SharedArtScene) &&
-            !SceneManager.GetSceneByName(level02Level03SharedArtScene).isLoaded)
-            yield return SceneManager.LoadSceneAsync(level02Level03SharedArtScene, LoadSceneMode.Additive);
-
-        if (UsesLevel03Level04SharedArt(sceneName) &&
-            !string.IsNullOrEmpty(level03Level04SharedArtScene) &&
-            !SceneManager.GetSceneByName(level03Level04SharedArtScene).isLoaded)
-            yield return SceneManager.LoadSceneAsync(level03Level04SharedArtScene, LoadSceneMode.Additive);
-
-        if (UsesLevel04Level045SharedArt(sceneName) &&
-            !string.IsNullOrEmpty(level04Level045SharedArtScene) &&
-            !SceneManager.GetSceneByName(level04Level045SharedArtScene).isLoaded)
-            yield return SceneManager.LoadSceneAsync(level04Level045SharedArtScene, LoadSceneMode.Additive);
-
-        if (UsesLevel045Level05SharedArt(sceneName) &&
-            !string.IsNullOrEmpty(level045Level05SharedArtScene) &&
-            !SceneManager.GetSceneByName(level045Level05SharedArtScene).isLoaded)
-            yield return SceneManager.LoadSceneAsync(level045Level05SharedArtScene, LoadSceneMode.Additive);
+        HashSet<string> required = GetRequiredSharedScenes(activeScene, transitionalScene, targetScene);
+        foreach (string sharedScene in required)
+        {
+            if (!string.IsNullOrEmpty(sharedScene) && !SceneManager.GetSceneByName(sharedScene).isLoaded)
+                yield return SceneManager.LoadSceneAsync(sharedScene, LoadSceneMode.Additive);
+        }
     }
 
     IEnumerator UnloadUnusedSharedArt()
     {
-        if (!UsesLevel01Level02SharedArt(currentLevelScene) &&
-            !UsesLevel01Level02SharedArt(pendingUnloadScene) &&
-            !string.IsNullOrEmpty(level01Level02SharedArtScene) &&
-            SceneManager.GetSceneByName(level01Level02SharedArtScene).isLoaded)
-            yield return SceneManager.UnloadSceneAsync(level01Level02SharedArtScene);
+        HashSet<string> required = GetRequiredSharedScenes(currentLevelScene, pendingUnloadScene, null);
+        HashSet<string> known = new HashSet<string>();
+        foreach (FormalRouteEntry entry in routeCatalog)
+        {
+            if (entry.sharedArtScenes == null)
+                continue;
+            foreach (string sharedScene in entry.sharedArtScenes)
+                known.Add(sharedScene);
+        }
 
-        if (!UsesLevel02Level03SharedArt(currentLevelScene) &&
-            !UsesLevel02Level03SharedArt(pendingUnloadScene) &&
-            !string.IsNullOrEmpty(level02Level03SharedArtScene) &&
-            SceneManager.GetSceneByName(level02Level03SharedArtScene).isLoaded)
-            yield return SceneManager.UnloadSceneAsync(level02Level03SharedArtScene);
-
-        if (!UsesLevel03Level04SharedArt(currentLevelScene) &&
-            !UsesLevel03Level04SharedArt(pendingUnloadScene) &&
-            !string.IsNullOrEmpty(level03Level04SharedArtScene) &&
-            SceneManager.GetSceneByName(level03Level04SharedArtScene).isLoaded)
-            yield return SceneManager.UnloadSceneAsync(level03Level04SharedArtScene);
-
-        if (!UsesLevel04Level045SharedArt(currentLevelScene) &&
-            !UsesLevel04Level045SharedArt(pendingUnloadScene) &&
-            !string.IsNullOrEmpty(level04Level045SharedArtScene) &&
-            SceneManager.GetSceneByName(level04Level045SharedArtScene).isLoaded)
-            yield return SceneManager.UnloadSceneAsync(level04Level045SharedArtScene);
-
-        if (!UsesLevel045Level05SharedArt(currentLevelScene) &&
-            !UsesLevel045Level05SharedArt(pendingUnloadScene) &&
-            !string.IsNullOrEmpty(level045Level05SharedArtScene) &&
-            SceneManager.GetSceneByName(level045Level05SharedArtScene).isLoaded)
-            yield return SceneManager.UnloadSceneAsync(level045Level05SharedArtScene);
+        foreach (string sharedScene in known)
+        {
+            if (!required.Contains(sharedScene) && SceneManager.GetSceneByName(sharedScene).isLoaded)
+                yield return SceneManager.UnloadSceneAsync(sharedScene);
+        }
     }
 
-    static bool UsesLevel01Level02SharedArt(string sceneName)
+    IEnumerator UnloadIrrelevantLevels(string priorPendingScene)
     {
-        return sceneName == "FormalLevel01" || sceneName == "FormalLevel02";
+        foreach (FormalRouteEntry entry in routeCatalog)
+        {
+            if (entry == null || string.IsNullOrEmpty(entry.sceneName) ||
+                entry.sceneName == currentLevelScene || entry.sceneName == pendingUnloadScene)
+                continue;
+
+            Scene scene = SceneManager.GetSceneByName(entry.sceneName);
+            if (scene.isLoaded)
+                yield return SceneManager.UnloadSceneAsync(scene);
+        }
+
+        // A new transition replaces an older checkpoint fallback scene.
+        if (!string.IsNullOrEmpty(priorPendingScene) &&
+            priorPendingScene != currentLevelScene &&
+            priorPendingScene != pendingUnloadScene)
+        {
+            Scene priorPending = SceneManager.GetSceneByName(priorPendingScene);
+            if (priorPending.isLoaded)
+                yield return SceneManager.UnloadSceneAsync(priorPending);
+        }
     }
 
-    static bool UsesLevel02Level03SharedArt(string sceneName)
+    HashSet<string> GetRequiredSharedScenes(string firstScene, string secondScene, string thirdScene)
     {
-        return sceneName == "FormalLevel02" || sceneName == "FormalLevel03";
+        HashSet<string> result = new HashSet<string>();
+        AddSharedScenes(result, FindRouteEntryByScene(firstScene));
+        AddSharedScenes(result, FindRouteEntryByScene(secondScene));
+        AddSharedScenes(result, FindRouteEntryByScene(thirdScene));
+        return result;
     }
 
-    static bool UsesLevel03Level04SharedArt(string sceneName)
+    IEnumerable<Scene> GetCurrentLevelDoorScenes()
     {
-        return sceneName == "FormalLevel03" || sceneName == "FormalLevel04";
+        Scene currentScene = SceneManager.GetSceneByName(currentLevelScene);
+        if (currentScene.IsValid())
+            yield return currentScene;
+
+        int currentIndex = FindRouteIndex(currentLevelScene);
+        if (currentIndex < 0 || currentIndex + 1 >= routeCatalog.Length)
+            yield break;
+
+        FormalRouteEntry current = routeCatalog[currentIndex];
+        FormalRouteEntry next = routeCatalog[currentIndex + 1];
+        if (current.sharedArtScenes == null || next.sharedArtScenes == null)
+            yield break;
+
+        HashSet<string> nextSharedScenes = new HashSet<string>(next.sharedArtScenes);
+        foreach (string sharedSceneName in current.sharedArtScenes)
+        {
+            if (!nextSharedScenes.Contains(sharedSceneName))
+                continue;
+
+            Scene sharedScene = SceneManager.GetSceneByName(sharedSceneName);
+            if (sharedScene.IsValid())
+                yield return sharedScene;
+        }
     }
 
-    static bool UsesLevel04Level045SharedArt(string sceneName)
+    static void AddSharedScenes(HashSet<string> result, FormalRouteEntry entry)
     {
-        return sceneName == "FormalLevel04" || sceneName == "FormalLevel045";
+        if (entry == null || entry.sharedArtScenes == null)
+            return;
+        foreach (string sceneName in entry.sharedArtScenes)
+            if (!string.IsNullOrEmpty(sceneName))
+                result.Add(sceneName);
     }
 
-    static bool UsesLevel045Level05SharedArt(string sceneName)
+    FormalRouteEntry FindRouteEntry(string levelId)
     {
-        return sceneName == "FormalLevel045" || sceneName == "FormalLevel05";
+        foreach (FormalRouteEntry entry in routeCatalog)
+            if (entry != null && entry.levelId == levelId)
+                return entry;
+        return null;
+    }
+
+    FormalRouteEntry FindRouteEntryByScene(string sceneName)
+    {
+        foreach (FormalRouteEntry entry in routeCatalog)
+            if (entry != null && entry.sceneName == sceneName)
+                return entry;
+        return null;
+    }
+
+    int FindRouteIndex(string sceneName)
+    {
+        for (int i = 0; i < routeCatalog.Length; i++)
+            if (routeCatalog[i] != null && routeCatalog[i].sceneName == sceneName)
+                return i;
+        return -1;
+    }
+
+    void EnsureRouteCatalog()
+    {
+        if (routeCatalog != null && routeCatalog.Length > 0)
+            return;
+
+        routeCatalog = new[]
+        {
+            Entry("Level01", "FormalLevel01", level01Level02SharedArtScene),
+            Entry("Level02", "FormalLevel02", level01Level02SharedArtScene, level02Level03SharedArtScene),
+            Entry("Level03", "FormalLevel03", level02Level03SharedArtScene, level03Level04SharedArtScene),
+            Entry("Level04", "FormalLevel04", level03Level04SharedArtScene, level04Level045SharedArtScene),
+            Entry("Level04.5", "FormalLevel045", level04Level045SharedArtScene, level045Level05SharedArtScene),
+            Entry("Level05", "FormalLevel05", level045Level05SharedArtScene)
+        };
+    }
+
+    static FormalRouteEntry Entry(string id, string scene, params string[] sharedScenes)
+    {
+        return new FormalRouteEntry { levelId = id, sceneName = scene, sharedArtScenes = sharedScenes };
     }
 
     void PlacePlayersAtLoadedLevelSpawn()

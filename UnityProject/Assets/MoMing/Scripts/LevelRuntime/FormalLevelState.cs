@@ -10,6 +10,12 @@ public interface IFormalLevelPermanentState
     bool IsComplete { get; }
 }
 
+public interface IFormalLevelActuator
+{
+    void Open();
+    void Close();
+}
+
 public static class FormalLevelActors
 {
     public static FormalLevelController FindLevelController(UnityEngine.SceneManagement.Scene scene)
@@ -27,12 +33,23 @@ public static class FormalLevelActors
 
     public static bool IsHuman(Collider other)
     {
-        FormalPlayerActor player = other.GetComponentInParent<FormalPlayerActor>();
+        FormalPlayerActor player = ResolvePlayer(other);
         return player != null && player.Role == FormalPlayerActor.ActorRole.Human;
+    }
+
+    public static bool IsDog(Collider other)
+    {
+        FormalPlayerActor player = ResolvePlayer(other);
+        return player != null && player.Role == FormalPlayerActor.ActorRole.Dog;
     }
 
     public static bool IsPlayer(Collider other)
     {
-        return other.GetComponentInParent<FormalPlayerActor>() != null;
+        return ResolvePlayer(other) != null;
+    }
+
+    public static FormalPlayerActor ResolvePlayer(Collider other)
+    {
+        return other != null ? other.GetComponentInParent<FormalPlayerActor>() : null;
     }
 }
