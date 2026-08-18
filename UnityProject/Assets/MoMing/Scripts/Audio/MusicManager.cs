@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -67,6 +68,32 @@ public class MusicManager : MonoBehaviour
     private AudioSource _active;   // 当前正在响的那个
     private string _currentId = "";
     private Coroutine _fadeRoutine;
+    // 已确认没有音频文件的 Id，记下来避免每帧重复 Resources.Load 和刷日志
+    private readonly HashSet<string> _missingClips = new HashSet<string>();
+
+    // “音乐”滑块驱动的 BGM 总音量(0~1)，只影响 BGM，不影响音效
+    private float _musicVol = 1f;
+    // 当前曲目的基础音量(来自 CSV)。最终音量 = _baseVol * _musicVol
+    private float _baseVol = 1f;
+    /// <summary>设置 BGM 总音量(0~1)，由 SettingsManager 的“音乐”滑块调用。</summary>
+    public void SetMusicVolume(float v) { _musicVol = Mathf.Clamp01(v); }
+
+    /// <summary>
+    /// 没有任何场景手动挂载 MusicManager 时，运行时自动生成一个并跨场景保留。
+    /// 这样不用改四个正式场景的 YAML，也不会因为忘挂而没声。
+    /// 若你之后在某个场景里手动拖了一个，这里会检测到并让路。
+    /// </summary>
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    static void AutoSpawn()
+    {
+        if (Instance != null) return;
+        if (FindObjectOfType<MusicManager>() != null) return;
+
+        GameObject go = new GameObject("MusicManager (Auto)");
+        MusicManager mm = go.AddComponent<MusicManager>(); // AddComponent 会立即跑 Awake
+        mm.dontDestroyOnLoad = true;
+        DontDestroyOnLoad(go);
+    }
 
     void Awake()
     {
@@ -114,15 +141,20 @@ public class MusicManager : MonoBehaviour
 
     void Start()
     {
-        // 自动模式：进场先播一首“在一起”的底噪
-        if (autoDriveByGameState)
-            PlayMusic(idTogether);
+        // 读取“音乐”滑块的初始音量
+        _musicVol = SettingsManager.MusicVolume;
+        // 进场先播一首“在一起”的底噪（手动模式下也要有 BGM）
+        PlayMusic(idTogether);
     }
 
     void Update()
     {
         if (autoDriveByGameState)
             DriveByGameState();
+
+        // 应用“音乐”滑块的总音量到当前 BGM（非淡变期间稳定维持，滑块一动即时生效）
+        if (_fadeRoutine == null && _active != null)
+            _active.volume = _baseVol * _musicVol;
     }
 
     /// <summary>根据在一起/分离 + 焦虑值，决定该放哪首，并在需要时切歌。</summary>
@@ -166,6 +198,7 @@ public class MusicManager : MonoBehaviour
     {
         if (string.IsNullOrEmpty(id)) return;
         if (id == _currentId) return;
+        if (_missingClips.Contains(id)) return; // 已知无文件，直接跳过，保持当前曲目继续播放
 
         MusicTable.Entry e = _table != null ? _table.Get(id) : null;
         if (e == null)
@@ -177,10 +210,12 @@ public class MusicManager : MonoBehaviour
         AudioClip clip = Resources.Load<AudioClip>(clipResourceFolder + e.clipName);
         if (clip == null)
         {
-            // 原型阶段常见：还没有音频文件。记录当前 Id 但不实际播放，避免反复刷日志。
+            // 原型阶段常见：还没有音频文件。记进黑名单后静默跳过。
+            // 注意：这里故意不写 _currentId，否则“当前曲目”会被一首不存在的歌占住，
+            // 导致状态切回来时把同一首 BGM 从头重放、两个 AudioSource 叠在一起。
             Debug.Log("[MusicManager] 暂无音频文件：Resources/" + clipResourceFolder + e.clipName +
                       "（Id=" + id + "），静默跳过。");
-            _currentId = id;
+            _missingClips.Add(id);
             return;
         }
 
@@ -188,6 +223,7 @@ public class MusicManager : MonoBehaviour
         float fadeIn = fade >= 0f ? fade : e.fadeIn;
         float fadeOut = fade >= 0f ? fade : defaultFade;
 
+        _baseVol = e.volume; // 记录本曲基础音量，供“音乐”滑块缩放
         AudioSource next = (_active == _sourceA) ? _sourceB : _sourceA;
         next.clip = clip;
         next.loop = e.loop;
@@ -229,12 +265,12 @@ public class MusicManager : MonoBehaviour
             t += Time.unscaledDeltaTime; // 用 unscaled，暂停(Time.timeScale=0)时音乐仍能淡变
             float kIn = fadeIn <= 0f ? 1f : Mathf.Clamp01(t / fadeIn);
             float kOut = fadeOut <= 0f ? 1f : Mathf.Clamp01(t / fadeOut);
-            if (to != null) to.volume = Mathf.Lerp(0f, targetVol, kIn);
+            if (to != null) to.volume = Mathf.Lerp(0f, targetVol * _musicVol, kIn);
             if (from != null) from.volume = Mathf.Lerp(fromStart, 0f, kOut);
             yield return null;
         }
 
-        if (to != null) to.volume = targetVol;
+        if (to != null) to.volume = targetVol * _musicVol;
         if (from != null)
         {
             from.volume = 0f;

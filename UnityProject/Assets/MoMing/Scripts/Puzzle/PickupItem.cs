@@ -56,7 +56,7 @@ public class PickupItem : MonoBehaviour
         if (rb != null) { rb.isKinematic = true; rb.useGravity = false; }
         if (col != null) col.enabled = false;
 
-        PlayAudio(pickupClip);
+        PlayAudio(pickupClip, Sfx.KeyPickup);
         Debug.Log("[PickupItem] Picked up by " + newHolder.name);
     }
 
@@ -83,7 +83,7 @@ public class PickupItem : MonoBehaviour
 
         if (col != null) col.enabled = true;
 
-        PlayAudio(dropClip);
+        PlayAudio(dropClip, Sfx.KeyThrow);
         Debug.Log("[PickupItem] Dropped.");
     }
 
@@ -100,5 +100,16 @@ public class PickupItem : MonoBehaviour
     {
         if (clip != null && audioSource != null)
             audioSource.PlayOneShot(clip);
+    }
+
+    /// <summary>Inspector 里拖了素材就用它，没拖就按名字从 Resources/SFX 加载。</summary>
+    void PlayAudio(AudioClip clip, string sfxPath)
+    {
+        if (clip != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(clip);
+            return;
+        }
+        SfxManager.PlayAt(sfxPath, transform.position);
     }
 }

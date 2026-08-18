@@ -34,11 +34,17 @@ public class GameHUDManager : MonoBehaviour
     [SerializeField] private GameObject settingsPanel;
 
     private bool isPaused = false;
+    // 全局暂停标记：供其它脚本（如相机）读取，暂停菜单打开时=true。
+    public static bool IsPaused { get; private set; }
+    private CameraFollow camFollow;
     private bool wasBoxAttached = false;
 
     private void Start()
     {
         UpdateObjectiveText();
+
+        // 缓存相机引用，暂停/恢复时用它切换鼠标光标的显示与锁定
+        camFollow = FindObjectOfType<CameraFollow>();
 
         if (settingsButton != null)
             settingsButton.onClick.AddListener(OpenPauseMenu);
@@ -172,8 +178,13 @@ public class GameHUDManager : MonoBehaviour
         if (pauseMenuRoot == null) return;
 
         isPaused = true;
+        IsPaused = true;
         pauseMenuRoot.SetActive(true);
         Time.timeScale = 0f;
+
+        // 暂停时显示并解锁鼠标，否则光标被锁在屏幕中心且隐藏，点不到按钮
+        if (camFollow != null) camFollow.SetCursorVisible(true);
+        else { Cursor.visible = true; Cursor.lockState = CursorLockMode.None; }
 
         var pm = PlayerManager.Instance;
         if (pm != null && pm.ActivePlayer != null)
@@ -185,8 +196,13 @@ public class GameHUDManager : MonoBehaviour
         if (pauseMenuRoot == null) return;
 
         isPaused = false;
+        IsPaused = false;
         pauseMenuRoot.SetActive(false);
         Time.timeScale = 1f;
+
+        // 恢复游戏时把鼠标重新隐藏并锁回中心
+        if (camFollow != null) camFollow.SetCursorVisible(false);
+        else { Cursor.visible = false; Cursor.lockState = CursorLockMode.Locked; }
 
         var pm = PlayerManager.Instance;
         if (pm != null && pm.ActivePlayer != null)
@@ -201,6 +217,7 @@ public class GameHUDManager : MonoBehaviour
 
     private void RestartLevel()
     {
+        IsPaused = false;
         Time.timeScale = 1f;
         Scene currentScene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(currentScene.name);
@@ -208,6 +225,7 @@ public class GameHUDManager : MonoBehaviour
 
     private void ReturnToMainMenu()
     {
+        IsPaused = false;
         Time.timeScale = 1f;
         SceneManager.LoadScene(mainMenuSceneName);
     }
