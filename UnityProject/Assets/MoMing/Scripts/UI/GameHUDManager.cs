@@ -34,6 +34,8 @@ public class GameHUDManager : MonoBehaviour
     [SerializeField] private GameObject settingsPanel;
 
     private bool isPaused = false;
+    // 全局暂停标记：供其它脚本（如相机）读取，暂停菜单打开时=true。
+    public static bool IsPaused { get; private set; }
     private bool wasBoxAttached = false;
 
     private void Start()
@@ -172,6 +174,7 @@ public class GameHUDManager : MonoBehaviour
         if (pauseMenuRoot == null) return;
 
         isPaused = true;
+        IsPaused = true;
         pauseMenuRoot.SetActive(true);
         Time.timeScale = 0f;
 
@@ -185,6 +188,7 @@ public class GameHUDManager : MonoBehaviour
         if (pauseMenuRoot == null) return;
 
         isPaused = false;
+        IsPaused = false;
         pauseMenuRoot.SetActive(false);
         Time.timeScale = 1f;
 
@@ -201,6 +205,7 @@ public class GameHUDManager : MonoBehaviour
 
     private void RestartLevel()
     {
+        IsPaused = false;
         Time.timeScale = 1f;
         Scene currentScene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(currentScene.name);
@@ -208,6 +213,7 @@ public class GameHUDManager : MonoBehaviour
 
     private void ReturnToMainMenu()
     {
+        IsPaused = false;
         Time.timeScale = 1f;
         SceneManager.LoadScene(mainMenuSceneName);
     }
