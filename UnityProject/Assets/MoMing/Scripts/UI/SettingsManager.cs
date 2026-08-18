@@ -90,9 +90,18 @@ public class SettingsManager : MonoBehaviour
 
     private static void ApplyVolumes()
     {
-        // 简易方案：用 AudioListener.volume 做总音量，后续接入 AudioMixer 时替换
-        // 音乐和音效取平均值作为主音量（原型阶段，后续可拆分 AudioMixer Group）
-        AudioListener.volume = (musicVolume + sfxVolume) * 0.5f;
+        // BGM 与音效分开：AudioListener 作为总开关保持满音量，
+        // “音乐”滑块只驱动 MusicManager 的 BGM，“音效”滑块在播放音效时按 SfxVolume 缩放。
+        AudioListener.volume = 1f;
+        if (MusicManager.Instance != null)
+            MusicManager.Instance.SetMusicVolume(musicVolume);
+    }
+
+    /// <summary>统一播放音效入口：自动按“音效”滑块(SfxVolume)缩放。所有 SFX 都应走这里。</summary>
+    public static void PlaySfx(AudioSource source, AudioClip clip)
+    {
+        if (source != null && clip != null)
+            source.PlayOneShot(clip, sfxVolume);
     }
 
     public void Close()

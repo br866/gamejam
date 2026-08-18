@@ -143,7 +143,8 @@ public class SfxManager : MonoBehaviour
 
         s.transform.position = spatial ? pos : Vector3.zero;
         s.spatialBlend = spatial ? 1f : 0f;
-        s.volume = Mathf.Clamp01(volume);
+        // 统一乘上“音效”滑块音量：所有 SFX（脚步/UI/交互等）都归“音效”管，与 BGM 分开
+        s.volume = Mathf.Clamp01(volume) * SettingsManager.SfxVolume;
         s.clip = clip;
         s.Play();
     }

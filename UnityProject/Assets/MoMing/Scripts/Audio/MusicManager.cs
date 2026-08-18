@@ -71,6 +71,13 @@ public class MusicManager : MonoBehaviour
     // 已确认没有音频文件的 Id，记下来避免每帧重复 Resources.Load 和刷日志
     private readonly HashSet<string> _missingClips = new HashSet<string>();
 
+    // “音乐”滑块驱动的 BGM 总音量(0~1)，只影响 BGM，不影响音效
+    private float _musicVol = 1f;
+    // 当前曲目的基础音量(来自 CSV)。最终音量 = _baseVol * _musicVol
+    private float _baseVol = 1f;
+    /// <summary>设置 BGM 总音量(0~1)，由 SettingsManager 的“音乐”滑块调用。</summary>
+    public void SetMusicVolume(float v) { _musicVol = Mathf.Clamp01(v); }
+
     /// <summary>
     /// 没有任何场景手动挂载 MusicManager 时，运行时自动生成一个并跨场景保留。
     /// 这样不用改四个正式场景的 YAML，也不会因为忘挂而没声。
@@ -134,6 +141,8 @@ public class MusicManager : MonoBehaviour
 
     void Start()
     {
+        // 读取“音乐”滑块的初始音量
+        _musicVol = SettingsManager.MusicVolume;
         // 进场先播一首“在一起”的底噪（手动模式下也要有 BGM）
         PlayMusic(idTogether);
     }
@@ -142,6 +151,10 @@ public class MusicManager : MonoBehaviour
     {
         if (autoDriveByGameState)
             DriveByGameState();
+
+        // 应用“音乐”滑块的总音量到当前 BGM（非淡变期间稳定维持，滑块一动即时生效）
+        if (_fadeRoutine == null && _active != null)
+            _active.volume = _baseVol * _musicVol;
     }
 
     /// <summary>根据在一起/分离 + 焦虑值，决定该放哪首，并在需要时切歌。</summary>
@@ -210,6 +223,7 @@ public class MusicManager : MonoBehaviour
         float fadeIn = fade >= 0f ? fade : e.fadeIn;
         float fadeOut = fade >= 0f ? fade : defaultFade;
 
+        _baseVol = e.volume; // 记录本曲基础音量，供“音乐”滑块缩放
         AudioSource next = (_active == _sourceA) ? _sourceB : _sourceA;
         next.clip = clip;
         next.loop = e.loop;
@@ -251,12 +265,12 @@ public class MusicManager : MonoBehaviour
             t += Time.unscaledDeltaTime; // 用 unscaled，暂停(Time.timeScale=0)时音乐仍能淡变
             float kIn = fadeIn <= 0f ? 1f : Mathf.Clamp01(t / fadeIn);
             float kOut = fadeOut <= 0f ? 1f : Mathf.Clamp01(t / fadeOut);
-            if (to != null) to.volume = Mathf.Lerp(0f, targetVol, kIn);
+            if (to != null) to.volume = Mathf.Lerp(0f, targetVol * _musicVol, kIn);
             if (from != null) from.volume = Mathf.Lerp(fromStart, 0f, kOut);
             yield return null;
         }
 
-        if (to != null) to.volume = targetVol;
+        if (to != null) to.volume = targetVol * _musicVol;
         if (from != null)
         {
             from.volume = 0f;
