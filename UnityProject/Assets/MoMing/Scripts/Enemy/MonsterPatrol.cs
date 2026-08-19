@@ -29,6 +29,9 @@ public class MonsterPatrol : MonoBehaviour
     public float chaseSpeed = 4.5f;
     public float chaseStopDistance = 1f;
 
+    [Header("Safe Zones")]
+    [SerializeField] private Collider[] safeZones;
+
     [Header("Audio")]
     [SerializeField] private AudioClip footstepClip;
     [SerializeField] private AudioClip catchClip;
@@ -70,6 +73,10 @@ public class MonsterPatrol : MonoBehaviour
     {
         if (GameManager.Instance != null)
             GameManager.Instance.OnLevelReset += ResetPatrol;
+
+        FormalLevelController level = FormalLevelActors.FindLevelController(gameObject.scene);
+        if (level != null)
+            level.RegisterTemporaryState(new FormalMonsterResetState(this));
     }
 
     void OnDestroy()
@@ -167,7 +174,7 @@ public class MonsterPatrol : MonoBehaviour
         }
 
         // 目标离开房间 → 丢失目标
-        if (!IsInRoom(chaseTarget.position))
+        if (!IsInRoom(chaseTarget.position) || IsInSafeZone(chaseTarget.position))
         {
             chaseTarget = null;
             currentState = State.Patrol;
@@ -218,14 +225,21 @@ public class MonsterPatrol : MonoBehaviour
             if (TryCatch(GameManager.Instance.dogPlayer)) return;
         }
 
+        if (FormalPlayerActors.Instance != null)
+        {
+            if (TryCatch(FormalPlayerActors.Instance.Human != null ? FormalPlayerActors.Instance.Human.transform : null)) return;
+            if (TryCatch(FormalPlayerActors.Instance.Dog != null ? FormalPlayerActors.Instance.Dog.transform : null)) return;
+        }
+
         // 2. 检测玩家：必须同时满足(在房间内) AND (在锥形视野内)
         Collider[] detectionHits = Physics.OverlapSphere(transform.position, detectionRange);
         foreach (var hit in detectionHits)
         {
-            if (hit.CompareTag("Player"))
+            FormalPlayerActor formalPlayer = FormalLevelActors.ResolvePlayer(hit);
+            if (hit.CompareTag("Player") || formalPlayer != null)
             {
                 // 玩家不在怪物房间内 → 不检测
-                if (!IsInRoom(hit.transform.position))
+                if (!IsInRoom(hit.transform.position) || IsInSafeZone(hit.transform.position))
                     continue;
 
                 // XZ平面计算，忽略Y高度差
@@ -283,6 +297,8 @@ public class MonsterPatrol : MonoBehaviour
     bool TryCatch(Transform player)
     {
         if (player == null || !player.gameObject.activeInHierarchy) return false;
+        // 玩家在安全区内时怪物无法抓捕（安全区豁免）
+        if (IsInSafeZone(player.position)) return false;
 
         // XZ 平面中心距（忽略 Y 高度差）
         float dx = player.position.x - transform.position.x;
@@ -291,7 +307,7 @@ public class MonsterPatrol : MonoBehaviour
 
         // 抓捕阈值随实际碰撞体大小自适应：怪物世界半径 + 玩家世界半径 + 缓冲。
         // 怪物被放大后(scale 2.2)实心碰撞体会把玩家顶开，中心永远进不到旧的固定 catchRadius(1.2) 内，
-        // 所以按真实半径算，保证“贴上就抓到”。找不到碰撞体时回退到 catchRadius。
+        // 所以按真实半径算，保证贴上就抓到。找不到碰撞体时回退到 catchRadius。
         float threshold = WorldRadius(selfCol, transform)
                         + WorldRadius(player.GetComponent<CapsuleCollider>(), player)
                         + catchBuffer;
@@ -301,6 +317,12 @@ public class MonsterPatrol : MonoBehaviour
         {
             if (GameManager.Instance != null)
                 GameManager.Instance.OnPlayerCaught();
+            else
+            {
+                FormalLevelController level = FormalLevelActors.FindLevelController(gameObject.scene);
+                if (level != null)
+                    level.ResetLevel();
+            }
             PlayAudio(catchClip);
             return true;
         }
@@ -322,6 +344,35 @@ public class MonsterPatrol : MonoBehaviour
         chaseTarget = null;
         currentWaypoint = 0;
         transform.position = startPos;
+    }
+
+    bool IsInSafeZone(Vector3 position)
+    {
+        if (safeZones == null)
+            return false;
+
+        foreach (Collider safeZone in safeZones)
+        {
+            if (safeZone != null && safeZone.bounds.Contains(position))
+                return true;
+        }
+
+        return false;
+    }
+
+    class FormalMonsterResetState : IFormalLevelTemporaryState
+    {
+        readonly MonsterPatrol patrol;
+
+        public FormalMonsterResetState(MonsterPatrol patrol)
+        {
+            this.patrol = patrol;
+        }
+
+        public void ResetTemporaryState()
+        {
+            patrol.ResetPatrol();
+        }
     }
 
 }

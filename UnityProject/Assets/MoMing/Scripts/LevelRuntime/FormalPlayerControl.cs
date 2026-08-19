@@ -11,6 +11,8 @@ public class FormalPlayerControl : MonoBehaviour
     private bool linked;
     private CameraFollow cameraFollow;
 
+    public bool IsDogActive => activeActor != null && activeActor.Role == FormalPlayerActor.ActorRole.Dog;
+
     void Start()
     {
         activeActor = human;

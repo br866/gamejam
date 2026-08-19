@@ -27,9 +27,11 @@ public class FormalGameFlowController : MonoBehaviour
     private string currentLevelScene;
     private string pendingUnloadScene;
     private bool operationInProgress;
+    private bool routeComplete;
 
     public string CurrentLevelScene => currentLevelScene;
     public IReadOnlyList<FormalRouteEntry> RouteCatalog => routeCatalog;
+    public bool IsRouteComplete => routeComplete;
 
     void Awake()
     {
@@ -45,6 +47,9 @@ public class FormalGameFlowController : MonoBehaviour
 
     void Update()
     {
+        if (routeComplete)
+            return;
+
         if (Input.GetKeyDown(KeyCode.Keypad2))
             GoToNextLevel();
         else if (Input.GetKeyDown(KeyCode.Keypad8))
@@ -57,7 +62,31 @@ public class FormalGameFlowController : MonoBehaviour
 
     public void LoadSuccessor(string sceneName)
     {
-        LoadLevelAsync(sceneName, null);
+        if (operationInProgress)
+            return;
+
+        StartCoroutine(LoadLevelRoutine(sceneName, null, false));
+    }
+
+    public void CompleteRoute()
+    {
+        if (currentLevelScene != "FormalLevel05")
+        {
+            Debug.LogWarning("Formal route completion can only be triggered from FormalLevel05.");
+            return;
+        }
+
+        routeComplete = true;
+        SetFormalControlsEnabled(false);
+    }
+
+    public void RestartRoute()
+    {
+        if (operationInProgress)
+            return;
+
+        routeComplete = false;
+        LoadLevelAsync(initialLevelScene, _ => SetFormalControlsEnabled(true));
     }
 
     public void LoadLevel(string sceneName)
@@ -65,7 +94,7 @@ public class FormalGameFlowController : MonoBehaviour
         if (operationInProgress)
             return;
 
-        StartCoroutine(LoadLevelRoutine(sceneName, null));
+        StartCoroutine(LoadLevelRoutine(sceneName, null, true));
     }
 
     public void LoadLevelAsync(string sceneName, Action<bool> completed)
@@ -76,7 +105,7 @@ public class FormalGameFlowController : MonoBehaviour
             return;
         }
 
-        StartCoroutine(LoadLevelRoutine(sceneName, completed));
+        StartCoroutine(LoadLevelRoutine(sceneName, completed, true));
     }
 
     public void UnloadLevel(string sceneName)
@@ -154,7 +183,7 @@ public class FormalGameFlowController : MonoBehaviour
         UnloadLevelAsync(priorScene, null);
     }
 
-    IEnumerator LoadLevelRoutine(string sceneName, Action<bool> completed)
+    IEnumerator LoadLevelRoutine(string sceneName, Action<bool> completed, bool discardPriorLevel)
     {
         FormalRouteEntry target = FindRouteEntryByScene(sceneName);
         if (target == null)
@@ -164,15 +193,18 @@ public class FormalGameFlowController : MonoBehaviour
         }
 
         operationInProgress = true;
+        string predecessorScene = currentLevelScene;
         string priorPendingScene = pendingUnloadScene;
-        yield return LoadSharedArtForEntries(currentLevelScene, pendingUnloadScene, sceneName);
+        yield return LoadSharedArtForEntries(predecessorScene, priorPendingScene, sceneName);
 
         bool alreadyLoaded = SceneManager.GetSceneByName(sceneName).isLoaded;
         if (!alreadyLoaded)
             yield return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
 
         currentLevelScene = sceneName;
-        pendingUnloadScene = null;
+        pendingUnloadScene = discardPriorLevel || predecessorScene == sceneName
+            ? null
+            : predecessorScene;
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentLevelScene));
         PlacePlayersAtLoadedLevelSpawn();
         yield return UnloadIrrelevantLevels(priorPendingScene);
@@ -227,7 +259,7 @@ public class FormalGameFlowController : MonoBehaviour
         foreach (FormalRouteEntry entry in routeCatalog)
         {
             if (entry == null || string.IsNullOrEmpty(entry.sceneName) ||
-                entry.sceneName == currentLevelScene)
+                entry.sceneName == currentLevelScene || entry.sceneName == pendingUnloadScene)
                 continue;
 
             Scene scene = SceneManager.GetSceneByName(entry.sceneName);
@@ -237,7 +269,7 @@ public class FormalGameFlowController : MonoBehaviour
 
         // A new transition replaces any older checkpoint fallback scene.
         if (!string.IsNullOrEmpty(priorPendingScene) &&
-            priorPendingScene != currentLevelScene)
+            priorPendingScene != currentLevelScene && priorPendingScene != pendingUnloadScene)
         {
             Scene priorPending = SceneManager.GetSceneByName(priorPendingScene);
             if (priorPending.isLoaded)
@@ -340,5 +372,26 @@ public class FormalGameFlowController : MonoBehaviour
         FormalLevelController level = FormalLevelActors.FindLevelController(SceneManager.GetSceneByName(currentLevelScene));
         if (level != null)
             level.PlacePlayersAtSpawn();
+    }
+
+    void SetFormalControlsEnabled(bool enabled)
+    {
+        foreach (FormalPlayerControl control in FindObjectsOfType<FormalPlayerControl>())
+            control.enabled = enabled;
+    }
+
+    void OnGUI()
+    {
+        if (!routeComplete)
+            return;
+
+        const float width = 360f;
+        const float height = 180f;
+        Rect panel = new Rect((Screen.width - width) * 0.5f, (Screen.height - height) * 0.5f, width, height);
+        GUI.Box(panel, "Route Complete");
+        GUI.Label(new Rect(panel.x + 24f, panel.y + 42f, width - 48f, 24f), "You reached the end of the formal route.");
+
+        if (GUI.Button(new Rect(panel.x + 90f, panel.y + 105f, 180f, 36f), "Restart Formal Route"))
+            RestartRoute();
     }
 }

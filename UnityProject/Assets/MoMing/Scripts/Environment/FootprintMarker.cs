@@ -23,6 +23,16 @@ public class FootprintMarker : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        if (PlayerManager.Instance != null)
+            return;
+
+        FormalPlayerControl formalControl = FindObjectOfType<FormalPlayerControl>();
+        if (formalControl != null)
+            SetVisible(formalControl.IsDogActive);
+    }
+
     void OnDestroy()
     {
         if (PlayerManager.Instance != null)

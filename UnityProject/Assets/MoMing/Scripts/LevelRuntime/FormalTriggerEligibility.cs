@@ -5,6 +5,7 @@ public enum FormalTriggerRequirement
     EitherPlayer,
     HumanOnly,
     DogOnly,
+    BothPlayers,
     ResettablePhysicsOccupant
 }
 
@@ -21,7 +22,7 @@ public static class FormalTriggerEligibility
         if (requirement == FormalTriggerRequirement.DogOnly)
             return FormalLevelActors.IsDog(other);
 
-        if (requirement == FormalTriggerRequirement.EitherPlayer)
+        if (requirement == FormalTriggerRequirement.EitherPlayer || requirement == FormalTriggerRequirement.BothPlayers)
             return FormalLevelActors.IsPlayer(other);
 
         return other.GetComponentInParent<FormalResettablePhysicsOccupant>() != null;
