@@ -442,6 +442,27 @@ public class FormalTraversalValidationTests
             Assert.IsTrue(collider.isTrigger, $"Mechanism pedal collider {collider.name} must be trigger-only.");
     }
 
+    [Test]
+    public void L01HumanKeyLoadsFormalLevel02Directly()
+    {
+        var keyPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
+            "Assets/MoMing/FormalLevels/Prefabs/L01_HumanKey.prefab");
+        Assert.IsNotNull(keyPrefab, "L01 human key prefab is missing.");
+
+        var key = keyPrefab.GetComponent<FormalHumanKey>();
+        var trigger = keyPrefab.GetComponent<Collider>();
+        var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+        var successorScene = (string)typeof(FormalHumanKey)
+            .GetField("successorScene", flags)
+            .GetValue(key);
+
+        Assert.IsNotNull(key, "L01 human key has no FormalHumanKey behavior.");
+        Assert.IsNotNull(trigger, "L01 human key has no trigger collider.");
+        Assert.IsTrue(trigger.isTrigger, "L01 human key collider must be a trigger.");
+        Assert.AreEqual("FormalLevel02", successorScene,
+            "L01 human key must load FormalLevel02 directly.");
+    }
+
     static T[] FindInScene<T>(Scene scene) where T : Component
     {
         var results = new List<T>();

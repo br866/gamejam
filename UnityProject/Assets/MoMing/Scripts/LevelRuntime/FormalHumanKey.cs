@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class FormalHumanKey : MonoBehaviour, IFormalLevelTemporaryState
 {
-    [SerializeField] private FormalDoor exitDoor;
+    [SerializeField] private string successorScene = "FormalLevel02";
 
     private Vector3 initialPosition;
     private Quaternion initialRotation;
@@ -23,9 +23,11 @@ public class FormalHumanKey : MonoBehaviour, IFormalLevelTemporaryState
             return;
 
         collected = true;
-        if (exitDoor != null)
-            exitDoor.OpenPermanently();
         gameObject.SetActive(false);
+
+        FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
+        if (flow != null)
+            flow.LoadSuccessor(successorScene);
     }
 
     public void ResetTemporaryState()
