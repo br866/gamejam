@@ -1114,59 +1114,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 3.04, y: 5.14, z: 1.36}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1 &506968881
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 506968882}
-  - component: {fileID: 506968883}
-  m_Layer: 0
-  m_Name: Collision_Boundary_West
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &506968882
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 506968881}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 17.75, y: 14, z: -5.1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1733516916}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &506968883
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 506968881}
-  m_Material: {fileID: 13400000, guid: 8d2f6a4b1c7e49a5b0d3f6e829c51742, type: 2}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.5, y: 8, z: 31.6}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &671300266
 GameObject:
   m_ObjectHideFlags: 0
@@ -2007,7 +1954,6 @@ Transform:
   m_Children:
   - {fileID: 1197579791}
   - {fileID: 1939593319}
-  - {fileID: 506968882}
   - {fileID: 1676329466}
   - {fileID: 1740271262}
   - {fileID: 214708641}
