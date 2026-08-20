@@ -45,3 +45,14 @@ The system SHALL remove Collider components from formal-level door-frame and doo
 #### Scenario: Player approaches a formal doorway
 - **WHEN** a player approaches a doorway while its door leaf is open or absent
 - **THEN** the door frame does not create invisible physical blocking and only the `NavDynamic` door leaf can block the opening.
+
+### Requirement: Mechanism detection colliders are trigger-only and Prefab-owned
+The system SHALL represent formal mechanism detection volumes, including pedals, pressure plates, buttons, checkpoints, and exit volumes, with an explicit Prefab-owned Collider whose `isTrigger` value is true. The visual model SHALL not be the source of physical blocking for these mechanisms.
+
+#### Scenario: Player crosses a mechanism device
+- **WHEN** a player actor enters a pedal, pressure plate, button, checkpoint, or exit detection volume
+- **THEN** the mechanism receives its trigger callback without physically stopping the actor.
+
+#### Scenario: A mechanism needs physical blocking
+- **WHEN** a mechanism also represents a solid object that intentionally blocks traversal
+- **THEN** its non-trigger blocking Collider is separate from the trigger detection Collider and the object is classified as a retained physical obstacle rather than a trigger-only mechanism.

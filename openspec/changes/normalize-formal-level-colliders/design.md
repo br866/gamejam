@@ -41,6 +41,18 @@ L01 contains the largest concentration of formal-level MeshColliders. Its audit,
 
 `SuccessorCheckpoint` is the only identified direct rendered formal-scene object. It will be extracted to a Prefab and replaced in `FormalLevel02`, preserving its serialized behavior and references.
 
+### Separate mechanism triggers from physical blockers
+
+Mechanism devices such as pedals, pressure plates, buttons, checkpoints, and exit volumes SHALL be Prefab-owned and SHALL keep their actor-detection Collider separate from any optional physical blocker. The actor-detection Collider is a Trigger and owns the trigger behavior; a mechanism visual model SHALL not receive an implicit solid Collider merely because it is rendered. Objects whose gameplay role is to block traversal, such as crates, door leaves, walls, and movable platforms, retain a separate non-trigger Collider and are not converted to trigger-only devices.
+
+The formal trigger path SHALL prefer `FormalTriggerEligibility` together with `FormalActuatorTrigger` or `FormalOccupancyTrigger` for new mechanism instances. Existing specialized components remain valid where their serialized behavior is already established, but their trigger Collider must still be explicit and must not be supplied by the visual model.
+
+### Deduplicate strictly equivalent Prefab assets through instance replacement
+
+Prefab deduplication SHALL be based on a structural fingerprint, not on names, numeric suffixes, shared mesh names, or asset filename prefixes. The fingerprint includes the complete root and child hierarchy, relative transforms, active state, Layer, Tag, component types, mesh references, Collider settings, and serialized script identity/configuration. Material references are deliberately excluded from identity: different art materials do not prevent Prefab deduplication.
+
+For an eligible duplicate group, one canonical Prefab SHALL be selected and every formal scene or content-Prefab instance referencing another member SHALL be replaced with a new instance of the canonical Prefab. Replacement SHALL preserve the old instance's parent, local Transform, name, active state, Layer, Tag, and supported serialized overrides. Renderer material slots from the old instance SHALL be captured before replacement and reapplied as instance-level material overrides on the canonical Prefab instance. Objects with runtime references, non-identical scripts, or non-identical Collider configuration SHALL remain separate and be recorded for manual review.
+
 ## Risks / Trade-offs
 
 - [A box extends beyond an irregular visual mesh] -> Classify irregular blocking objects as manual review and verify traversable gaps in Scene view and play mode.

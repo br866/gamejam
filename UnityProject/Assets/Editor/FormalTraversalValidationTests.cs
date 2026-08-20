@@ -405,6 +405,43 @@ public class FormalTraversalValidationTests
         EditorSceneManager.CloseScene(scene, false);
     }
 
+    [Test]
+    public void L01MechanismPedalUsesTriggerPrefabAndDoesNotBlock()
+    {
+        const string contentPath = "Assets/MoMing/FormalLevels/Prefabs/L01_Content.prefab";
+        const string pedalPath = "Assets/MoMing/FormalLevels/Prefabs/L01_Mechanism_Pedal.prefab";
+
+        var content = AssetDatabase.LoadAssetAtPath<GameObject>(contentPath);
+        var pedalPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(pedalPath);
+        Assert.IsNotNull(content, "L01 content prefab is missing.");
+        Assert.IsNotNull(pedalPrefab, "L01 mechanism pedal prefab is missing.");
+
+        var contentPedal = FindChild(content.transform, "L01_Mechanism_Pedal");
+        var prefabPedal = FindChild(pedalPrefab.transform, "L01_Mechanism_Pedal");
+        Assert.IsNotNull(contentPedal, "L01 content does not contain the mechanism pedal instance.");
+        Assert.IsNotNull(prefabPedal, "L01 mechanism prefab has no root pedal object.");
+
+        var contentCollider = contentPedal.GetComponent<Collider>();
+        var prefabCollider = prefabPedal.GetComponent<Collider>();
+        Assert.IsNotNull(contentCollider, "L01 content pedal has no detection collider.");
+        Assert.IsNotNull(prefabCollider, "L01 pedal prefab has no detection collider.");
+        Assert.IsTrue(contentCollider.isTrigger, "L01 content pedal detection collider must be a trigger.");
+        Assert.IsTrue(prefabCollider.isTrigger, "L01 pedal prefab detection collider must be a trigger.");
+        Assert.IsNotNull(contentPedal.GetComponent<FormalMechanismPedal>(), "L01 content pedal has no mechanism behavior.");
+        Assert.IsNotNull(prefabPedal.GetComponent<FormalMechanismPedal>(), "L01 pedal prefab has no mechanism behavior.");
+    }
+
+    [Test]
+    public void FormalMechanismPedalPrefabHasNoSolidChildCollider()
+    {
+        var pedalPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
+            "Assets/MoMing/FormalLevels/Prefabs/L01_Mechanism_Pedal.prefab");
+        Assert.IsNotNull(pedalPrefab, "L01 mechanism pedal prefab is missing.");
+
+        foreach (var collider in pedalPrefab.GetComponentsInChildren<Collider>(true))
+            Assert.IsTrue(collider.isTrigger, $"Mechanism pedal collider {collider.name} must be trigger-only.");
+    }
+
     static T[] FindInScene<T>(Scene scene) where T : Component
     {
         var results = new List<T>();
@@ -431,6 +468,17 @@ public class FormalTraversalValidationTests
                 if (transform.name == name)
                     return transform;
             }
+        }
+
+        return null;
+    }
+
+    static Transform FindChild(Transform root, string name)
+    {
+        foreach (var transform in root.GetComponentsInChildren<Transform>(true))
+        {
+            if (transform.name == name)
+                return transform;
         }
 
         return null;

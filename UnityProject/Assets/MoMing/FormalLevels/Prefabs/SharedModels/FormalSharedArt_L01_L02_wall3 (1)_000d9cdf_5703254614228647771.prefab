@@ -11,7 +11,8 @@ GameObject:
   - component: {fileID: 7397592349915313222}
   - component: {fileID: 6558715679173283406}
   - component: {fileID: 3878720060263682784}
-  - component: {fileID: 5281964761991928905}
+  - component: {fileID: 6001272833895719753}
+  - component: {fileID: 9079638837262151848}
   m_Layer: 7
   m_Name: FormalSharedArt_L01_L02_wall3 (1)_000d9cdf_5703254614228647771
   m_TagString: Untagged
@@ -84,14 +85,14 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5281964761991928905
+--- !u!65 &6001272833895719753
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7691054432571994502}
-  m_Material: {fileID: 13400000, guid: 8d2f6a4b1c7e49a5b0d3f6e829c51742, type: 2}
+  m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -103,5 +104,26 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.01, y: 0.0065625, z: 0.00603515}
-  m_Center: {x: 0, y: -0.000019530067, z: 0.000009764801}
+  m_Size: {x: 0.001, y: 0.0065625, z: 0.00603515}
+  m_Center: {x: 0.0045, y: 0, z: 0}
+--- !u!65 &9079638837262151848
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7691054432571994502}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.01, y: 0.001, z: 0.00603515}
+  m_Center: {x: 0, y: 0.0027, z: 0}
