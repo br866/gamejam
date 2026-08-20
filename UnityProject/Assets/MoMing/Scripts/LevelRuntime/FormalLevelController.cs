@@ -22,7 +22,8 @@ public class FormalLevelController : MonoBehaviour
 
     void Start()
     {
-        PlacePlayersAtSpawn();
+        if (FindObjectsOfType<FormalLevelController>().Length == 1)
+            PlacePlayersAtSpawn();
     }
 
     public void PlacePlayersAtSpawn()

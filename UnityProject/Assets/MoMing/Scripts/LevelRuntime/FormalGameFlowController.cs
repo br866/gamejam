@@ -246,7 +246,8 @@ public class FormalGameFlowController : MonoBehaviour
             : predecessorScene;
         successorArrivalConfirmed = false;
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentLevelScene));
-        PlacePlayersAtLoadedLevelSpawn();
+        if (string.IsNullOrEmpty(predecessorScene))
+            PlacePlayersAtLoadedLevelSpawn();
         yield return UnloadIrrelevantLevels(priorPendingScene);
         yield return UnloadUnusedSharedArt();
         operationInProgress = false;
