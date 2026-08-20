@@ -58,6 +58,9 @@
         },
         {
             "m_Id": "15eecff54010447da63464f00e427f3a"
+        },
+        {
+            "m_Id": "3a316a5e977940a48ef8a2e178bb451f"
         }
     ],
     "m_GroupDatas": [],
@@ -72,7 +75,7 @@
             },
             "m_InputSlot": {
                 "m_Node": {
-                    "m_Id": "c7811778244e400ea6c9e9296a812831"
+                    "m_Id": "3a316a5e977940a48ef8a2e178bb451f"
                 },
                 "m_SlotId": 0
             }
@@ -89,6 +92,20 @@
                     "m_Id": "55b98577820140b29810df46119c85f7"
                 },
                 "m_SlotId": 1
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "3a316a5e977940a48ef8a2e178bb451f"
+                },
+                "m_SlotId": 1
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "c7811778244e400ea6c9e9296a812831"
+                },
+                "m_SlotId": 0
             }
         },
         {
@@ -328,6 +345,30 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.DynamicVectorMaterialSlot",
+    "m_ObjectId": "0c7b529942c243319e82b4f8b7f6dbe8",
+    "m_Id": 1,
+    "m_DisplayName": "Out",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Out",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    }
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.SampleTexture2DNode",
     "m_ObjectId": "10e0bad0cf8a4ff5b680f103da7187b9",
     "m_Group": {
@@ -338,9 +379,9 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -612.6666870117188,
-            "y": -18.000001907348634,
-            "width": 209.33334350585938,
+            "x": -734.6666870117188,
+            "y": 200.0,
+            "width": 209.3333740234375,
             "height": 436.0
         }
     },
@@ -543,6 +584,46 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.OneMinusNode",
+    "m_ObjectId": "3a316a5e977940a48ef8a2e178bb451f",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "One Minus",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": -384.6666259765625,
+            "y": 223.99996948242188,
+            "width": 209.33334350585938,
+            "height": 280.00006103515627
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "5a32bbae6bc444428cdfe86741556d8f"
+        },
+        {
+            "m_Id": "0c7b529942c243319e82b4f8b7f6dbe8"
+        }
+    ],
+    "synonyms": [
+        "complement",
+        "invert",
+        "opposite"
+    ],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_DismissedVersion": 0,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    }
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector4MaterialSlot",
     "m_ObjectId": "3b38bde44f7e4e41a3fd3b328bbda18f",
     "m_Id": 0,
@@ -719,6 +800,30 @@
     "m_SupportsLODCrossFade": false,
     "m_CustomEditorGUI": "",
     "m_SupportVFX": false
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.DynamicVectorMaterialSlot",
+    "m_ObjectId": "5a32bbae6bc444428cdfe86741556d8f",
+    "m_Id": 0,
+    "m_DisplayName": "In",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "In",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0,
+        "w": 1.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    }
 }
 
 {
@@ -1802,7 +1907,7 @@
         "m_SerializedTexture": "{\"texture\":{\"fileID\":2800000,\"guid\":\"abdbfcd7a327b694982dea22809c1de2\",\"type\":3}}",
         "m_Guid": ""
     },
-    "m_DefaultType": 0
+    "m_DefaultType": 3
 }
 
 {
