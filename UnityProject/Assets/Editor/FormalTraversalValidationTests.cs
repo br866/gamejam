@@ -265,6 +265,66 @@ public class FormalTraversalValidationTests
         }
     }
 
+    [Test]
+    public void CooperativeRailMoverRequiresBothActorsAndClampsTravel()
+    {
+        var moverObject = new GameObject("Mover");
+        moverObject.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+        moverObject.AddComponent<BoxCollider>();
+        moverObject.AddComponent<Rigidbody>();
+        var mover = moverObject.AddComponent<FormalCooperativeRailMover>();
+        var rightHumanPoint = CreatePoint(moverObject.transform, "RightHumanPoint", Vector3.right);
+        var leftHumanPoint = CreatePoint(moverObject.transform, "LeftHumanPoint", Vector3.left);
+        var frontHumanPoint = CreatePoint(moverObject.transform, "FrontHumanPoint", Vector3.forward);
+        var backHumanPoint = CreatePoint(moverObject.transform, "BackHumanPoint", Vector3.back);
+
+        var human = CreateFormalActor("Human", FormalPlayerActor.ActorRole.Human, leftHumanPoint.position);
+        var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+        var groups = new[]
+        {
+            new FormalCooperativeRailMover.DirectionPointGroup { humanPoint = rightHumanPoint },
+            new FormalCooperativeRailMover.DirectionPointGroup { humanPoint = leftHumanPoint },
+            new FormalCooperativeRailMover.DirectionPointGroup { humanPoint = frontHumanPoint },
+            new FormalCooperativeRailMover.DirectionPointGroup { humanPoint = backHumanPoint }
+        };
+        typeof(FormalCooperativeRailMover).GetField("directionGroups", flags).SetValue(mover, groups);
+        typeof(FormalCooperativeRailMover).GetField("maximumTravel", flags).SetValue(mover, 1f);
+        typeof(FormalCooperativeRailMover).GetMethod("Awake", flags).Invoke(mover, null);
+
+        Assert.IsTrue(mover.TryEngage(human));
+        mover.Move(Vector3.right);
+        Assert.Greater(moverObject.transform.position.x, 0f);
+
+        for (int i = 0; i < 100; i++)
+            mover.Move(Vector3.right);
+        Assert.LessOrEqual(moverObject.transform.position.x, 1.001f);
+        Assert.AreEqual(0f, moverObject.transform.position.z, 0.001f);
+
+        mover.Cancel();
+        Assert.IsFalse(mover.IsEngaged);
+        mover.ResetTemporaryState();
+        moverObject.GetComponent<Rigidbody>().position = Vector3.zero;
+        moverObject.GetComponent<Rigidbody>().rotation = Quaternion.identity;
+        moverObject.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+        Physics.SyncTransforms();
+        Assert.AreEqual(Vector3.zero, moverObject.GetComponent<Rigidbody>().position);
+
+        human.SetPosition(frontHumanPoint.position);
+        Physics.SyncTransforms();
+        Assert.IsTrue(mover.TryEngage(human));
+        for (int i = 0; i < 100; i++)
+            mover.Move(Vector3.forward);
+        Assert.LessOrEqual(moverObject.transform.position.z, 1.001f);
+        Assert.AreEqual(0f, moverObject.transform.position.x, 0.001f);
+
+        Object.DestroyImmediate(rightHumanPoint.gameObject);
+        Object.DestroyImmediate(leftHumanPoint.gameObject);
+        Object.DestroyImmediate(frontHumanPoint.gameObject);
+        Object.DestroyImmediate(backHumanPoint.gameObject);
+        Object.DestroyImmediate(human.gameObject);
+        Object.DestroyImmediate(moverObject);
+    }
+
     [TestCase("Assets/MoMing/FormalLevels/FormalLevel01.unity")]
     [TestCase("Assets/MoMing/FormalLevels/FormalLevel02.unity")]
     public void EntranceAndCheckpointAnchorsAreSupported(string scenePath)
@@ -347,6 +407,15 @@ public class FormalTraversalValidationTests
         return results.ToArray();
     }
 
+    static Transform CreatePoint(Transform parent, string name, Vector3 position)
+    {
+        var point = new GameObject(name).transform;
+        point.SetParent(parent);
+        point.localPosition = position;
+        return point;
+    }
+
+
     static Transform FindTransform(Scene scene, string name)
     {
         foreach (GameObject root in scene.GetRootGameObjects())
@@ -365,5 +434,14 @@ public class FormalTraversalValidationTests
     {
         var field = typeof(FormalLevelController).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
         return field != null ? field.GetValue(controller) as Transform : null;
+    }
+
+    static FormalPlayerActor CreateFormalActor(string name, FormalPlayerActor.ActorRole role, Vector3 position)
+    {
+        var actor = new GameObject(name).AddComponent<FormalPlayerActor>();
+        actor.transform.position = position;
+        typeof(FormalPlayerActor).GetField("role", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(actor, role);
+        typeof(FormalPlayerActor).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(actor, null);
+        return actor;
     }
 }

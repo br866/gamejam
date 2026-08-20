@@ -4,19 +4,22 @@ using UnityEngine;
 public class FormalPlayerActor : MonoBehaviour
 {
     public enum ActorRole { Human, Dog }
-    public enum ActorState { Idle, Walking, Sprinting, Jumping, Linked, Pushing }
+    public enum ActorState { Idle, Walking, Sprinting, Jumping, Linked, Pushing, Pulling }
 
     [SerializeField] private ActorRole role;
     [SerializeField] private float walkSpeed = 4f;
     [SerializeField] private float sprintSpeed = 7f;
     [SerializeField] private float turnSpeed = 12f;
-    [SerializeField] private float jumpHeight = 1.5f;
+    [SerializeField] private float jumpHeight = 2.2f;
 
     private Rigidbody body;
     private CapsuleCollider capsule;
     private Animator animator;
     private ActorState state;
     private bool animationInitialized;
+    private bool moverRotationLocked;
+    private Quaternion moverRotation;
+    private RigidbodyConstraints constraintsBeforeMoverLock;
     private float nextIdleVariationTime;
     private bool idleVariation;
 
@@ -39,6 +42,7 @@ public class FormalPlayerActor : MonoBehaviour
             animator = GetComponentInChildren<Animator>();
             if (animator != null)
             {
+                animator.applyRootMotion = false;
                 animationInitialized = true;
                 PlayAnimationForState();
             }
@@ -56,6 +60,9 @@ public class FormalPlayerActor : MonoBehaviour
 
     public void Move(Vector3 direction, bool sprint)
     {
+        if (moverRotationLocked)
+            return;
+
         float speed = sprint && role == ActorRole.Dog ? sprintSpeed : walkSpeed;
         body.velocity = new Vector3(direction.x * speed, body.velocity.y, direction.z * speed);
         SetState(!IsGrounded()
@@ -64,7 +71,7 @@ public class FormalPlayerActor : MonoBehaviour
                 ? sprint && role == ActorRole.Dog ? ActorState.Sprinting : ActorState.Walking
                 : ActorState.Idle);
 
-        if (direction.sqrMagnitude > 0.01f)
+        if (direction.sqrMagnitude > 0.01f && !moverRotationLocked)
             body.MoveRotation(Quaternion.Slerp(body.rotation, Quaternion.LookRotation(direction), turnSpeed * Time.fixedDeltaTime));
     }
 
@@ -94,6 +101,43 @@ public class FormalPlayerActor : MonoBehaviour
         SetState(isPushing ? ActorState.Pushing : ActorState.Idle);
     }
 
+    public void SetMoverInteraction(bool pushing, Vector3 moverPosition)
+    {
+        LockMoverInteraction(moverPosition);
+        SetState(pushing ? ActorState.Pushing : ActorState.Pulling);
+    }
+
+    public void SetMoverIdle()
+    {
+        if (moverRotationLocked)
+            SetState(ActorState.Idle);
+    }
+
+    public void LockMoverInteraction(Vector3 moverPosition)
+    {
+        Vector3 lookDirection = moverPosition - transform.position;
+        lookDirection.y = 0f;
+        if (lookDirection.sqrMagnitude > 0.01f)
+        {
+            moverRotation = Quaternion.LookRotation(lookDirection);
+            if (!moverRotationLocked)
+            {
+                moverRotationLocked = true;
+                constraintsBeforeMoverLock = body.constraints;
+                body.constraints = RigidbodyConstraints.FreezeAll;
+            }
+            body.rotation = moverRotation;
+            transform.rotation = moverRotation;
+        }
+    }
+
+    public void ReleaseMoverInteraction()
+    {
+        if (moverRotationLocked)
+            body.constraints = constraintsBeforeMoverLock;
+        moverRotationLocked = false;
+    }
+
     void SetState(ActorState nextState)
     {
         if (state == nextState)
@@ -106,16 +150,39 @@ public class FormalPlayerActor : MonoBehaviour
 
     void PlayAnimationForState()
     {
-        if (!animationInitialized || animator == null || role != ActorRole.Human)
+        if (!animationInitialized || animator == null)
             return;
 
         string stateName = state == ActorState.Jumping ? "Jump" :
-            state == ActorState.Pushing ? "PushBack" :
+            state == ActorState.Pushing ? "Push" :
+            state == ActorState.Pulling ? "Pull" :
             state == ActorState.Linked ? "Walk" :
             state == ActorState.Walking || state == ActorState.Sprinting ? "Walk" :
             idleVariation ? "Idle2" : "Idle1";
         float blendTime = state == ActorState.Jumping ? 0.08f : 0.15f;
-        animator.CrossFadeInFixedTime(stateName, blendTime, 0, 0f);
+        string resolvedState = ResolveAnimationState(stateName);
+        if (resolvedState == null)
+        {
+            Debug.LogWarning("[FormalPlayerActor] " + name + " missing animation state " + stateName);
+            return;
+        }
+
+        animator.CrossFadeInFixedTime(resolvedState, blendTime, 0, 0f);
+        Debug.Log("[FormalPlayerActor] " + name + " play animation " + resolvedState + " for " + state);
+    }
+
+    bool HasAnimationState(string stateName)
+    {
+        return ResolveAnimationState(stateName) != null;
+    }
+
+    string ResolveAnimationState(string stateName)
+    {
+        if (animator.HasState(0, Animator.StringToHash(stateName)))
+            return stateName;
+
+        string fullName = "Base Layer." + stateName;
+        return animator.HasState(0, Animator.StringToHash(fullName)) ? fullName : null;
     }
 
     void ApplyAnimationState()
@@ -149,6 +216,12 @@ public class FormalPlayerActor : MonoBehaviour
     public void SetPosition(Vector3 position)
     {
         body.position = position;
+        if (moverRotationLocked)
+        {
+            body.rotation = moverRotation;
+            transform.rotation = moverRotation;
+        }
+        Physics.SyncTransforms();
         body.velocity = Vector3.zero;
         body.angularVelocity = Vector3.zero;
     }

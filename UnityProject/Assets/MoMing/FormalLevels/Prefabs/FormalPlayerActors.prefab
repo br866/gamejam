@@ -101,6 +101,7 @@ MonoBehaviour:
   walkSpeed: 4
   sprintSpeed: 7
   turnSpeed: 12
+  jumpHeight: 2.2
 --- !u!114 &6413983776683320286
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -113,8 +114,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4773447bb83645a4f87ce7a9db2b214f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  range: 1.5
-  force: 18
 --- !u!1 &8158345382601080219
 GameObject:
   m_ObjectHideFlags: 0
@@ -185,6 +184,8 @@ MonoBehaviour:
     type: 3}
   humanVisualScale: 1.5
   dogVisualScale: 1.5
+  humanVisualOffset: {x: 0, y: 0, z: 0}
+  dogVisualOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &1782578789361906537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,8 +200,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   human: {fileID: 760469862906547505}
   dog: {fileID: 84737074289029913}
-  linkRequireRadius: 3
-  linkedDogOffset: {x: 1.5, y: 0, z: 0}
 --- !u!1 &8420114696259409746
 GameObject:
   m_ObjectHideFlags: 0
@@ -301,3 +300,4 @@ MonoBehaviour:
   walkSpeed: 4
   sprintSpeed: 7
   turnSpeed: 12
+  jumpHeight: 1.5
