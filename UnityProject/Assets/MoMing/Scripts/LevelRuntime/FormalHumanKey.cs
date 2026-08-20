@@ -27,7 +27,10 @@ public class FormalHumanKey : MonoBehaviour, IFormalLevelTemporaryState
 
         FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
         if (flow != null)
+        {
+            flow.OpenTransitionDoor("FormalLevel01", successorScene);
             flow.LoadSuccessor(successorScene);
+        }
     }
 
     public void ResetTemporaryState()

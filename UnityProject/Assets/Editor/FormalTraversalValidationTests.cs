@@ -463,6 +463,30 @@ public class FormalTraversalValidationTests
             "L01 human key must load FormalLevel02 directly.");
     }
 
+    [Test]
+    public void FormalFlowKeepsPredecessorPendingUntilRestart()
+    {
+        var flowObject = new GameObject("Flow");
+        var flow = flowObject.AddComponent<FormalGameFlowController>();
+        var pendingField = typeof(FormalGameFlowController)
+            .GetField("pendingUnloadScene", BindingFlags.Instance | BindingFlags.NonPublic);
+        var confirmedField = typeof(FormalGameFlowController)
+            .GetField("successorArrivalConfirmed", BindingFlags.Instance | BindingFlags.NonPublic);
+        var currentField = typeof(FormalGameFlowController)
+            .GetField("currentLevelScene", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        pendingField.SetValue(flow, "FormalLevel01");
+        currentField.SetValue(flow, "FormalLevel02");
+        typeof(FormalGameFlowController)
+            .GetMethod("NotifySuccessorCheckpointActivated", BindingFlags.Instance | BindingFlags.Public)
+            .Invoke(flow, new object[] { "FormalLevel02" });
+
+        Assert.AreEqual("FormalLevel01", pendingField.GetValue(flow));
+        Assert.IsTrue((bool)confirmedField.GetValue(flow));
+
+        Object.DestroyImmediate(flowObject);
+    }
+
     static T[] FindInScene<T>(Scene scene) where T : Component
     {
         var results = new List<T>();

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -28,10 +29,12 @@ public class FormalGameFlowController : MonoBehaviour
     private string pendingUnloadScene;
     private bool operationInProgress;
     private bool routeComplete;
+    private bool successorArrivalConfirmed;
 
     public string CurrentLevelScene => currentLevelScene;
     public IReadOnlyList<FormalRouteEntry> RouteCatalog => routeCatalog;
     public bool IsRouteComplete => routeComplete;
+    public bool SuccessorArrivalConfirmed => successorArrivalConfirmed;
 
     void Awake()
     {
@@ -153,9 +156,25 @@ public class FormalGameFlowController : MonoBehaviour
         if (string.IsNullOrEmpty(currentLevelScene))
             return;
 
+        if (!string.IsNullOrEmpty(pendingUnloadScene))
+        {
+            if (!operationInProgress)
+                StartCoroutine(RestartCurrentLevelRoutine());
+            return;
+        }
+
         FormalLevelController level = FormalLevelActors.FindLevelController(SceneManager.GetSceneByName(currentLevelScene));
         if (level != null)
             level.ResetLevel();
+    }
+
+    public void OpenTransitionDoor(string fromScene, string toScene)
+    {
+        FormalDoor door = FindTransitionDoor(fromScene, toScene);
+        if (door != null)
+            door.OpenPermanently();
+        else
+            Debug.LogWarning($"No shared transition door found from {fromScene} to {toScene}.");
     }
 
     public void OpenDoorsInCurrentLevelScope()
@@ -178,9 +197,29 @@ public class FormalGameFlowController : MonoBehaviour
         if (sceneName != currentLevelScene || string.IsNullOrEmpty(pendingUnloadScene))
             return;
 
-        string priorScene = pendingUnloadScene;
+        successorArrivalConfirmed = true;
+    }
+
+    IEnumerator RestartCurrentLevelRoutine()
+    {
+        operationInProgress = true;
+        string predecessorScene = pendingUnloadScene;
+        FormalDoor door = FindTransitionDoor(predecessorScene, currentLevelScene);
+        if (door != null)
+            door.SetClosedImmediate();
+
+        Scene predecessor = SceneManager.GetSceneByName(predecessorScene);
+        if (predecessor.isLoaded)
+            yield return SceneManager.UnloadSceneAsync(predecessor);
+
         pendingUnloadScene = null;
-        UnloadLevelAsync(priorScene, null);
+        successorArrivalConfirmed = false;
+        FormalLevelController level = FormalLevelActors.FindLevelController(SceneManager.GetSceneByName(currentLevelScene));
+        if (level != null)
+            level.ResetLevel();
+
+        yield return UnloadUnusedSharedArt();
+        operationInProgress = false;
     }
 
     IEnumerator LoadLevelRoutine(string sceneName, Action<bool> completed, bool discardPriorLevel)
@@ -205,6 +244,7 @@ public class FormalGameFlowController : MonoBehaviour
         pendingUnloadScene = discardPriorLevel || predecessorScene == sceneName
             ? null
             : predecessorScene;
+        successorArrivalConfirmed = false;
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentLevelScene));
         PlacePlayersAtLoadedLevelSpawn();
         yield return UnloadIrrelevantLevels(priorPendingScene);
@@ -311,6 +351,44 @@ public class FormalGameFlowController : MonoBehaviour
             if (sharedScene.IsValid())
                 yield return sharedScene;
         }
+    }
+
+    FormalDoor FindTransitionDoor(string fromScene, string toScene)
+    {
+        FormalRouteEntry from = FindRouteEntryByScene(fromScene);
+        FormalRouteEntry to = FindRouteEntryByScene(toScene);
+        if (from == null || to == null || from.sharedArtScenes == null || to.sharedArtScenes == null)
+            return null;
+
+        HashSet<string> sharedScenes = new HashSet<string>(from.sharedArtScenes);
+        sharedScenes.IntersectWith(to.sharedArtScenes);
+        FieldInfo successorField = typeof(FormalLevelExit).GetField(
+            "successorScene", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        foreach (string sharedSceneName in sharedScenes)
+        {
+            Scene sharedScene = SceneManager.GetSceneByName(sharedSceneName);
+            if (!sharedScene.isLoaded)
+                continue;
+
+            foreach (GameObject root in sharedScene.GetRootGameObjects())
+            {
+                foreach (FormalLevelExit exit in root.GetComponentsInChildren<FormalLevelExit>(true))
+                {
+                    string successor = successorField != null
+                        ? successorField.GetValue(exit) as string
+                        : null;
+                    if (successor != toScene)
+                        continue;
+
+                    FormalDoor door = exit.GetComponent<FormalDoor>();
+                    if (door != null)
+                        return door;
+                }
+            }
+        }
+
+        return null;
     }
 
     static void AddSharedScenes(HashSet<string> result, FormalRouteEntry entry)
