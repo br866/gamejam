@@ -10,14 +10,13 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
     }
 
     [SerializeField] private DirectionPointGroup[] directionGroups = new DirectionPointGroup[4];
-    [SerializeField] private float minimumTravel = -2.5f;
-    [SerializeField] private float maximumTravel = 4f;
     [SerializeField] private float movementSpeed = 2f;
     [SerializeField] private float interactionRange = 2.5f;
     [SerializeField] private float sideTolerance = 0.55f;
 
     private Rigidbody body;
     private Vector3 initialPosition;
+    private Vector3 movementOrigin;
     private Quaternion initialRotation;
     private float travel;
     private FormalPlayerActor human;
@@ -31,47 +30,56 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
     {
         body = GetComponent<Rigidbody>();
         initialPosition = transform.position;
+        movementOrigin = initialPosition;
         initialRotation = transform.rotation;
         body.isKinematic = false;
         body.velocity = Vector3.zero;
         body.angularVelocity = Vector3.zero;
         body.isKinematic = true;
+        body.interpolation = RigidbodyInterpolation.None;
 
         FormalLevelController level = FormalLevelActors.FindLevelController(gameObject.scene);
         if (level != null)
             level.RegisterTemporaryState(this);
     }
 
-    void FixedUpdate()
-    {
-        KeepAttachedActorsAtNodes();
-    }
-
-    void LateUpdate()
-    {
-        // Animation is evaluated after physics; restore the authored point before rendering.
-        KeepAttachedActorsAtNodes();
-    }
-
     public bool TryEngage(FormalPlayerActor actor)
     {
         if (actor == null || IsAttached(actor))
+        {
+            Debug.LogWarning($"[FormalCooperativeRailMover] F engage rejected: actor={(actor != null ? actor.name : "null")}, alreadyAttached={IsAttached(actor)}");
             return false;
+        }
 
         int group = FindMatchingGroup(actor);
-        if (group < 0 || !CanUseGroup(actor, group))
+        if (group < 0)
+        {
+            Debug.LogWarning($"[FormalCooperativeRailMover] F engage rejected: actor={actor.name}, actorPosition={actor.transform.position}, cratePosition={transform.position}, no matching interaction point within range={interactionRange:F2}");
             return false;
+        }
+
+        if (!CanUseGroup(actor, group))
+        {
+            Debug.LogWarning($"[FormalCooperativeRailMover] F engage rejected: actor={actor.name}, group={group}, role={actor.Role}, group unavailable");
+            return false;
+        }
 
         if (actor.Role != FormalPlayerActor.ActorRole.Human)
+        {
+            Debug.LogWarning($"[FormalCooperativeRailMover] F engage rejected: actor={actor.name}, role={actor.Role}; only Human can attach");
             return false;
+        }
 
         human = actor;
         humanGroup = group;
         movementAxis = humanGroup < 2 ? 0 : 1;
+        movementOrigin = transform.position;
+        travel = 0f;
 
         IgnoreMoverCollision(actor, true);
         actor.LockMoverInteraction(transform.position);
         KeepAttachedActorsAtNodes();
+        Debug.Log($"[FormalCooperativeRailMover] F engage succeeded: actor={actor.name}, group={humanGroup}, movementAxis={(movementAxis == 0 ? "X" : "Z")}, origin={movementOrigin}");
         return true;
     }
 
@@ -105,9 +113,8 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
 
         direction = Mathf.Sign(direction);
 
-        travel = Mathf.Clamp(travel + direction * movementSpeed * Time.fixedDeltaTime, minimumTravel, maximumTravel);
-        Vector3 targetPosition = initialPosition + axis * travel;
-        body.position = targetPosition;
+        travel += direction * movementSpeed * Time.fixedDeltaTime;
+        Vector3 targetPosition = movementOrigin + axis * travel;
         transform.position = targetPosition;
         Physics.SyncTransforms();
         KeepAttachedActorsAtNodes();
@@ -123,7 +130,7 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
     public void SetAttachedPullAnimation()
     {
         if (human != null)
-            human.SetMoverInteraction(false, transform.position);
+            human.SetMoverIdle();
     }
 
     public void SetAttachedIdleAnimation()
@@ -149,6 +156,7 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
     {
         Cancel();
         travel = 0f;
+        movementOrigin = initialPosition;
         body.position = initialPosition;
         body.rotation = initialRotation;
         transform.SetPositionAndRotation(initialPosition, initialRotation);
@@ -193,8 +201,8 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
     {
         Vector3 actorOffset = actor.transform.position - transform.position;
         actorOffset.y = 0f;
-        if (actorOffset.sqrMagnitude < 0.01f)
-            return -1;
+
+        Debug.Log($"[FormalCooperativeRailMover] F matching start: actorOffset={actorOffset}, actorFlatDistance={actorOffset.magnitude:F3}, sideTolerance={sideTolerance:F3}, interactionRange={interactionRange:F3}");
 
         int bestGroup = -1;
         float bestDot = -1f;
@@ -202,14 +210,25 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
         {
             DirectionPointGroup points = GetGroup(group);
             if (points == null)
+            {
+                Debug.Log($"[FormalCooperativeRailMover] F matching group={group}: group=null");
                 continue;
+            }
 
             Vector3 groupOffset = GetGroupCenter(points) - transform.position;
             groupOffset.y = 0f;
             if (groupOffset.sqrMagnitude < 0.01f)
+            {
+                Debug.Log($"[FormalCooperativeRailMover] F matching group={group}: centerOffset={groupOffset}, invalid center direction");
                 continue;
+            }
 
-            float dot = Vector3.Dot(actorOffset.normalized, groupOffset.normalized);
+            float dot = actorOffset.sqrMagnitude < 0.01f
+                ? 1f
+                : Vector3.Dot(actorOffset.normalized, groupOffset.normalized);
+            Vector3 pointPosition = GetGroupPoint(group, actor.Role);
+            float pointDistance = FlatDistance(actor.transform.position, pointPosition);
+            Debug.Log($"[FormalCooperativeRailMover] F matching group={group}: point={pointPosition}, centerOffset={groupOffset}, pointDistance={pointDistance:F3}, dot={dot:F3}, sidePass={dot >= sideTolerance}, rangePass={pointDistance <= interactionRange}");
             if (dot > bestDot)
             {
                 bestDot = dot;
@@ -218,11 +237,16 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
         }
 
         if (bestGroup < 0 || bestDot < sideTolerance)
+        {
+            Debug.Log($"[FormalCooperativeRailMover] F matching rejected by side: bestGroup={bestGroup}, bestDot={bestDot:F3}, sideTolerance={sideTolerance:F3}");
             return -1;
+        }
 
-        return FlatDistance(actor.transform.position, GetGroupPoint(bestGroup, actor.Role)) <= interactionRange
-            ? bestGroup
-            : -1;
+        Vector3 bestPoint = GetGroupPoint(bestGroup, actor.Role);
+        float bestDistance = FlatDistance(actor.transform.position, bestPoint);
+        bool inRange = bestDistance <= interactionRange;
+        Debug.Log($"[FormalCooperativeRailMover] F matching selected: group={bestGroup}, point={bestPoint}, distance={bestDistance:F3}, range={interactionRange:F3}, inRange={inRange}");
+        return inRange ? bestGroup : -1;
     }
 
     bool CanUseGroup(FormalPlayerActor actor, int group)
@@ -235,7 +259,12 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
     void UpdateAttachedAnimations(bool pushing)
     {
         if (human != null)
-            human.SetMoverInteraction(pushing, transform.position);
+        {
+            if (pushing)
+                human.SetMoverInteraction(true, transform.position);
+            else
+                human.SetMoverIdle();
+        }
     }
 
     Vector3 GetMovementAxis()

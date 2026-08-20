@@ -124,7 +124,7 @@ public class FormalPlayerActor : MonoBehaviour
             {
                 moverRotationLocked = true;
                 constraintsBeforeMoverLock = body.constraints;
-                body.constraints = RigidbodyConstraints.FreezeAll;
+                body.constraints = RigidbodyConstraints.FreezeRotation;
             }
             body.rotation = moverRotation;
             transform.rotation = moverRotation;
@@ -168,7 +168,7 @@ public class FormalPlayerActor : MonoBehaviour
         }
 
         animator.CrossFadeInFixedTime(resolvedState, blendTime, 0, 0f);
-        Debug.Log("[FormalPlayerActor] " + name + " play animation " + resolvedState + " for " + state);
+        //Debug.Log("[FormalPlayerActor] " + name + " play animation " + resolvedState + " for " + state);
     }
 
     bool HasAnimationState(string stateName)
@@ -221,8 +221,8 @@ public class FormalPlayerActor : MonoBehaviour
             body.rotation = moverRotation;
             transform.rotation = moverRotation;
         }
-        Physics.SyncTransforms();
         body.velocity = Vector3.zero;
         body.angularVelocity = Vector3.zero;
+        Physics.SyncTransforms();
     }
 }

@@ -266,8 +266,10 @@ public class FormalTraversalValidationTests
     }
 
     [Test]
-    public void CooperativeRailMoverRequiresBothActorsAndClampsTravel()
+    public void CooperativeRailMoverAllowsHumanOnlyUnlimitedTravel()
     {
+        float originalFixedDeltaTime = Time.fixedDeltaTime;
+        Time.fixedDeltaTime = 0.02f;
         var moverObject = new GameObject("Mover");
         moverObject.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
         moverObject.AddComponent<BoxCollider>();
@@ -288,34 +290,37 @@ public class FormalTraversalValidationTests
             new FormalCooperativeRailMover.DirectionPointGroup { humanPoint = backHumanPoint }
         };
         typeof(FormalCooperativeRailMover).GetField("directionGroups", flags).SetValue(mover, groups);
-        typeof(FormalCooperativeRailMover).GetField("maximumTravel", flags).SetValue(mover, 1f);
         typeof(FormalCooperativeRailMover).GetMethod("Awake", flags).Invoke(mover, null);
-
         Assert.IsTrue(mover.TryEngage(human));
         mover.Move(Vector3.right);
-        Assert.Greater(moverObject.transform.position.x, 0f);
+        var travelField = typeof(FormalCooperativeRailMover).GetField("travel", flags);
+        Assert.Greater((float)travelField.GetValue(mover), 0f);
 
         for (int i = 0; i < 100; i++)
             mover.Move(Vector3.right);
-        Assert.LessOrEqual(moverObject.transform.position.x, 1.001f);
-        Assert.AreEqual(0f, moverObject.transform.position.z, 0.001f);
+        Assert.Greater((float)travelField.GetValue(mover), 1.001f);
+
+        mover.SetAttachedPullAnimation();
+        Assert.AreEqual(FormalPlayerActor.ActorState.Idle, human.State);
+
+        float travelBeforeBackwardMove = (float)travelField.GetValue(mover);
+        mover.Move(Vector3.left, false);
+        Assert.Less((float)travelField.GetValue(mover), travelBeforeBackwardMove);
+        Assert.AreEqual(FormalPlayerActor.ActorState.Idle, human.State);
 
         mover.Cancel();
         Assert.IsFalse(mover.IsEngaged);
         mover.ResetTemporaryState();
-        moverObject.GetComponent<Rigidbody>().position = Vector3.zero;
-        moverObject.GetComponent<Rigidbody>().rotation = Quaternion.identity;
-        moverObject.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-        Physics.SyncTransforms();
-        Assert.AreEqual(Vector3.zero, moverObject.GetComponent<Rigidbody>().position);
 
         human.SetPosition(frontHumanPoint.position);
         Physics.SyncTransforms();
         Assert.IsTrue(mover.TryEngage(human));
-        for (int i = 0; i < 100; i++)
-            mover.Move(Vector3.forward);
-        Assert.LessOrEqual(moverObject.transform.position.z, 1.001f);
-        Assert.AreEqual(0f, moverObject.transform.position.x, 0.001f);
+        var originField = typeof(FormalCooperativeRailMover).GetField("movementOrigin", flags);
+        Assert.AreEqual(0f, (float)travelField.GetValue(mover), 0.001f);
+        Assert.AreEqual(moverObject.transform.position, (Vector3)originField.GetValue(mover));
+        mover.Move(Vector3.forward);
+        Assert.Greater((float)travelField.GetValue(mover), 0f);
+        mover.Cancel();
 
         Object.DestroyImmediate(rightHumanPoint.gameObject);
         Object.DestroyImmediate(leftHumanPoint.gameObject);
@@ -323,6 +328,7 @@ public class FormalTraversalValidationTests
         Object.DestroyImmediate(backHumanPoint.gameObject);
         Object.DestroyImmediate(human.gameObject);
         Object.DestroyImmediate(moverObject);
+        Time.fixedDeltaTime = originalFixedDeltaTime;
     }
 
     [TestCase("Assets/MoMing/FormalLevels/FormalLevel01.unity")]

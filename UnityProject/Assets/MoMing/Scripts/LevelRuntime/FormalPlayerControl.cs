@@ -37,7 +37,10 @@ public class FormalPlayerControl : MonoBehaviour
         }
 
         if (Input.GetKeyDown(KeyCode.F))
+        {
+            Debug.Log($"[FormalPlayerControl] F pressed: activeActor={(activeActor != null ? activeActor.name : "null")}, position={(activeActor != null ? activeActor.transform.position.ToString() : "null")}");
             ToggleMoverEngagement();
+        }
 
         if (Input.GetKeyDown(KeyCode.Space) && !IsMoverEngaged())
             activeActor.Jump();
@@ -73,21 +76,29 @@ public class FormalPlayerControl : MonoBehaviour
 
     void ToggleMoverEngagement()
     {
+        int moverCount = 0;
         foreach (FormalCooperativeRailMover mover in FindObjectsOfType<FormalCooperativeRailMover>())
         {
+            moverCount++;
             if (mover.IsAttached(activeActor))
             {
                 mover.Cancel();
+                Debug.Log($"[FormalPlayerControl] F released mover: {mover.name}");
                 return;
             }
 
             if (mover.TryEngage(activeActor))
+            {
+                Debug.Log($"[FormalPlayerControl] F attached mover: {mover.name}");
                 return;
+            }
 
             // A stale single-actor engagement should never block a fresh F interaction.
             if (!mover.IsEngaged)
                 mover.Cancel();
         }
+
+        Debug.LogWarning($"[FormalPlayerControl] F attach failed: moverCount={moverCount}, activeActor={(activeActor != null ? activeActor.name : "null")}, activeActorRole={(activeActor != null ? activeActor.Role.ToString() : "null")}");
     }
 
     Vector3 CameraRelativeDirection(Vector3 input)
