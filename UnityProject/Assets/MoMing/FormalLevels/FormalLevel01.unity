@@ -1444,7 +1444,7 @@ PrefabInstance:
         type: 3}
       propertyPath: exitDoor
       value: 
-      objectReference: {fileID: 1586114676}
+      objectReference: {fileID: 0}
     - target: {fileID: 3819947220973119726, guid: aefb826dae2d6d04f855265045731d94,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1594,7 +1594,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1682145804}
-  - {fileID: 1586114677}
   - {fileID: 46720783}
   - {fileID: 959879585}
   - {fileID: 742999177}
@@ -1785,92 +1784,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1586114675
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1154122515}
-    m_Modifications:
-    - target: {fileID: 8284044289964596036, guid: 0389ec6bbf7192c40a8dcb0c9554c652,
-        type: 3}
-      propertyPath: m_Name
-      value: L01_ExitDoor_ToLevel02
-      objectReference: {fileID: 0}
-    - target: {fileID: 8762170693179902065, guid: 0389ec6bbf7192c40a8dcb0c9554c652,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 20.121754
-      objectReference: {fileID: 0}
-    - target: {fileID: 8762170693179902065, guid: 0389ec6bbf7192c40a8dcb0c9554c652,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 13.460075
-      objectReference: {fileID: 0}
-    - target: {fileID: 8762170693179902065, guid: 0389ec6bbf7192c40a8dcb0c9554c652,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -6.04961
-      objectReference: {fileID: 0}
-    - target: {fileID: 8762170693179902065, guid: 0389ec6bbf7192c40a8dcb0c9554c652,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 8762170693179902065, guid: 0389ec6bbf7192c40a8dcb0c9554c652,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8762170693179902065, guid: 0389ec6bbf7192c40a8dcb0c9554c652,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 8762170693179902065, guid: 0389ec6bbf7192c40a8dcb0c9554c652,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8762170693179902065, guid: 0389ec6bbf7192c40a8dcb0c9554c652,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8762170693179902065, guid: 0389ec6bbf7192c40a8dcb0c9554c652,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 90
-      objectReference: {fileID: 0}
-    - target: {fileID: 8762170693179902065, guid: 0389ec6bbf7192c40a8dcb0c9554c652,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 0389ec6bbf7192c40a8dcb0c9554c652, type: 3}
---- !u!114 &1586114676 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2742936238726105418, guid: 0389ec6bbf7192c40a8dcb0c9554c652,
-    type: 3}
-  m_PrefabInstance: {fileID: 1586114675}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ececac01d06cb047842eb48d2af8a28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &1586114677 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8762170693179902065, guid: 0389ec6bbf7192c40a8dcb0c9554c652,
-    type: 3}
-  m_PrefabInstance: {fileID: 1586114675}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1622436310
 GameObject:
   m_ObjectHideFlags: 0
@@ -2354,12 +2267,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 213b3c8344498f94981e762a2d0aae04, type: 3}
-  m_Name: ""
-  m_EditorClassIdentifier: ""
+  m_Name: 
+  m_EditorClassIdentifier: 
   level: {fileID: 1573916568}
-  successorScene: ""
+  successorScene: 
   humanRespawnAnchor: {fileID: 808553672}
   dogRespawnAnchor: {fileID: 671300267}
+  prerequisites: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
