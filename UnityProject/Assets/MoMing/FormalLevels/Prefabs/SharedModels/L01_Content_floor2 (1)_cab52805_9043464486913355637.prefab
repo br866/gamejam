@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 8012336110900001658}
   - component: {fileID: 2674351756090349924}
   - component: {fileID: 6462128346653627994}
-  - component: {fileID: 2247880907515938685}
-  m_Layer: 0
+  - component: {fileID: 6738234107577703153}
+  m_Layer: 7
   m_Name: L01_Content_floor2 (1)_cab52805_9043464486913355637
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,8 +84,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &2247880907515938685
-MeshCollider:
+--- !u!65 &6738234107577703153
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -102,7 +102,6 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 9043464486913355637, guid: cab5280519badce489b3cfd05aef5937, type: 3}
+  serializedVersion: 3
+  m_Size: {x: 0.018953135, y: 0.0019314907, z: 0.037219748}
+  m_Center: {x: -0.000020296313, y: -0.00053262286, z: -0.00003380049}

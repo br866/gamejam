@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 5604902866548822522}
   - component: {fileID: 5597090534127027799}
   - component: {fileID: 3422134035210416402}
-  - component: {fileID: 4439241185900779212}
-  m_Layer: 0
+  - component: {fileID: 5631575162609040297}
+  m_Layer: 7
   m_Name: L01_Content_small metal locker (1)_198e587e_-2690800137451493969
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,8 +84,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &4439241185900779212
-MeshCollider:
+--- !u!65 &5631575162609040297
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -102,7 +102,6 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -2690800137451493969, guid: 198e587e028e1ed4a8922ce46820fed9, type: 3}
+  serializedVersion: 3
+  m_Size: {x: 0.0026074199, y: 0.00250122, z: 0.00706054}
+  m_Center: {x: -0.00036890825, y: 0.0007139861, z: -0.0003194143}

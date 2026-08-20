@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 4430494672701864702}
   - component: {fileID: 3523570822184173735}
   - component: {fileID: 2495134217125777849}
-  - component: {fileID: 5166900209517893940}
-  m_Layer: 0
+  - component: {fileID: 8258399734239010960}
+  m_Layer: 7
   m_Name: L01_Content_EmergencyButton (1)_5b8ab08f_4368661169096922121
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,8 +84,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &5166900209517893940
-MeshCollider:
+--- !u!65 &8258399734239010960
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -102,7 +102,6 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4368661169096922121, guid: 5b8ab08f4b619d2459b3211b371e5f8c, type: 3}
+  serializedVersion: 3
+  m_Size: {x: 0.0028515598, y: 0.0017236299, z: 0.01}
+  m_Center: {x: -0.0008398399, y: 0.000012205011, z: 0}

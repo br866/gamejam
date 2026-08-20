@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ececac01d06cb047842eb48d2af8a28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blockingCollider: {fileID: 4611781573499709930}
+  blockingCollider: {fileID: 3635507407115811279}
   visualPivot: {fileID: 4574505421718315913}
   openingDirection: 0
   openAngle: 90
@@ -61,8 +61,8 @@ GameObject:
   - component: {fileID: 8304590926667473591}
   - component: {fileID: 511621985351617911}
   - component: {fileID: 2715698359623491742}
-  - component: {fileID: 4611781573499709930}
-  m_Layer: 0
+  - component: {fileID: 3635507407115811279}
+  m_Layer: 8
   m_Name: DoorLeaf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -134,8 +134,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &4611781573499709930
-MeshCollider:
+--- !u!65 &3635507407115811279
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -152,10 +152,9 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 7158796146257112550, guid: 18194154474b9cc47b8f3b7624391376, type: 3}
+  serializedVersion: 3
+  m_Size: {x: 0.0040039, y: 0.00102295, z: 0.01}
+  m_Center: {x: 0.000019530067, y: 0.0000036650163, z: 0}
 --- !u!1 &5137105851330067042
 GameObject:
   m_ObjectHideFlags: 0

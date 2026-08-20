@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 1671912506314087250}
   - component: {fileID: 7003680592948232333}
   - component: {fileID: 8024553143894052579}
-  - component: {fileID: 8528706451983865210}
-  m_Layer: 0
+  - component: {fileID: 3459735090530849454}
+  m_Layer: 7
   m_Name: L01_Content_medical_drawer_cart (1)_b7a64439_7158796146257112550
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,8 +84,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &8528706451983865210
-MeshCollider:
+--- !u!65 &3459735090530849454
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -102,7 +102,6 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 7158796146257112550, guid: b7a64439a2cfe8e4b9286ec493ae62ad, type: 3}
+  serializedVersion: 3
+  m_Size: {x: 0.0071517853, y: 0.0038181162, z: 0.0100054}
+  m_Center: {x: 0.000015220488, y: 0.000014528108, z: -0.0000020379666}

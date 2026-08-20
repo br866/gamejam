@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 2323080997653529473}
   - component: {fileID: 3056886242629631631}
   - component: {fileID: 4264212748894949192}
-  - component: {fileID: 5465760297037255738}
-  m_Layer: 0
+  - component: {fileID: 2037861315992120141}
+  m_Layer: 7
   m_Name: L01_Content_stool (1)_3e856731_-1737458079604235342
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,8 +84,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &5465760297037255738
-MeshCollider:
+--- !u!65 &2037861315992120141
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -102,7 +102,6 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -1737458079604235342, guid: 3e856731dffb02744a779e301a5b68db, type: 3}
+  serializedVersion: 3
+  m_Size: {x: 0.0035964595, y: 0.00360318, z: 0.0041706795}
+  m_Center: {x: -0.000005207199, y: -0.0000033830875, z: -0.00023459463}

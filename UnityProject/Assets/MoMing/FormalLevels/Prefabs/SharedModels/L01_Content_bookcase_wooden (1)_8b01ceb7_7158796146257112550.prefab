@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 8821481956901874068}
   - component: {fileID: 5553166835477584357}
   - component: {fileID: 319788555647926060}
-  - component: {fileID: 8431892334978000403}
-  m_Layer: 0
+  - component: {fileID: 5362952425573119807}
+  m_Layer: 7
   m_Name: L01_Content_bookcase_wooden (1)_8b01ceb7_7158796146257112550
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,8 +84,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &8431892334978000403
-MeshCollider:
+--- !u!65 &5362952425573119807
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -102,7 +102,6 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 7158796146257112550, guid: 8b01ceb76d6a0cc4f9392d3bc9fe97c3, type: 3}
+  serializedVersion: 3
+  m_Size: {x: 0.010000864, y: 0.0028810957, z: 0.00617188}
+  m_Center: {x: 0.0000004323665, y: 0.000024292094, z: 0}

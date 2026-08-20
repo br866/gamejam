@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 4493483519094003175}
   - component: {fileID: 6000180630464399404}
   - component: {fileID: 7348537208952621661}
-  - component: {fileID: 3607306284663247985}
-  m_Layer: 0
+  - component: {fileID: 5001267026550730280}
+  m_Layer: 7
   m_Name: L01_Content_hospital bed (1)_4f08e5e9_8462417918075336456
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,8 +84,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &3607306284663247985
-MeshCollider:
+--- !u!65 &5001267026550730280
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -102,7 +102,6 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 8462417918075336456, guid: 4f08e5e91082e454e8411c3ff711af17, type: 3}
+  serializedVersion: 3
+  m_Size: {x: 0.009661302, y: 0.018968925, z: 0.010574648}
+  m_Center: {x: 0.00013030996, y: 0.0005644248, z: 0.0005394649}

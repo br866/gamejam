@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 6404497776741637358}
   - component: {fileID: 8839900704877261593}
   - component: {fileID: 2421259499422491614}
-  - component: {fileID: 2572396467072230497}
-  m_Layer: 0
+  - component: {fileID: 8382568082522668531}
+  m_Layer: 7
   m_Name: L01_Content_medical cabinet (2)_82275908_7158796146257112550
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,8 +84,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &2572396467072230497
-MeshCollider:
+--- !u!65 &8382568082522668531
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -102,7 +102,6 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 7158796146257112550, guid: 82275908a4d5936458d4433e0602eecd, type: 3}
+  serializedVersion: 3
+  m_Size: {x: 0.00463867, y: 0.0029350757, z: 0.010000067}
+  m_Center: {x: 0.00002441497, y: 0.000016842154, z: 0.00000002863817}

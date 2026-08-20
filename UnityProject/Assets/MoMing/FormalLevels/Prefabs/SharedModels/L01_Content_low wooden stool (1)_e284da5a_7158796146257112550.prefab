@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 5249889251317825216}
   - component: {fileID: 8931655841447467183}
   - component: {fileID: 7466454266197284885}
-  - component: {fileID: 8906529061703562882}
-  m_Layer: 0
+  - component: {fileID: 8507945276562478055}
+  m_Layer: 7
   m_Name: L01_Content_low wooden stool (1)_e284da5a_7158796146257112550
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,8 +84,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &8906529061703562882
-MeshCollider:
+--- !u!65 &8507945276562478055
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -102,7 +102,6 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 7158796146257112550, guid: e284da5a894bd344c9095d805a92e543, type: 3}
+  serializedVersion: 3
+  m_Size: {x: 0.01, y: 0.00609376, z: 0.0037206998}
+  m_Center: {x: 0, y: 0, z: -0.000004880072}
