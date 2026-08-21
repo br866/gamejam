@@ -1495,9 +1495,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a034019449920d049988bb2fc99cfc47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleState: Idle
-  walkState: Walk
-  runState: Run
+  idleState: monster3 idle1
+  walkState: monster3 walk
+  runState: monster3 run
   crossFadeDuration: 0.15
   movingSpeedThreshold: 0.2
 --- !u!1 &924689526
@@ -2482,7 +2482,7 @@ Animator:
   m_GameObject: {fileID: 2097310835}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 803dccf85ef19554a919221bd5730b10, type: 2}
+  m_Controller: {fileID: 9100000, guid: 6938ea4d0308cae4bac17b02a7db08e4, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
