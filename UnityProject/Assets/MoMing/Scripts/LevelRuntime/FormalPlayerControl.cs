@@ -38,7 +38,6 @@ public class FormalPlayerControl : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F))
         {
-            Debug.Log($"[FormalPlayerControl] F pressed: activeActor={(activeActor != null ? activeActor.name : "null")}, position={(activeActor != null ? activeActor.transform.position.ToString() : "null")}");
             ToggleMoverEngagement();
         }
 
@@ -55,18 +54,23 @@ public class FormalPlayerControl : MonoBehaviour
         float vertical = Input.GetAxisRaw("Vertical");
         Vector3 input = new Vector3(horizontal, 0f, vertical).normalized;
         Vector3 direction = CameraRelativeDirection(input);
-        FormalCooperativeRailMover mover = FindEngagedMover();
-        if (mover != null)
+        FormalCooperativeRailMover railMover = FindEngagedRailMover();
+        IFormalPushMover engagedMover = railMover != null ? (IFormalPushMover)railMover : FindEngagedPushable();
+        if (engagedMover != null)
         {
             if (Input.GetKey(KeyCode.W))
-                mover.SetAttachedPushAnimation();
+                engagedMover.SetAttachedPushAnimation();
             else if (Input.GetKey(KeyCode.S))
-                mover.SetAttachedPullAnimation();
+                engagedMover.SetAttachedPullAnimation();
             else
-                mover.SetAttachedIdleAnimation();
+                engagedMover.SetAttachedIdleAnimation();
 
-            Vector3 moverDirection = activeActor.transform.forward * vertical;
-            mover.Move(moverDirection, vertical > 0.01f);
+            if (railMover != null)
+            {
+                Vector3 moverDirection = activeActor.transform.forward * vertical;
+                railMover.Move(moverDirection, vertical > 0.01f);
+            }
+            // 物理推箱的移动由其自身 FixedUpdate 读取输入驱动。
             return;
         }
 
@@ -76,29 +80,33 @@ public class FormalPlayerControl : MonoBehaviour
 
     void ToggleMoverEngagement()
     {
-        int moverCount = 0;
         foreach (FormalCooperativeRailMover mover in FindObjectsOfType<FormalCooperativeRailMover>())
         {
-            moverCount++;
             if (mover.IsAttached(activeActor))
             {
                 mover.Cancel();
-                Debug.Log($"[FormalPlayerControl] F released mover: {mover.name}");
                 return;
             }
 
             if (mover.TryEngage(activeActor))
-            {
-                Debug.Log($"[FormalPlayerControl] F attached mover: {mover.name}");
                 return;
-            }
 
             // A stale single-actor engagement should never block a fresh F interaction.
             if (!mover.IsEngaged)
                 mover.Cancel();
         }
 
-        Debug.LogWarning($"[FormalPlayerControl] F attach failed: moverCount={moverCount}, activeActor={(activeActor != null ? activeActor.name : "null")}, activeActorRole={(activeActor != null ? activeActor.Role.ToString() : "null")}");
+        foreach (FormalPushableCrate crate in FindObjectsOfType<FormalPushableCrate>())
+        {
+            if (crate.IsAttached(activeActor))
+            {
+                crate.Cancel();
+                return;
+            }
+
+            if (crate.TryEngage(activeActor))
+                return;
+        }
     }
 
     Vector3 CameraRelativeDirection(Vector3 input)
@@ -125,14 +133,22 @@ public class FormalPlayerControl : MonoBehaviour
 
     bool IsMoverEngaged()
     {
-        return FindEngagedMover() != null;
+        return FindEngagedRailMover() != null || FindEngagedPushable() != null;
     }
 
-    static FormalCooperativeRailMover FindEngagedMover()
+    static FormalCooperativeRailMover FindEngagedRailMover()
     {
         foreach (FormalCooperativeRailMover mover in FindObjectsOfType<FormalCooperativeRailMover>())
             if (mover.IsEngaged)
                 return mover;
+        return null;
+    }
+
+    static FormalPushableCrate FindEngagedPushable()
+    {
+        foreach (FormalPushableCrate crate in FindObjectsOfType<FormalPushableCrate>())
+            if (crate.IsEngaged)
+                return crate;
         return null;
     }
 }

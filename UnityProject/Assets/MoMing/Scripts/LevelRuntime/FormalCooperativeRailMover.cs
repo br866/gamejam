@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporaryState
+public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporaryState, IFormalPushMover
 {
     [System.Serializable]
     public class DirectionPointGroup
