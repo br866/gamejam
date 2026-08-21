@@ -21,8 +21,6 @@ public class MonsterPatrol : MonoBehaviour
     public float detectionRange = 8f;
     public float fieldOfView = 60f;
     public float catchRadius = 1.2f;
-    [Tooltip("抓捕缓冲：在人物与怪物碰撞体刚接触的基础上再外扩一点。最终阈值=怪物半径+玩家半径+此值")]
-    public float catchBuffer = 0.35f;
     public float loseTargetTime = 3f;
 
     [Header("Chase")]
@@ -37,9 +35,6 @@ public class MonsterPatrol : MonoBehaviour
     [SerializeField] private AudioClip catchClip;
     [SerializeField] private AudioClip detectClip;
 
-    [Tooltip("怪物走多远算一步")]
-    public float footstepDistance = 1.6f;
-
     [Header("Detection Gizmos")]
     public bool showDetectionGizmos = true;
     public Color fieldOfViewGizmoColor = new Color(1f, 0.85f, 0f, 0.9f);
@@ -51,8 +46,6 @@ public class MonsterPatrol : MonoBehaviour
     private Vector3 startPos;
     private Transform chaseTarget;
     private float lastSeenTime;
-    private Vector3 lastStepPos;
-    private CapsuleCollider selfCol;
 
     void Awake()
     {
@@ -64,9 +57,29 @@ public class MonsterPatrol : MonoBehaviour
 
         audioSource = GetComponent<AudioSource>();
         navigation = GetComponent<LevelMonsterNavigation>();
-        selfCol = GetComponent<CapsuleCollider>();
         startPos = transform.position;
-        lastStepPos = transform.position;
+        ResolveFormalSafeZones();
+    }
+
+    void ResolveFormalSafeZones()
+    {
+        if (safeZones != null && safeZones.Length > 0)
+            return;
+
+        FormalActuatorTrigger[] triggers = FindObjectsOfType<FormalActuatorTrigger>(true);
+        var resolved = new System.Collections.Generic.List<Collider>();
+        foreach (FormalActuatorTrigger trigger in triggers)
+        {
+            if (trigger.gameObject.scene != gameObject.scene ||
+                trigger.gameObject.name.IndexOf("SafeZone", System.StringComparison.OrdinalIgnoreCase) < 0)
+                continue;
+
+            Collider zone = trigger.GetComponent<Collider>();
+            if (zone != null)
+                resolved.Add(zone);
+        }
+
+        safeZones = resolved.ToArray();
     }
 
     void Start()
@@ -97,7 +110,6 @@ public class MonsterPatrol : MonoBehaviour
         }
 
         CheckForPlayers();
-        HandleFootsteps();
     }
 
     bool HasAssignedWaypoints()
@@ -272,22 +284,6 @@ public class MonsterPatrol : MonoBehaviour
         }
     }
 
-    /// <summary>怪物移动时的脚步声，按移动距离触发。</summary>
-    void HandleFootsteps()
-    {
-        Vector3 a = transform.position; a.y = 0f;
-        Vector3 b = lastStepPos;        b.y = 0f;
-        if ((a - b).sqrMagnitude < footstepDistance * footstepDistance) return;
-        lastStepPos = transform.position;
-
-        if (footstepClip != null)
-        {
-            PlayAudio(footstepClip);
-            return;
-        }
-        SfxManager.PlayRandom(Sfx.FootstepFolder, Sfx.MonsterStep, transform.position);
-    }
-
     void PlayAudio(AudioClip clip)
     {
         if (clip != null && audioSource != null)
@@ -297,23 +293,11 @@ public class MonsterPatrol : MonoBehaviour
     bool TryCatch(Transform player)
     {
         if (player == null || !player.gameObject.activeInHierarchy) return false;
-        // 玩家在安全区内时怪物无法抓捕（安全区豁免）
         if (IsInSafeZone(player.position)) return false;
-
-        // XZ 平面中心距（忽略 Y 高度差）
-        float dx = player.position.x - transform.position.x;
-        float dz = player.position.z - transform.position.z;
-        float xzDist = Mathf.Sqrt(dx * dx + dz * dz);
-
-        // 抓捕阈值随实际碰撞体大小自适应：怪物世界半径 + 玩家世界半径 + 缓冲。
-        // 怪物被放大后(scale 2.2)实心碰撞体会把玩家顶开，中心永远进不到旧的固定 catchRadius(1.2) 内，
-        // 所以按真实半径算，保证贴上就抓到。找不到碰撞体时回退到 catchRadius。
-        float threshold = WorldRadius(selfCol, transform)
-                        + WorldRadius(player.GetComponent<CapsuleCollider>(), player)
-                        + catchBuffer;
-        if (threshold < catchRadius) threshold = catchRadius;
-
-        if (xzDist <= threshold)
+        float xzDist = Mathf.Sqrt(
+            (player.position.x - transform.position.x) * (player.position.x - transform.position.x) +
+            (player.position.z - transform.position.z) * (player.position.z - transform.position.z));
+        if (xzDist <= catchRadius)
         {
             if (GameManager.Instance != null)
                 GameManager.Instance.OnPlayerCaught();
@@ -327,15 +311,6 @@ public class MonsterPatrol : MonoBehaviour
             return true;
         }
         return false;
-    }
-
-    /// <summary>胶囊碰撞体在世界空间下的半径（Y 轴胶囊按 X/Z 里较大的缩放算）。</summary>
-    static float WorldRadius(CapsuleCollider c, Transform t)
-    {
-        if (c == null || t == null) return 0f;
-        Vector3 sc = t.lossyScale;
-        float radialScale = Mathf.Max(Mathf.Abs(sc.x), Mathf.Abs(sc.z));
-        return c.radius * radialScale;
     }
 
     public void ResetPatrol()

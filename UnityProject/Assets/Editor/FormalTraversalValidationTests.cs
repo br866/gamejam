@@ -109,25 +109,6 @@ public class FormalTraversalValidationTests
     }
 
     [Test]
-    public void ExitRequiresItsDoorToBeOpenByDefault()
-    {
-        var exitObject = new GameObject("Exit");
-        exitObject.AddComponent<BoxCollider>().isTrigger = true;
-        var door = exitObject.AddComponent<FormalDoor>();
-        var exit = exitObject.AddComponent<FormalLevelExit>();
-
-        typeof(FormalLevelExit).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(exit, null);
-        var requiredDoor = (FormalDoor)typeof(FormalLevelExit)
-            .GetField("requiredDoor", BindingFlags.Instance | BindingFlags.NonPublic)
-            .GetValue(exit);
-
-        Assert.AreEqual(door, requiredDoor);
-        Assert.IsFalse(door.IsOpen);
-
-        Object.DestroyImmediate(exitObject);
-    }
-
-    [Test]
     public void PrerequisiteActuatorOpensOnlyAfterEveryMechanismCompletes()
     {
         var prerequisiteObject = new GameObject("Prerequisites");
@@ -230,19 +211,16 @@ public class FormalTraversalValidationTests
             var dogPlate = FindTransform(scene, "L02_DogPlateTrigger");
             var safeZone = FindTransform(scene, "L02_CooperativeSafeZoneTrigger");
             var exitDoor = FindTransform(scene, "L02_ExitDoor_ToLevel03");
-            var exit = FindTransform(scene, "L02_ExitTrigger_ToLevel03");
             var checkpoint = FindTransform(scene, "SuccessorCheckpoint");
 
             Assert.IsNotNull(dogPlate);
             Assert.IsNotNull(safeZone);
             Assert.IsNotNull(exitDoor);
-            Assert.IsNotNull(exit);
             Assert.IsNotNull(checkpoint);
 
             var dogTrigger = dogPlate.GetComponent<FormalActuatorTrigger>();
             var safeZoneTrigger = safeZone.GetComponent<FormalActuatorTrigger>();
             var safeZoneCollider = safeZone.GetComponent<BoxCollider>();
-            var formalExit = exit.GetComponent<FormalLevelExit>();
             var formalCheckpoint = checkpoint.GetComponent<FormalCheckpoint>();
             var flags = BindingFlags.Instance | BindingFlags.NonPublic;
 
@@ -251,13 +229,25 @@ public class FormalTraversalValidationTests
             Assert.AreEqual(FormalTriggerRequirement.BothPlayers,
                 typeof(FormalActuatorTrigger).GetField("requirement", flags).GetValue(safeZoneTrigger));
             Assert.IsTrue(safeZoneCollider.isTrigger);
-            Assert.AreEqual("FormalLevel03",
-                typeof(FormalLevelExit).GetField("successorScene", flags).GetValue(formalExit));
-            Assert.IsNotNull(typeof(FormalLevelExit).GetField("requiredDoor", flags).GetValue(formalExit));
+            var safeZonePrerequisites = (FormalMechanismState[])typeof(FormalActuatorTrigger)
+                .GetField("prerequisites", flags).GetValue(safeZoneTrigger);
+            Assert.AreEqual(0, safeZonePrerequisites.Length);
+            var dogPlateActuators = (MonoBehaviour[])typeof(FormalActuatorTrigger)
+                .GetField("actuators", flags).GetValue(dogTrigger);
+            Assert.AreEqual(1, dogPlateActuators.Length);
+            Assert.AreEqual(exitDoor.GetComponent<FormalDoor>(), dogPlateActuators[0]);
+
+            var safeZoneActuators = (MonoBehaviour[])typeof(FormalActuatorTrigger)
+                .GetField("actuators", flags).GetValue(safeZoneTrigger);
+            Assert.AreEqual(0, safeZoneActuators.Length);
 
             var checkpointPrerequisites = (FormalMechanismState[])typeof(FormalCheckpoint)
                 .GetField("prerequisites", flags).GetValue(formalCheckpoint);
-            Assert.AreEqual(2, checkpointPrerequisites.Length);
+            Assert.IsNotNull(checkpointPrerequisites);
+            Assert.AreEqual(0, checkpointPrerequisites.Length);
+
+            Assert.IsTrue((bool)typeof(FormalCheckpoint)
+                .GetField("successorRegistrationPoint", flags).GetValue(formalCheckpoint));
         }
         finally
         {
@@ -485,6 +475,13 @@ public class FormalTraversalValidationTests
         Assert.IsTrue((bool)confirmedField.GetValue(flow));
 
         Object.DestroyImmediate(flowObject);
+    }
+
+    [Test]
+    public void KeypadSixShortcutExposesCurrentDoorScopeOperation()
+    {
+        Assert.IsNotNull(typeof(FormalGameFlowController).GetMethod(
+            "OpenAllDoorsInCurrentLevelScope", BindingFlags.Instance | BindingFlags.Public));
     }
 
     static T[] FindInScene<T>(Scene scene) where T : Component

@@ -475,12 +475,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   requirement: 3
-  prerequisites:
-  - {fileID: 1913106090}
+  prerequisites: []
   completionState: {fileID: 184154373}
-  actuators:
-  - {fileID: 547879729}
+  actuators: []
   permanent: 0
+  successorScene: FormalLevel03
 --- !u!65 &184154375
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1590,74 +1589,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1220307206
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1220307207}
-  - component: {fileID: 1220307209}
-  - component: {fileID: 1220307208}
-  m_Layer: 0
-  m_Name: L02_ExitTrigger_ToLevel03
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1220307207
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1220307206}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -24.7, y: 11.85, z: -6.15}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1917110749}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1220307208
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1220307206}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb4e2a09b2122c54d97a60c969426b2f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  successorScene: FormalLevel03
-  requiredDoor: {fileID: 547879729}
---- !u!65 &1220307209
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1220307206}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 2.5, y: 2.5, z: 2.5}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1401622683
 GameObject:
   m_ObjectHideFlags: 0
@@ -1984,7 +1915,8 @@ MonoBehaviour:
   requirement: 2
   prerequisites: []
   completionState: {fileID: 1913106090}
-  actuators: []
+  actuators:
+  - {fileID: 547879729}
   permanent: 0
 --- !u!65 &1913106089
 BoxCollider:
@@ -2060,7 +1992,6 @@ Transform:
   - {fileID: 1913106087}
   - {fileID: 184154376}
   - {fileID: 547879730}
-  - {fileID: 1220307207}
   - {fileID: 839781449}
   - {fileID: 1979700654}
   m_Father: {fileID: 0}
@@ -2269,14 +2200,9 @@ PrefabInstance:
       objectReference: {fileID: 4085635862333141082}
     - target: {fileID: 4568444335705342108, guid: e637cb3edc283604fa531497c225abee,
         type: 3}
-      propertyPath: prerequisites.Array.data[0]
-      value: 
-      objectReference: {fileID: 1913106090}
-    - target: {fileID: 4568444335705342108, guid: e637cb3edc283604fa531497c225abee,
-        type: 3}
-      propertyPath: prerequisites.Array.data[1]
-      value: 
-      objectReference: {fileID: 184154373}
+      propertyPath: prerequisites.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7059743468741404496, guid: e637cb3edc283604fa531497c225abee,
         type: 3}
       propertyPath: m_LocalPosition.x

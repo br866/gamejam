@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -60,7 +59,7 @@ public class FormalGameFlowController : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.Keypad5))
             ResetCurrentLevel();
         else if (Input.GetKeyDown(KeyCode.Keypad6))
-            OpenDoorsInCurrentLevelScope();
+            CompleteCurrentLevelConditionsAndAdvance();
     }
 
     public void LoadSuccessor(string sceneName)
@@ -177,7 +176,32 @@ public class FormalGameFlowController : MonoBehaviour
             Debug.LogWarning($"No shared transition door found from {fromScene} to {toScene}.");
     }
 
-    public void OpenDoorsInCurrentLevelScope()
+    public void CompleteCurrentLevelConditionsAndAdvance()
+    {
+        Scene current = SceneManager.GetSceneByName(currentLevelScene);
+        if (!current.isLoaded)
+            return;
+
+        OpenAllDoorsInCurrentLevelScope();
+
+        // Keypad 6 is an editor/test shortcut: mark the current level's
+        // completion state directly instead of simulating player movement.
+        foreach (FormalMechanismState state in FindInScene<FormalMechanismState>(current))
+            state.Complete();
+
+        foreach (FormalActuatorTrigger trigger in FindInScene<FormalActuatorTrigger>(current))
+            trigger.CompleteImmediately();
+
+        int currentIndex = FindRouteIndex(currentLevelScene);
+        if (currentIndex >= 0 && currentIndex + 1 < routeCatalog.Length)
+        {
+            string successor = routeCatalog[currentIndex + 1].sceneName;
+            OpenTransitionDoor(currentLevelScene, successor);
+            LoadSuccessor(successor);
+        }
+    }
+
+    public void OpenAllDoorsInCurrentLevelScope()
     {
         foreach (Scene scene in GetCurrentLevelDoorScenes())
         {
@@ -185,19 +209,40 @@ public class FormalGameFlowController : MonoBehaviour
                 continue;
 
             foreach (GameObject root in scene.GetRootGameObjects())
-            {
                 foreach (FormalDoor door in root.GetComponentsInChildren<FormalDoor>(true))
-                    door.Open();
-            }
+                    door.OpenPermanently();
         }
+    }
+
+    static T[] FindInScene<T>(Scene scene) where T : Component
+    {
+        List<T> result = new List<T>();
+        foreach (GameObject root in scene.GetRootGameObjects())
+            result.AddRange(root.GetComponentsInChildren<T>(true));
+        return result.ToArray();
     }
 
     public void NotifySuccessorCheckpointActivated(string sceneName)
     {
-        if (sceneName != currentLevelScene || string.IsNullOrEmpty(pendingUnloadScene))
+        if (sceneName != currentLevelScene || string.IsNullOrEmpty(pendingUnloadScene) ||
+            successorArrivalConfirmed || operationInProgress)
             return;
 
         successorArrivalConfirmed = true;
+        StartCoroutine(UnloadConfirmedPredecessorRoutine());
+    }
+
+    IEnumerator UnloadConfirmedPredecessorRoutine()
+    {
+        operationInProgress = true;
+        string predecessorScene = pendingUnloadScene;
+        Scene predecessor = SceneManager.GetSceneByName(predecessorScene);
+        if (predecessor.isLoaded)
+            yield return SceneManager.UnloadSceneAsync(predecessor);
+
+        pendingUnloadScene = null;
+        yield return UnloadUnusedSharedArt();
+        operationInProgress = false;
     }
 
     IEnumerator RestartCurrentLevelRoutine()
@@ -363,9 +408,6 @@ public class FormalGameFlowController : MonoBehaviour
 
         HashSet<string> sharedScenes = new HashSet<string>(from.sharedArtScenes);
         sharedScenes.IntersectWith(to.sharedArtScenes);
-        FieldInfo successorField = typeof(FormalLevelExit).GetField(
-            "successorScene", BindingFlags.Instance | BindingFlags.NonPublic);
-
         foreach (string sharedSceneName in sharedScenes)
         {
             Scene sharedScene = SceneManager.GetSceneByName(sharedSceneName);
@@ -373,20 +415,9 @@ public class FormalGameFlowController : MonoBehaviour
                 continue;
 
             foreach (GameObject root in sharedScene.GetRootGameObjects())
-            {
-                foreach (FormalLevelExit exit in root.GetComponentsInChildren<FormalLevelExit>(true))
-                {
-                    string successor = successorField != null
-                        ? successorField.GetValue(exit) as string
-                        : null;
-                    if (successor != toScene)
-                        continue;
-
-                    FormalDoor door = exit.GetComponent<FormalDoor>();
-                    if (door != null)
+                foreach (FormalDoor door in root.GetComponentsInChildren<FormalDoor>(true))
+                    if (door.name.IndexOf("ToLevel", StringComparison.OrdinalIgnoreCase) >= 0)
                         return door;
-                }
-            }
         }
 
         return null;

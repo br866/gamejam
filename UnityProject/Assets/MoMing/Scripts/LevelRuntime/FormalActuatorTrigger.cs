@@ -9,9 +9,12 @@ public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState
     [SerializeField] private FormalMechanismState completionState;
     [SerializeField] private MonoBehaviour[] actuators;
     [SerializeField] private bool permanent = true;
+    [SerializeField] private string successorScene;
 
     private readonly HashSet<Object> occupants = new HashSet<Object>();
     private bool complete;
+
+    public bool IsComplete => complete;
 
     void Awake()
     {
@@ -27,15 +30,7 @@ public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState
             !PrerequisitesComplete() || !RequirementSatisfied())
             return;
 
-        complete = true;
-        if (completionState != null)
-            completionState.Complete();
-        foreach (MonoBehaviour behaviour in actuators)
-        {
-            IFormalLevelActuator actuator = behaviour as IFormalLevelActuator;
-            if (actuator != null)
-                actuator.Open();
-        }
+        CompleteTrigger();
     }
 
     void OnTriggerExit(Collider other)
@@ -91,6 +86,19 @@ public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState
         if (complete || !PrerequisitesComplete() || !RequirementSatisfied())
             return;
 
+        CompleteTrigger();
+    }
+
+    public void CompleteImmediately()
+    {
+        if (complete)
+            return;
+
+        CompleteTrigger();
+    }
+
+    void CompleteTrigger()
+    {
         complete = true;
         if (completionState != null)
             completionState.Complete();
@@ -99,6 +107,20 @@ public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState
             IFormalLevelActuator actuator = behaviour as IFormalLevelActuator;
             if (actuator != null)
                 actuator.Open();
+        }
+
+        if (!string.IsNullOrEmpty(successorScene))
+        {
+            FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
+            if (flow != null)
+                flow.LoadSuccessor(successorScene);
+        }
+
+        if (!string.IsNullOrEmpty(successorScene))
+        {
+            FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
+            if (flow != null)
+                flow.LoadSuccessor(successorScene);
         }
     }
 

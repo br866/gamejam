@@ -3,10 +3,10 @@ using UnityEngine;
 public class FormalCheckpoint : MonoBehaviour, IFormalLevelPermanentState
 {
     [SerializeField] private FormalLevelController level;
-    [SerializeField] private string successorScene;
     [SerializeField] private Transform humanRespawnAnchor;
     [SerializeField] private Transform dogRespawnAnchor;
     [SerializeField] private FormalMechanismState[] prerequisites;
+    [SerializeField] private bool successorRegistrationPoint;
 
     public bool IsComplete { get; private set; }
 
@@ -17,6 +17,9 @@ public class FormalCheckpoint : MonoBehaviour, IFormalLevelPermanentState
 
         IsComplete = true;
         level.SetCheckpoint(humanRespawnAnchor, dogRespawnAnchor);
+
+        if (!successorRegistrationPoint)
+            return;
 
         FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
         if (flow != null)
