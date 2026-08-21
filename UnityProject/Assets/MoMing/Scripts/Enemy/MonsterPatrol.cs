@@ -40,6 +40,11 @@ public class MonsterPatrol : MonoBehaviour
     public Color fieldOfViewGizmoColor = new Color(1f, 0.85f, 0f, 0.9f);
 
     private State currentState = State.Patrol;
+
+    public bool IsChasing
+    {
+        get { return currentState == State.Chase; }
+    }
     private int currentWaypoint = 0;
     private AudioSource audioSource;
     private LevelMonsterNavigation navigation;
