@@ -109,6 +109,28 @@ public class FormalTraversalValidationTests
     }
 
     [Test]
+    public void DogOnlyRequirementRejectsHumanAndAcceptsDog()
+    {
+        var humanObject = new GameObject("Human");
+        var dogObject = new GameObject("Dog");
+        var human = humanObject.AddComponent<FormalPlayerActor>();
+        var dog = dogObject.AddComponent<FormalPlayerActor>();
+        humanObject.AddComponent<BoxCollider>();
+        dogObject.AddComponent<BoxCollider>();
+        var roleField = typeof(FormalPlayerActor).GetField("role", BindingFlags.Instance | BindingFlags.NonPublic);
+        roleField.SetValue(human, FormalPlayerActor.ActorRole.Human);
+        roleField.SetValue(dog, FormalPlayerActor.ActorRole.Dog);
+
+        Assert.IsFalse(FormalTriggerEligibility.Accepts(
+            humanObject.GetComponent<Collider>(), FormalTriggerRequirement.DogOnly));
+        Assert.IsTrue(FormalTriggerEligibility.Accepts(
+            dogObject.GetComponent<Collider>(), FormalTriggerRequirement.DogOnly));
+
+        Object.DestroyImmediate(dogObject);
+        Object.DestroyImmediate(humanObject);
+    }
+
+    [Test]
     public void PrerequisiteActuatorOpensOnlyAfterEveryMechanismCompletes()
     {
         var prerequisiteObject = new GameObject("Prerequisites");
