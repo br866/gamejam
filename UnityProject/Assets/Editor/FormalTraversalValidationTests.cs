@@ -278,6 +278,38 @@ public class FormalTraversalValidationTests
     }
 
     [Test]
+    public void Level02MonsterPatrolsSceneWaypoints()
+    {
+        Scene scene = EditorSceneManager.OpenScene("Assets/MoMing/FormalLevels/FormalLevel02.unity", OpenSceneMode.Additive);
+        try
+        {
+            MonsterPatrol monster = null;
+            foreach (var root in scene.GetRootGameObjects())
+                foreach (var patrol in root.GetComponentsInChildren<MonsterPatrol>(true))
+                    monster = patrol;
+
+            Assert.IsNotNull(monster, "FormalLevel02 has no monster.");
+
+            var waypoints = monster.waypoints;
+
+            Assert.IsNotNull(waypoints, "Level02 monster waypoints are missing.");
+            Assert.AreEqual(2, waypoints.Length);
+            Assert.IsNotNull(waypoints[0], "Level02 monster waypoint A is not wired.");
+            Assert.IsNotNull(waypoints[1], "Level02 monster waypoint B is not wired.");
+            Assert.AreEqual("L02_MonsterWaypointA", waypoints[0].name);
+            Assert.AreEqual("L02_MonsterWaypointB", waypoints[1].name);
+            Assert.AreEqual(scene, waypoints[0].gameObject.scene,
+                "Level02 monster waypoint A must live in FormalLevel02.");
+            Assert.AreEqual(scene, waypoints[1].gameObject.scene,
+                "Level02 monster waypoint B must live in FormalLevel02.");
+        }
+        finally
+        {
+            EditorSceneManager.CloseScene(scene, false);
+        }
+    }
+
+    [Test]
     public void CooperativeRailMoverAllowsHumanOnlyUnlimitedTravel()
     {
         float originalFixedDeltaTime = Time.fixedDeltaTime;
@@ -476,10 +508,13 @@ public class FormalTraversalValidationTests
     }
 
     [Test]
-    public void FormalFlowKeepsPredecessorPendingUntilRestart()
+    public void FormalFlowUnloadsPredecessorAfterSuccessorArrival()
     {
         var flowObject = new GameObject("Flow");
         var flow = flowObject.AddComponent<FormalGameFlowController>();
+        typeof(FormalGameFlowController)
+            .GetMethod("EnsureRouteCatalog", BindingFlags.Instance | BindingFlags.NonPublic)
+            .Invoke(flow, null);
         var pendingField = typeof(FormalGameFlowController)
             .GetField("pendingUnloadScene", BindingFlags.Instance | BindingFlags.NonPublic);
         var confirmedField = typeof(FormalGameFlowController)
@@ -493,7 +528,8 @@ public class FormalTraversalValidationTests
             .GetMethod("NotifySuccessorCheckpointActivated", BindingFlags.Instance | BindingFlags.Public)
             .Invoke(flow, new object[] { "FormalLevel02" });
 
-        Assert.AreEqual("FormalLevel01", pendingField.GetValue(flow));
+        Assert.IsNull(pendingField.GetValue(flow),
+            "Arrival at the successor registration point must unload the predecessor.");
         Assert.IsTrue((bool)confirmedField.GetValue(flow));
 
         Object.DestroyImmediate(flowObject);
