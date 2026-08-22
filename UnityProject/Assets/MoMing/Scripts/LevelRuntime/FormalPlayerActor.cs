@@ -166,7 +166,7 @@ public class FormalPlayerActor : MonoBehaviour
             state == ActorState.Linked ? "Walk" :
             state == ActorState.Walking || state == ActorState.Sprinting ? "Walk" :
             idleVariation ? "Idle2" : "Idle1";
-        float blendTime = state == ActorState.Jumping ? 0.08f : 0.15f;
+        float blendTime = state == ActorState.Jumping ? 0.12f : 0.25f;
         string resolvedState = ResolveAnimationState(stateName);
         if (resolvedState == null)
         {

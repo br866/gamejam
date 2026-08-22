@@ -224,25 +224,14 @@ public class FormalGameFlowController : MonoBehaviour
 
     public void NotifySuccessorCheckpointActivated(string sceneName)
     {
-        if (sceneName != currentLevelScene || string.IsNullOrEmpty(pendingUnloadScene) ||
-            successorArrivalConfirmed || operationInProgress)
+        if (sceneName != currentLevelScene || string.IsNullOrEmpty(pendingUnloadScene))
             return;
 
+        // The predecessor level stays loaded after the checkpoint registers,
+        // because the dog may still be inside it. It is only unloaded when the
+        // player resets the current level (RestartCurrentLevelRoutine) or jumps
+        // to another route entry (UnloadIrrelevantLevels).
         successorArrivalConfirmed = true;
-        StartCoroutine(UnloadConfirmedPredecessorRoutine());
-    }
-
-    IEnumerator UnloadConfirmedPredecessorRoutine()
-    {
-        operationInProgress = true;
-        string predecessorScene = pendingUnloadScene;
-        Scene predecessor = SceneManager.GetSceneByName(predecessorScene);
-        if (predecessor.isLoaded)
-            yield return SceneManager.UnloadSceneAsync(predecessor);
-
-        pendingUnloadScene = null;
-        yield return UnloadUnusedSharedArt();
-        operationInProgress = false;
     }
 
     IEnumerator RestartCurrentLevelRoutine()
