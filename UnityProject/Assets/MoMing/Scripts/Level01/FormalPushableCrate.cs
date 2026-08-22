@@ -1,18 +1,24 @@
 using UnityEngine;
 
 /// <summary>
-/// 物理推箱：动态 Rigidbody + 速度驱动，墙体自然阻挡（不会穿墙）。
-/// 支持推不动：前方 BoxCast 检测到障碍时箱子不施力，并报告 Blocked。
-/// requiredPushers=2 时需要人类和狗同时挂点才能推动（协作箱）。
+/// 物理推箱：未挂点时 kinematic 完全不可推动；挂点后切换为动态刚体，
+/// 速度驱动 + 墙体自然阻挡（不会穿墙）。前方 BoxCast 检测到障碍时报告 Blocked。
+/// requiredPushers=2 时需要人类和狗同时挂点才能推动（协作箱/柜子）。
+/// axisMode=Auto 时推动方向由挂点位置推导；固定轴模式用于柜子等单向机关。
 /// </summary>
 [RequireComponent(typeof(Rigidbody), typeof(BoxCollider))]
 public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IFormalPushMover
 {
+    public enum PushAxisMode { Auto, PlusX, MinusX, PlusZ, MinusZ }
+
     [SerializeField] private float movementSpeed = 2f;
     [SerializeField] private float interactionRange = 2.5f;
     [SerializeField] private int requiredPushers = 1;
     [SerializeField] private Transform[] interactionPoints = new Transform[4];
     [SerializeField] private float blockProbeSkin = 0.12f;
+    [SerializeField] private PushAxisMode axisMode = PushAxisMode.Auto;
+    [Tooltip("沿推轴最大位移，0 = 不限制")]
+    [SerializeField] private float travelLimit = 0f;
 
     private Rigidbody body;
     private BoxCollider box;
@@ -22,6 +28,7 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
     private int dogPoint = -1;
     private Vector3 initialPosition;
     private Quaternion initialRotation;
+    private Vector3 engageOrigin;
 
     public bool IsEngaged { get { return human != null; } }
     public bool IsBlocked { get; private set; }
@@ -33,7 +40,7 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
         box = GetComponent<BoxCollider>();
         initialPosition = transform.position;
         initialRotation = transform.rotation;
-        body.isKinematic = false;
+        body.isKinematic = true;
         body.useGravity = true;
         body.constraints = RigidbodyConstraints.FreezeRotation;
         body.interpolation = RigidbodyInterpolation.Interpolate;
@@ -59,6 +66,13 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
         if (!hasHumanInput || !enoughPushers)
         {
             IsBlocked = false;
+            return;
+        }
+
+        if (travelLimit > 0f && Vector3.Dot(transform.position - engageOrigin, axis) >= travelLimit)
+        {
+            IsBlocked = true;
+            body.velocity = new Vector3(0f, body.velocity.y, 0f);
             return;
         }
 
@@ -100,6 +114,11 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
         IgnoreCrateCollision(actor, true);
         actor.LockMoverInteraction(transform.position);
         actor.SetPosition(GetPointPosition(point));
+        if (human == actor)
+        {
+            engageOrigin = transform.position;
+            body.isKinematic = false;
+        }
         return true;
     }
 
@@ -112,7 +131,8 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
         humanPoint = -1;
         dogPoint = -1;
         IsBlocked = false;
-        body.velocity = new Vector3(0f, body.velocity.y, 0f);
+        body.velocity = Vector3.zero;
+        body.isKinematic = true;
     }
 
     public void Move(Vector3 worldDirection, bool pushingAnimation)
@@ -148,8 +168,6 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
     public void ResetTemporaryState()
     {
         Cancel();
-        body.velocity = Vector3.zero;
-        body.angularVelocity = Vector3.zero;
         body.position = initialPosition;
         body.rotation = initialRotation;
         transform.SetPositionAndRotation(initialPosition, initialRotation);
@@ -166,6 +184,18 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
 
     Vector3 ResolvePushAxis()
     {
+        switch (axisMode)
+        {
+            case PushAxisMode.PlusX:
+                return Vector3.right;
+            case PushAxisMode.MinusX:
+                return Vector3.left;
+            case PushAxisMode.PlusZ:
+                return Vector3.forward;
+            case PushAxisMode.MinusZ:
+                return Vector3.back;
+        }
+
         if (humanPoint < 0)
             return Vector3.zero;
         Vector3 offset = GetPointPosition(humanPoint) - transform.position;
