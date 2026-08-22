@@ -35,6 +35,10 @@ public class MonsterPatrol : MonoBehaviour
     [SerializeField] private AudioClip catchClip;
     [SerializeField] private AudioClip detectClip;
 
+    [Header("Line of Sight")]
+    [SerializeField] private LayerMask sightBlockMask;
+    [SerializeField] private float eyeHeight = 1.5f;
+
     [Header("Detection Gizmos")]
     public bool showDetectionGizmos = true;
     public Color fieldOfViewGizmoColor = new Color(1f, 0.85f, 0f, 0.9f);
@@ -43,8 +47,56 @@ public class MonsterPatrol : MonoBehaviour
     public bool showRoomBounds = true;
     public Color roomBoundsGizmoColor = new Color(0f, 1f, 0.55f, 0.9f);
 
+    bool HasLineOfSight(Transform target)
+    {
+        Vector3 from = transform.position;
+        if (visualRenderer != null)
+            from.y = visualRenderer.bounds.min.y + eyeHeight;
+
+        Vector3 to = target.position + Vector3.up * (eyeHeight * 0.5f);
+        int mask = sightBlockMask.value != 0 ? sightBlockMask.value : ~0;
+        mask &= ~(1 << gameObject.layer);
+        mask &= ~(1 << target.gameObject.layer);
+
+        if (Physics.Linecast(from, to, out RaycastHit hitInfo, mask, QueryTriggerInteraction.Ignore))
+        {
+            if (hitInfo.collider.transform == target || hitInfo.collider.transform.IsChildOf(transform))
+                return true;
+            return false;
+        }
+
+        return true;
+    }
+
     void OnDrawGizmos()
     {
+        if (showDetectionGizmos)
+        {
+            Gizmos.color = fieldOfViewGizmoColor;
+            Vector3 origin = transform.position;
+            Vector3 flatForward = transform.forward;
+            flatForward.y = 0f;
+            flatForward.Normalize();
+            if (flatForward.sqrMagnitude < 0.001f)
+                flatForward = Vector3.forward;
+
+            float half = fieldOfView * 0.5f;
+            Vector3 dirLeft = Quaternion.Euler(0f, -half, 0f) * flatForward;
+            Vector3 dirRight = Quaternion.Euler(0f, half, 0f) * flatForward;
+            Gizmos.DrawRay(origin, dirLeft * detectionRange);
+            Gizmos.DrawRay(origin, dirRight * detectionRange);
+
+            const int segments = 20;
+            Vector3 previous = origin + dirLeft * detectionRange;
+            for (int i = 1; i <= segments; i++)
+            {
+                float angle = Mathf.Lerp(-half, half, i / (float)segments);
+                Vector3 next = origin + Quaternion.Euler(0f, angle, 0f) * flatForward * detectionRange;
+                Gizmos.DrawLine(previous, next);
+                previous = next;
+            }
+        }
+
         if (!showRoomBounds)
             return;
 
@@ -64,6 +116,7 @@ public class MonsterPatrol : MonoBehaviour
     }
 
     private State currentState = State.Patrol;
+    private Renderer visualRenderer;
 
     public bool IsChasing
     {
@@ -87,6 +140,7 @@ public class MonsterPatrol : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         navigation = GetComponent<LevelMonsterNavigation>();
         startPos = transform.position;
+        visualRenderer = GetComponentInChildren<Renderer>();
         ResolveFormalSafeZones();
     }
 
@@ -295,7 +349,7 @@ public class MonsterPatrol : MonoBehaviour
 
                 bool inSight = angle <= fieldOfView * 0.5f;
 
-                if (inSight)
+                if (inSight && HasLineOfSight(hit.transform))
                 {
                     bool wasChasing = currentState == State.Chase;
                     chaseTarget = hit.transform;
@@ -323,6 +377,7 @@ public class MonsterPatrol : MonoBehaviour
     {
         if (player == null || !player.gameObject.activeInHierarchy) return false;
         if (IsInSafeZone(player.position)) return false;
+        if (!HasLineOfSight(player)) return false;
         float xzDist = Mathf.Sqrt(
             (player.position.x - transform.position.x) * (player.position.x - transform.position.x) +
             (player.position.z - transform.position.z) * (player.position.z - transform.position.z));
