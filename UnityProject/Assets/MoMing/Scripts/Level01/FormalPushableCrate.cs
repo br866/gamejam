@@ -262,10 +262,20 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
         RaycastHit hit;
         if (Physics.BoxCast(origin, Vector3.Scale(half, new Vector3(0.9f, 0.9f, 0.9f)), axis, out hit, transform.rotation, distance))
         {
-            if (hit.collider != null && !hit.collider.isTrigger && !hit.collider.transform.IsChildOf(transform))
+            // IgnoreCollision 只影响接触解算，不影响 BoxCast；挂点角色就在运动方向上，
+            // 拉动时必须把他们排除掉，否则永远误报 Blocked。
+            if (hit.collider != null && !hit.collider.isTrigger
+                && !hit.collider.transform.IsChildOf(transform)
+                && !IsAttachedRider(hit.collider))
                 return true;
         }
         return false;
+    }
+
+    bool IsAttachedRider(Collider collider)
+    {
+        return (human != null && collider.transform.IsChildOf(human.transform))
+            || (dog != null && collider.transform.IsChildOf(dog.transform));
     }
 
     int FindMatchingPoint(FormalPlayerActor actor)
