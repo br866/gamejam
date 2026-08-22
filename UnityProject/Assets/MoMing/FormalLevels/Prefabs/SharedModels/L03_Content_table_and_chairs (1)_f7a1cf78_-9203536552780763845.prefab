@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7781670218476095472}
   - component: {fileID: 7789227891945455395}
   - component: {fileID: 4486193164794660437}
+  - component: {fileID: 5087723398537198983}
   m_Layer: 0
   m_Name: L03_Content_table_and_chairs (1)_f7a1cf78_-9203536552780763845
   m_TagString: Untagged
@@ -83,3 +84,25 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &5087723398537198983
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7463618340805803808}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -9203536552780763845, guid: f7a1cf781a3bdde4d83ea48ef866c083, type: 3}
