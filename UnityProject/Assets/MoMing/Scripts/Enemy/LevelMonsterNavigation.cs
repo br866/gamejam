@@ -13,6 +13,21 @@ public class LevelMonsterNavigation : MonoBehaviour
     public float moveSpeed = 4.5f;
     public float arrivalDistance = 1f;
 
+    [Header("Area Gizmos")]
+    public bool showAreaBounds = true;
+    public Color areaBoundsGizmoColor = new Color(1f, 0.5f, 0f, 0.9f);
+
+    void OnDrawGizmos()
+    {
+        if (!showAreaBounds)
+            return;
+
+        Vector3 center = new Vector3(areaCenter.x, areaCenter.y, areaCenter.z);
+        Vector3 size = new Vector3(areaSize.x, 0.05f, areaSize.z);
+        Gizmos.color = areaBoundsGizmoColor;
+        Gizmos.DrawWireCube(center, size);
+    }
+
     private Seeker seeker;
     private GridGraph graph;
     private Path currentPath;

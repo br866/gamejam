@@ -39,6 +39,30 @@ public class MonsterPatrol : MonoBehaviour
     public bool showDetectionGizmos = true;
     public Color fieldOfViewGizmoColor = new Color(1f, 0.85f, 0f, 0.9f);
 
+    [Header("Room Bounds Gizmos")]
+    public bool showRoomBounds = true;
+    public Color roomBoundsGizmoColor = new Color(0f, 1f, 0.55f, 0.9f);
+
+    void OnDrawGizmos()
+    {
+        if (!showRoomBounds)
+            return;
+
+        float y = Application.isPlaying ? startPos.y : transform.position.y;
+        Vector3 center = new Vector3(roomCenter.x, y, roomCenter.z);
+        Vector3 size = new Vector3(roomSize.x, 0.05f, roomSize.z);
+        Gizmos.color = roomBoundsGizmoColor;
+        Gizmos.DrawWireCube(center, size);
+
+        if (waypoints != null)
+        {
+            Gizmos.color = Color.cyan;
+            foreach (Transform waypoint in waypoints)
+                if (waypoint != null)
+                    Gizmos.DrawWireSphere(waypoint.position, 0.35f);
+        }
+    }
+
     private State currentState = State.Patrol;
 
     public bool IsChasing
