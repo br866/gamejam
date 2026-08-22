@@ -9,6 +9,8 @@ public class FormalPlayerControl : MonoBehaviour
 
     public bool IsDogActive => activeActor != null && activeActor.Role == FormalPlayerActor.ActorRole.Dog;
 
+    public event System.Action<bool> ActiveRoleChanged;
+
     void Start()
     {
         activeActor = human;
@@ -34,6 +36,8 @@ public class FormalPlayerControl : MonoBehaviour
         {
             activeActor = activeActor == human ? dog : human;
             SetCameraTarget();
+            if (ActiveRoleChanged != null)
+                ActiveRoleChanged(IsDogActive);
         }
 
         if (Input.GetKeyDown(KeyCode.F))
