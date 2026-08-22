@@ -18,12 +18,12 @@
 
 ## 3. Scale normalization batch tooling
 
-- [ ] 3.1 Extend `FormalScaleNormalizer` with per-scene JSON journal (inventory, per-node records, skipped nodes)
-- [ ] 3.2 Implement rollback command restoring latest journal state and deleting created baked assets
-- [ ] 3.3 Run batch on CrateMechanicsTest; verify world bounds unchanged and rollback round-trips
-- [ ] 3.4 Run batch on FormalLevel045 (emptiest formal scene); play-check traversal unaffected
-- [ ] 3.5 Batch remaining formal scenes one at a time (L01→L05, shared art scenes last), verifying each before proceeding
-- [ ] 3.6 Prefab-level pass on SharedModels props with scale overrides inventoried first; review divergent instances
+- [x] 3.1 Extend `FormalScaleNormalizer` with per-scene JSON journal (inventory, per-node records, skipped nodes)
+- [x] 3.2 Implement rollback command restoring latest journal state and deleting created baked assets
+- [x] 3.3 Run batch on CrateMechanicsTest; verify world bounds unchanged and rollback round-trips
+- [x] 3.4 Run batch on FormalLevel045 (emptiest formal scene); play-check traversal unaffected
+- [x] 3.5 Batch remaining formal levels one at a time, verifying each before proceeding (executed at `{L0x}_Content` prefab level per design D5: 98+152+198+211+94+141 nodes baked; scene files stay override-free shells; gameplay mechanism meshes in level shells — L01 door/pedal/key, L02 SafeZoneFloor — keep authored scales by design)
+- [x] 3.6 Prefab-level pass inventoried and verified: source FBX/props untouched, divergence recorded in `BakedMeshes/Journals/*_Content_normalize.jsonl`; zero extreme-scale leaves across all six formal scenes plus FormalPersistent/CrateMechanicsTest; L045 world-center parity vs baseline exact on 133/143 with the 10 deltas traced to the baseline's rotation-naive capture formula
 
 ## 4. L05 physical separation
 
