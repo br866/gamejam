@@ -4,7 +4,7 @@ using UnityEngine;
 /// 物理推箱：未挂点时 kinematic 完全不可推动；挂点后切换为动态刚体，
 /// 速度驱动 + 墙体自然阻挡（不会穿墙）。前方 BoxCast 检测到障碍时报告 Blocked。
 /// requiredPushers=2 时需要人类和狗同时挂点才能推动（协作箱/柜子）。
-/// axisMode=Auto 时推动方向由挂点位置推导；固定轴模式用于柜子等单向机关。
+/// axisMode=Auto 时移动方向由挂点位置推导，支持推（W）和拉（S）；固定轴模式用于柜子等单向机关。
 /// </summary>
 [RequireComponent(typeof(Rigidbody), typeof(BoxCollider))]
 public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IFormalPushMover
@@ -61,29 +61,30 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
         if (axis.sqrMagnitude < 0.01f)
             return;
 
-        bool hasHumanInput = human != null && HumanWantsMove(axis);
         bool enoughPushers = CountAttached() >= Mathf.Max(1, requiredPushers);
-        if (!hasHumanInput || !enoughPushers)
+        float inputSign = human != null ? ResolveInputDirection(axis) : 0f;
+        if (inputSign == 0f || !enoughPushers)
         {
             IsBlocked = false;
             return;
         }
 
-        if (travelLimit > 0f && Vector3.Dot(transform.position - engageOrigin, axis) >= travelLimit)
+        Vector3 moveAxis = axis * inputSign;
+        if (inputSign > 0f && travelLimit > 0f && Vector3.Dot(transform.position - engageOrigin, axis) >= travelLimit)
         {
             IsBlocked = true;
             body.velocity = new Vector3(0f, body.velocity.y, 0f);
             return;
         }
 
-        IsBlocked = ProbeBlocked(axis);
+        IsBlocked = ProbeBlocked(moveAxis);
         if (IsBlocked)
         {
             body.velocity = new Vector3(0f, body.velocity.y, 0f);
             return;
         }
 
-        Vector3 velocity = axis * movementSpeed;
+        Vector3 velocity = moveAxis * movementSpeed;
         body.velocity = new Vector3(velocity.x, body.velocity.y, velocity.z);
     }
 
@@ -198,20 +199,30 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
 
         if (humanPoint < 0)
             return Vector3.zero;
-        Vector3 offset = GetPointPosition(humanPoint) - transform.position;
+        // 推箱方向：从人指向箱子再延伸，即箱子被推离人的方向。
+        Vector3 offset = transform.position - GetPointPosition(humanPoint);
         offset.y = 0f;
         return offset.sqrMagnitude > 0.01f ? offset.normalized : Vector3.zero;
     }
 
-    bool HumanWantsMove(Vector3 axis)
+    /// <summary>
+    /// 把相机相对输入解析成沿轴的移动方向：+1 推（沿轴离开人）、-1 拉（沿轴朝向人）、0 无有效输入。
+    /// 固定轴模式（柜子等单向机关）只允许推。
+    /// </summary>
+    float ResolveInputDirection(Vector3 axis)
     {
         float vertical = Input.GetAxisRaw("Vertical");
         float horizontal = Input.GetAxisRaw("Horizontal");
         Vector3 input = new Vector3(horizontal, 0f, vertical);
         if (input.sqrMagnitude < 0.01f)
-            return false;
+            return 0f;
 
-        Camera camera = Camera.main;
+        Camera camera = null;
+        CameraFollow follow = FindObjectOfType<CameraFollow>();
+        if (follow != null)
+            camera = follow.GetComponent<Camera>();
+        if (camera == null)
+            camera = Camera.main;
         Vector3 forward = camera != null ? camera.transform.forward : Vector3.forward;
         forward.y = 0f;
         forward.Normalize();
@@ -219,7 +230,15 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
         right.y = 0f;
         right.Normalize();
         Vector3 world = forward * vertical + right * horizontal;
-        return world.sqrMagnitude > 0.01f && Vector3.Dot(world.normalized, axis) > 0.35f;
+        if (world.sqrMagnitude < 0.01f)
+            return 0f;
+
+        world.Normalize();
+        if (Vector3.Dot(world, axis) > 0.35f)
+            return 1f;
+        if (axisMode == PushAxisMode.Auto && Vector3.Dot(world, -axis) > 0.35f)
+            return -1f;
+        return 0f;
     }
 
     bool CooperationNeeded()

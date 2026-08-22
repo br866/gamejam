@@ -33,6 +33,7 @@ public class FormalPlayerActor : MonoBehaviour
         body.useGravity = true;
         body.constraints = RigidbodyConstraints.FreezeRotation;
         body.interpolation = RigidbodyInterpolation.Interpolate;
+        body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
     }
 
     void Update()
@@ -64,7 +65,7 @@ public class FormalPlayerActor : MonoBehaviour
             return;
 
         float speed = sprint && role == ActorRole.Dog ? sprintSpeed : walkSpeed;
-        body.velocity = new Vector3(direction.x * speed, body.velocity.y, direction.z * speed);
+        body.velocity = new Vector3(direction.x * speed, ClampFall(body.velocity.y), direction.z * speed);
         SetState(!IsGrounded()
             ? ActorState.Jumping
             : direction.sqrMagnitude > 0.01f
@@ -89,6 +90,12 @@ public class FormalPlayerActor : MonoBehaviour
         float jumpVelocity = Mathf.Sqrt(2f * Mathf.Abs(Physics.gravity.y) * jumpHeight);
         body.velocity = new Vector3(body.velocity.x, jumpVelocity, body.velocity.z);
         SetState(ActorState.Jumping);
+    }
+
+    static float ClampFall(float vertical)
+    {
+        // 限制最大下落速度，避免落地帧穿透地面。
+        return Mathf.Max(vertical, -20f);
     }
 
     public void SetLinked(bool isMoving)
