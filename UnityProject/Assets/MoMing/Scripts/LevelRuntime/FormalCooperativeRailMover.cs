@@ -113,12 +113,47 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
 
         direction = Mathf.Sign(direction);
 
-        travel += direction * movementSpeed * Time.fixedDeltaTime;
-        Vector3 targetPosition = movementOrigin + axis * travel;
+        float prospectiveTravel = travel + direction * movementSpeed * Time.fixedDeltaTime;
+        Vector3 targetPosition = movementOrigin + axis * prospectiveTravel;
+        Vector3 step = targetPosition - transform.position;
+
+        // 墙体阻挡：Transform 位移不经过物理解算，必须先探测目标位置是否穿墙。
+        if (step.sqrMagnitude > 0.000001f && ProbeBlocked(step.normalized, step.magnitude + 0.05f))
+        {
+            UpdateAttachedAnimations(pushingAnimation);
+            return;
+        }
+
+        travel = prospectiveTravel;
         transform.position = targetPosition;
         Physics.SyncTransforms();
         KeepAttachedActorsAtNodes();
         UpdateAttachedAnimations(pushingAnimation);
+    }
+
+    bool ProbeBlocked(Vector3 direction, float distance)
+    {
+        BoxCollider box = GetComponent<BoxCollider>();
+        if (box == null)
+            return false;
+
+        Vector3 half = Vector3.Scale(box.size * 0.5f, transform.lossyScale);
+        Vector3 origin = transform.position + Vector3.up * 0.1f;
+        RaycastHit hit;
+        if (Physics.BoxCast(origin, Vector3.Scale(half, new Vector3(0.9f, 0.9f, 0.9f)), direction, out hit, transform.rotation, distance))
+        {
+            // IgnoreCollision 只影响接触解算，不影响 BoxCast；挂点角色随箱移动，需排除。
+            if (hit.collider != null && !hit.collider.isTrigger
+                && !hit.collider.transform.IsChildOf(transform)
+                && !IsAttachedRider(hit.collider))
+                return true;
+        }
+        return false;
+    }
+
+    bool IsAttachedRider(Collider collider)
+    {
+        return human != null && collider.transform.IsChildOf(human.transform);
     }
 
     public void SetAttachedPushAnimation()
