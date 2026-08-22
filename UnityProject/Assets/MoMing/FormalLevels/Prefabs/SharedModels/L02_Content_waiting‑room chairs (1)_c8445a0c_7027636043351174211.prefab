@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6018161899342223887}
   - component: {fileID: 88091302757511996}
   - component: {fileID: 5596422218392703683}
-  - component: {fileID: 8226489559708782572}
+  - component: {fileID: 8692629002005103317}
   m_Layer: 7
   m_Name: "L02_Content_waiting\u2011room chairs (1)_c8445a0c_7027636043351174211"
   m_TagString: Untagged
@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0.0052142143, y: 0.7070161, z: 0.7070876, w: -0.0113226175}
   m_LocalPosition: {x: 1.2397537, y: 11.050076, z: -0.72961044}
-  m_LocalScale: {x: 317.1872, y: 307.14355, z: 300.38132}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -41,7 +41,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2968285332493520356}
-  m_Mesh: {fileID: 7027636043351174211, guid: c8445a0c77465134b91daa20b798c466, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 85961ee8aa71fad428f587b2b4180766, type: 2}
 --- !u!23 &5596422218392703683
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -84,7 +84,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &8226489559708782572
+--- !u!65 &8692629002005103317
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -101,7 +101,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.019013159, y: 0.006950891, z: 0.00285859}
-  m_Center: {x: 0.000018883966, y: 0.000008804374, z: -0.0015}
+  m_Size: {x: 6.5277, y: 2.3864, z: 0.9598}
+  m_Center: {x: 0.00648, y: 0.00302, z: -0.50365}
