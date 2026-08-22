@@ -67,7 +67,7 @@ public class FormalGameFlowController : MonoBehaviour
         if (operationInProgress)
             return;
 
-        StartCoroutine(LoadLevelRoutine(sceneName, null, false));
+        StartCoroutine(LoadLevelRoutine(sceneName, null, false, true));
     }
 
     public void CompleteRoute()
@@ -224,14 +224,22 @@ public class FormalGameFlowController : MonoBehaviour
 
     public void NotifySuccessorCheckpointActivated(string sceneName)
     {
-        if (sceneName != currentLevelScene || string.IsNullOrEmpty(pendingUnloadScene))
+        if (routeComplete || sceneName != currentLevelScene || operationInProgress)
             return;
 
-        // The predecessor level stays loaded after the checkpoint registers,
-        // because the dog may still be inside it. It is only unloaded when the
-        // player resets the current level (RestartCurrentLevelRoutine) or jumps
-        // to another route entry (UnloadIrrelevantLevels).
+        // Reaching the level-exit checkpoint advances the route: the shared
+        // transition door opens permanently and the successor level loads
+        // additively. Prior levels stay loaded because the dog may still be
+        // inside them; they are only unloaded by an explicit level reset.
         successorArrivalConfirmed = true;
+
+        int index = FindRouteIndex(sceneName);
+        if (index >= 0 && index + 1 < routeCatalog.Length)
+        {
+            string successor = routeCatalog[index + 1].sceneName;
+            OpenTransitionDoor(sceneName, successor);
+            LoadSuccessor(successor);
+        }
     }
 
     IEnumerator RestartCurrentLevelRoutine()
@@ -256,7 +264,7 @@ public class FormalGameFlowController : MonoBehaviour
         operationInProgress = false;
     }
 
-    IEnumerator LoadLevelRoutine(string sceneName, Action<bool> completed, bool discardPriorLevel)
+    IEnumerator LoadLevelRoutine(string sceneName, Action<bool> completed, bool discardPriorLevel, bool keepPriorLevels = false)
     {
         FormalRouteEntry target = FindRouteEntryByScene(sceneName);
         if (target == null)
@@ -282,7 +290,8 @@ public class FormalGameFlowController : MonoBehaviour
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentLevelScene));
         if (string.IsNullOrEmpty(predecessorScene))
             PlacePlayersAtLoadedLevelSpawn();
-        yield return UnloadIrrelevantLevels(priorPendingScene);
+        if (!keepPriorLevels)
+            yield return UnloadIrrelevantLevels(priorPendingScene);
         yield return UnloadUnusedSharedArt();
         operationInProgress = false;
         completed?.Invoke(true);

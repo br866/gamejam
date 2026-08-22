@@ -140,7 +140,12 @@ public class MonsterPatrol : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         navigation = GetComponent<LevelMonsterNavigation>();
         startPos = transform.position;
-        visualRenderer = GetComponentInChildren<Renderer>();
+        foreach (Renderer r in GetComponentsInChildren<Renderer>())
+            if (r.enabled && r.gameObject.activeInHierarchy)
+            {
+                visualRenderer = r;
+                break;
+            }
         ResolveFormalSafeZones();
     }
 

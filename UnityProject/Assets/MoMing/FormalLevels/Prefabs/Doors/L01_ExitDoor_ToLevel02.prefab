@@ -126,7 +126,6 @@ GameObject:
   - component: {fileID: 8762170693179902065}
   - component: {fileID: 635625924307809100}
   - component: {fileID: 2742936238726105418}
-  - component: {fileID: 8077185899978154009}
   m_Layer: 0
   m_Name: L01_ExitDoor_ToLevel02
   m_TagString: Untagged
@@ -188,16 +187,3 @@ MonoBehaviour:
   openingDirection: 0
   openAngle: 90
   openSpeed: 180
---- !u!114 &8077185899978154009
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8284044289964596036}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb4e2a09b2122c54d97a60c969426b2f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  successorScene: FormalLevel02
