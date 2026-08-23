@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody), typeof(CapsuleCollider))]
+[RequireComponent(typeof(Rigidbody))]
 public class FormalPlayerActor : MonoBehaviour
 {
     public enum ActorRole { Human, Dog }
@@ -13,6 +13,8 @@ public class FormalPlayerActor : MonoBehaviour
     [SerializeField] private float jumpHeight = 2.2f;
     [SerializeField] private bool walkOnlyAnimation;
     [SerializeField] private bool canJump = true;
+    [SerializeField] private Transform focusAnchor;
+    [SerializeField] private Transform moverAttachPoint;
 
     private Rigidbody body;
     private CapsuleCollider capsule;
@@ -24,14 +26,68 @@ public class FormalPlayerActor : MonoBehaviour
     private RigidbodyConstraints constraintsBeforeMoverLock;
     private float nextIdleVariationTime;
     private bool idleVariation;
+    private bool moverAttachPointResolved;
 
     public ActorRole Role => role;
     public ActorState State => state;
 
+    /// <summary>相机注视点；未配置时回退到根节点。</summary>
+    public Transform FocusAnchor => focusAnchor != null ? focusAnchor : transform;
+
+    /// <summary>
+    /// 根节点(脚底)到挂接锚点的局部偏移。所有"把角色放到某个点位"的摆放
+    /// 都必须用点位减去该偏移，保证锚点与点位重合（脚底 pivot 约定）。
+    /// 未配置时为零向量，行为退化为旧的"根节点直接落在点位"。
+    /// </summary>
+    public Vector3 MoverAttachOffset => moverAttachPoint != null ? moverAttachPoint.localPosition : Vector3.zero;
+
+    /// <summary>
+    /// 把挂接锚点对齐到世界坐标：优先用 Inspector 指定或名为 MoverAttachPoint 的子节点，
+    /// 都不存在时退化为根节点直接落在点位。锚点引用只在首次调用时解析一次，不会每帧查找。
+    /// </summary>
+    public void SnapToMoverPoint(Vector3 worldPoint)
+    {
+        if (!moverAttachPointResolved)
+        {
+            moverAttachPointResolved = true;
+            if (moverAttachPoint == null)
+            {
+                moverAttachPoint = transform.Find("MoverAttachPoint");
+                if (moverAttachPoint == null)
+                {
+                    Transform[] children = GetComponentsInChildren<Transform>(true);
+                    foreach (Transform child in children)
+                    {
+                        if (child.name == "MoverAttachPoint")
+                        {
+                            moverAttachPoint = child;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        Vector3 target = worldPoint;
+        if (moverAttachPoint != null)
+            target -= moverAttachPoint.position - transform.position;
+
+        // 挂接吸附只接管 X/Z；Y 保持当前值且不清垂直速度，垂直交给重力与地面碰撞。
+        // 若整只 SetPosition 硬传送，锚点高度和地面接触会每帧互相打架，角色就会弹来弹去。
+        Vector3 velocity = body.velocity;
+        target.y = transform.position.y;
+        body.position = target;
+        transform.SetPositionAndRotation(target, transform.rotation);
+        if (moverRotationLocked)
+            transform.rotation = moverRotation;
+        body.velocity = velocity;
+        Physics.SyncTransforms();
+    }
+
     void Awake()
     {
         body = GetComponent<Rigidbody>();
-        capsule = GetComponent<CapsuleCollider>();
+        capsule = GetComponentInChildren<CapsuleCollider>();
         body.useGravity = true;
         body.constraints = RigidbodyConstraints.FreezeRotation;
         body.interpolation = RigidbodyInterpolation.Interpolate;

@@ -5,11 +5,12 @@ using UnityEngine;
 /// 速度驱动 + 墙体自然阻挡（不会穿墙）。前方 BoxCast 检测到障碍时报告 Blocked。
 /// requiredPushers=2 时需要人类和狗同时挂点才能推动（协作箱/柜子）。
 /// axisMode=Auto 时移动方向由挂点位置推导，支持推（W）和拉（S）；固定轴模式用于柜子等单向机关。
+/// axisMode=Free 时全向移动：人与挂点相对位置恒定随箱平移，箱子沿相机相对输入自由移动。
 /// </summary>
 [RequireComponent(typeof(Rigidbody), typeof(BoxCollider))]
 public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IFormalPushMover
 {
-    public enum PushAxisMode { Auto, PlusX, MinusX, PlusZ, MinusZ }
+    public enum PushAxisMode { Auto, PlusX, MinusX, PlusZ, MinusZ, Free }
 
     [SerializeField] private float movementSpeed = 2f;
     [SerializeField] private float interactionRange = 2.5f;
@@ -17,8 +18,6 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
     [SerializeField] private Transform[] interactionPoints = new Transform[4];
     [SerializeField] private float blockProbeSkin = 0.12f;
     [SerializeField] private PushAxisMode axisMode = PushAxisMode.Auto;
-    [Tooltip("沿推轴最大位移，0 = 不限制")]
-    [SerializeField] private float travelLimit = 0f;
 
     private Rigidbody body;
     private BoxCollider box;
@@ -28,7 +27,6 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
     private int dogPoint = -1;
     private Vector3 initialPosition;
     private Quaternion initialRotation;
-    private Vector3 engageOrigin;
 
     public bool IsEngaged { get { return human != null; } }
     public bool IsBlocked { get; private set; }
@@ -57,23 +55,35 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
             return;
 
         KeepActorsAtPoints();
-        Vector3 axis = ResolvePushAxis();
-        if (axis.sqrMagnitude < 0.01f)
-            return;
 
-        bool enoughPushers = CountAttached() >= Mathf.Max(1, requiredPushers);
-        float inputSign = human != null ? ResolveInputDirection(axis) : 0f;
-        if (inputSign == 0f || !enoughPushers)
+        Vector3 moveAxis;
+        if (axisMode == PushAxisMode.Free)
         {
-            IsBlocked = false;
-            return;
+            moveAxis = ResolveWorldInput();
+            if (moveAxis.sqrMagnitude < 0.01f)
+            {
+                IsBlocked = false;
+                return;
+            }
+        }
+        else
+        {
+            Vector3 axis = ResolvePushAxis();
+            if (axis.sqrMagnitude < 0.01f)
+                return;
+
+            float inputSign = ResolveInputDirection(axis);
+            if (inputSign == 0f)
+            {
+                IsBlocked = false;
+                return;
+            }
+            moveAxis = axis * inputSign;
         }
 
-        Vector3 moveAxis = axis * inputSign;
-        if (inputSign > 0f && travelLimit > 0f && Vector3.Dot(transform.position - engageOrigin, axis) >= travelLimit)
+        if (CountAttached() < Mathf.Max(1, requiredPushers))
         {
-            IsBlocked = true;
-            body.velocity = new Vector3(0f, body.velocity.y, 0f);
+            IsBlocked = false;
             return;
         }
 
@@ -90,6 +100,9 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
 
     public bool TryEngage(FormalPlayerActor actor)
     {
+        if (!enabled)
+            return false;
+
         if (actor == null || IsAttached(actor))
             return false;
 
@@ -114,12 +127,9 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
 
         IgnoreCrateCollision(actor, true);
         actor.LockMoverInteraction(transform.position);
-        actor.SetPosition(GetPointPosition(point));
+        actor.SnapToMoverPoint(GetPointPosition(point));
         if (human == actor)
-        {
-            engageOrigin = transform.position;
             body.isKinematic = false;
-        }
         return true;
     }
 
@@ -179,9 +189,9 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
     void KeepActorsAtPoints()
     {
         if (human != null && humanPoint >= 0)
-            human.SetPosition(GetPointPosition(humanPoint));
+            human.SnapToMoverPoint(GetPointPosition(humanPoint));
         if (dog != null && dogPoint >= 0)
-            dog.SetPosition(GetPointPosition(dogPoint));
+            dog.SnapToMoverPoint(GetPointPosition(dogPoint));
     }
 
     Vector3 ResolvePushAxis()
@@ -207,16 +217,14 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
     }
 
     /// <summary>
-    /// 把相机相对输入解析成沿轴的移动方向：+1 推（沿轴离开人）、-1 拉（沿轴朝向人）、0 无有效输入。
-    /// 固定轴模式（柜子等单向机关）只允许推。
+    /// 解析相机相对的水平输入向量为归一化方向；无有效输入时返回零向量。
     /// </summary>
-    float ResolveInputDirection(Vector3 axis)
+    Vector3 ResolveWorldInput()
     {
         float vertical = Input.GetAxisRaw("Vertical");
         float horizontal = Input.GetAxisRaw("Horizontal");
-        Vector3 input = new Vector3(horizontal, 0f, vertical);
-        if (input.sqrMagnitude < 0.01f)
-            return 0f;
+        if (new Vector3(horizontal, 0f, vertical).sqrMagnitude < 0.01f)
+            return Vector3.zero;
 
         Camera camera = null;
         CameraFollow follow = FindObjectOfType<CameraFollow>();
@@ -231,10 +239,19 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
         right.y = 0f;
         right.Normalize();
         Vector3 world = forward * vertical + right * horizontal;
+        return world.sqrMagnitude > 0.01f ? world.normalized : Vector3.zero;
+    }
+
+    /// <summary>
+    /// 把相机相对输入解析成沿轴的移动方向：+1 推（沿轴离开人）、-1 拉（沿轴朝向人）、0 无有效输入。
+    /// 固定轴模式（柜子等单向机关）只允许推。
+    /// </summary>
+    float ResolveInputDirection(Vector3 axis)
+    {
+        Vector3 world = ResolveWorldInput();
         if (world.sqrMagnitude < 0.01f)
             return 0f;
 
-        world.Normalize();
         if (Vector3.Dot(world, axis) > 0.35f)
             return 1f;
         if (axisMode == PushAxisMode.Auto && Vector3.Dot(world, -axis) > 0.35f)
@@ -316,7 +333,7 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
 
     void IgnoreCrateCollision(FormalPlayerActor actor, bool ignore)
     {
-        Collider actorCollider = actor.GetComponent<Collider>();
+        Collider actorCollider = actor.GetComponentInChildren<Collider>();
         if (actorCollider == null)
             return;
 

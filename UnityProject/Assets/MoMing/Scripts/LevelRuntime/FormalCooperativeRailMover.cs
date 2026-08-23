@@ -45,6 +45,9 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
 
     public bool TryEngage(FormalPlayerActor actor)
     {
+        if (!enabled)
+            return false;
+
         if (actor == null || IsAttached(actor))
         {
             Debug.LogWarning($"[FormalCooperativeRailMover] F engage rejected: actor={(actor != null ? actor.name : "null")}, alreadyAttached={IsAttached(actor)}");
@@ -201,7 +204,7 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
     void KeepAttachedActorsAtNodes()
     {
         if (human != null && humanGroup >= 0)
-            human.SetPosition(GetGroupPoint(humanGroup, human.Role));
+            human.SnapToMoverPoint(GetGroupPoint(humanGroup, human.Role));
     }
 
     void Detach(FormalPlayerActor actor)
@@ -216,7 +219,7 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
 
     void IgnoreMoverCollision(FormalPlayerActor actor, bool ignore)
     {
-        Collider actorCollider = actor.GetComponent<Collider>();
+        Collider actorCollider = actor.GetComponentInChildren<Collider>();
         if (actorCollider == null)
             return;
 
