@@ -36,5 +36,5 @@
 - [x] 6.2 Select canonical Prefabs and audit all formal scene/content-Prefab instances referencing duplicate members.
 - [x] 6.3 Replace eligible instances with canonical Prefab instances while preserving parent, Transform, name, active state, Layer, Tag, and supported overrides.
 - [x] 6.4 Verify no duplicate-member instances remain in formal scenes/content Prefabs and record manual-review exclusions.
-- [ ] 6.5 Preserve per-instance Renderer material differences when replacing duplicate members with canonical Prefab instances.
+- [x] 6.5 Preserve per-instance Renderer material differences when replacing duplicate members with canonical Prefab instances.
 - [x] 6.6 Delete obsolete duplicate Prefab assets only after excluding external scene/resource references; retain referenced shared-art assets.
