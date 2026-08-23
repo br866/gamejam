@@ -36,8 +36,30 @@
 2. **同拓扑不同尺寸的变体未合并**：约 74 组（如不同长度的 pipe/wall5 分段）。若要合并必须同步修改
    场景物体 localScale 做"归一化"，风险较高，本轮未自动处理。
 
-## Phase 2 计划（待执行：Prefab 整合）
+## Phase 2 执行记录：Prefab 整合（已完成）
 
-把同一分量内各实例改接到**同一个源 Prefab**（复用现有 SharedModels 包装 Prefab，材质/碰撞体随实例
-override 迁移），然后删除失去全部引用的包装 Prefab 文件。Instance override 词汇已确认为封闭集合：
-Transform / m_Layer / m_Name / m_Mesh / m_Materials[0] / BoxCollider size+center。
+调查结论：项目架构**本就是共享 Prefab 模式**——每个模型只有一个 SharedModels 包装 Prefab，场景内是其多实例，
+实例级 `m_Mesh` override 指向烘焙网格。阶段1后这些 override 已自动收敛到规范网格，无需大规模改接。
+
+实际执行的整合（167 个包装 Prefab 全量签名扫描后仅剩 5 组完全同内容重复）：
+
+| 组 | 删除的冗余包装 | 保留（规范） | 改接实例 |
+|---|---|---|---|
+| door4 jamb | (3)(4)(5) | (1) | 3 |
+| wall5 边界件 A | (8)(18)(20)(42)(43) | (7) | 5 |
+| wall5 边界件 B | (45) | (44) | 1 |
+| floor2 边界件 | (9)(24) | (5) | 2 |
+| floor_tile_blue | (16) | (14) | 1 |
+
+- 方式：Unity API 实例替换（干跑结构校验 12/12 通过 → 替换 → 保存场景），保留名称/变换/层/材质/碰撞体等
+  全部实例级数据；涉及 `FormalSharedArt_L01_L02 ~ L045_L05.unity` 共 5 个边界场景。
+- 删除 12 个冗余包装 Prefab；全项目残留引用扫描 = 0；控制台 0 错误。
+- Content Prefab 缺失网格数复核：917 MeshFilter / 10 missing，与改动前完全一致（均为预置坏引用）。
+
+## 提交历史
+
+- `9448cac` 检查点（改动前快照）
+- `89c9554` Phase 1：网格去重 + GUID 重定向 + 删除冗余/孤儿资源（1337→586，-116.6 MB）
+- `578f90f` Phase 2：SharedArt 包装 Prefab 整合（-12 文件，12 实例改接共享 Prefab）
+
+回滚方式：`git checkout <commit> -- UnityProject/Assets/MoMing docs/` 后在 Unity 中刷新即可。
