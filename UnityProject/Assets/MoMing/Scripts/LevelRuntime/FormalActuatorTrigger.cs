@@ -105,18 +105,12 @@ public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState
                 actuator.Open();
         }
 
-        if (!string.IsNullOrEmpty(successorScene))
-        {
-            FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
-            if (flow != null)
-                flow.LoadSuccessor(successorScene);
-        }
+        bool requestsRouteAdvance = opensTransitionDoor || !string.IsNullOrEmpty(successorScene);
+        if (!requestsRouteAdvance)
+            return;
 
-        if (opensTransitionDoor)
-        {
-            FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
-            if (flow != null)
-                flow.OpenTransitionDoorToSuccessor(gameObject.scene.name);
-        }
+        FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
+        if (flow != null)
+            flow.RequestRouteAdvance();
     }
 }

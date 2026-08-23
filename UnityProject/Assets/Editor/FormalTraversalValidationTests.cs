@@ -493,16 +493,10 @@ public class FormalTraversalValidationTests
 
         var key = keyPrefab.GetComponent<FormalHumanKey>();
         var trigger = keyPrefab.GetComponent<Collider>();
-        var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-        var successorScene = (string)typeof(FormalHumanKey)
-            .GetField("successorScene", flags)
-            .GetValue(key);
 
         Assert.IsNotNull(key, "L01 human key has no FormalHumanKey behavior.");
         Assert.IsNotNull(trigger, "L01 human key has no trigger collider.");
         Assert.IsTrue(trigger.isTrigger, "L01 human key collider must be a trigger.");
-        Assert.AreEqual("FormalLevel02", successorScene,
-            "L01 human key must load FormalLevel02 directly.");
     }
 
     [Test]

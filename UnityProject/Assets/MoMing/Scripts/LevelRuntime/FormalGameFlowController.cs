@@ -12,6 +12,7 @@ public class FormalGameFlowController : MonoBehaviour
         public string levelId;
         public string sceneName;
         public string[] sharedArtScenes;
+        public string arrivalTransitionDoorName;
     }
 
     [SerializeField] private string initialLevelScene = "FormalLevel01";
@@ -24,13 +25,15 @@ public class FormalGameFlowController : MonoBehaviour
     [SerializeField] private string level04Level045SharedArtScene = "FormalSharedArt_L04_L045";
     [SerializeField] private string level045Level05SharedArtScene = "FormalSharedArt_L045_L05";
 
+    private const string RetainedPredecessorLevelId = "Level04.5";
+
     private string currentLevelScene;
     private string pendingUnloadScene;
     private bool operationInProgress;
     private bool routeComplete;
     private bool successorArrivalConfirmed;
     private Coroutine level045PursuitRoutine;
-    private bool gmLevel045Pending;
+    private string pendingAdvanceFromScene;
 
     public string CurrentLevelScene => currentLevelScene;
     public IReadOnlyList<FormalRouteEntry> RouteCatalog => routeCatalog;
@@ -54,9 +57,7 @@ public class FormalGameFlowController : MonoBehaviour
         if (routeComplete)
             return;
 
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-            StartGmLevel045();
-        else if (Input.GetKeyDown(KeyCode.Keypad2))
+        if (Input.GetKeyDown(KeyCode.Keypad2))
             GoToNextLevel();
         else if (Input.GetKeyDown(KeyCode.Keypad8))
             GoToPreviousLevel();
@@ -66,12 +67,41 @@ public class FormalGameFlowController : MonoBehaviour
             CompleteCurrentLevelConditionsAndAdvance();
     }
 
-    public void LoadSuccessor(string sceneName)
+    public void RequestRouteAdvance()
     {
-        if (operationInProgress)
+        string successor = GetRouteSuccessor(currentLevelScene);
+        if (string.IsNullOrEmpty(successor))
             return;
 
-        StartCoroutine(LoadLevelRoutine(sceneName, null, false, true));
+        if (operationInProgress)
+        {
+            if (!string.IsNullOrEmpty(pendingAdvanceFromScene))
+                Debug.Log($"[FormalGameFlowController] Replacing deferred advance from {pendingAdvanceFromScene} with request from {currentLevelScene}.");
+            pendingAdvanceFromScene = currentLevelScene;
+            return;
+        }
+
+        StartCoroutine(AdvanceRoutine(successor));
+    }
+
+    public void NotifyCheckpointActivated(string sceneName)
+    {
+        if (routeComplete || sceneName != currentLevelScene)
+            return;
+
+        if (!HasArrivalSequence(FindRouteIndex(currentLevelScene)))
+            return;
+
+        BeginRetainedPredecessorPursuitSequence();
+    }
+
+    public void NotifySuccessorCheckpointActivated(string sceneName)
+    {
+        if (routeComplete || sceneName != currentLevelScene)
+            return;
+
+        successorArrivalConfirmed = true;
+        RequestRouteAdvance();
     }
 
     public void CompleteRoute()
@@ -135,9 +165,8 @@ public class FormalGameFlowController : MonoBehaviour
 
     public void GoToNextLevel()
     {
-        int index = FindRouteIndex(currentLevelScene);
-        if (index >= 0 && index + 1 < routeCatalog.Length)
-            LoadSuccessor(routeCatalog[index + 1].sceneName);
+        if (FindRouteSuccessorIndex(currentLevelScene) >= 0)
+            RequestRouteAdvance();
     }
 
     public void GoToPreviousLevel()
@@ -154,129 +183,18 @@ public class FormalGameFlowController : MonoBehaviour
             LoadLevel(entry.sceneName);
     }
 
-    public void StartGmLevel045()
-    {
-        if (currentLevelScene == "FormalLevel045")
-            return;
-
-        if (operationInProgress)
-        {
-            gmLevel045Pending = true;
-            return;
-        }
-
-        StartCoroutine(LoadGmLevel045Routine());
-    }
-
-    IEnumerator LoadGmLevel045Routine()
-    {
-        operationInProgress = true;
-
-        yield return EnsureSceneLoaded("FormalSharedArt_L04_L045");
-        yield return EnsureSceneLoaded("FormalSharedArt_L045_L05");
-        yield return EnsureSceneLoaded("FormalLevel04");
-        yield return EnsureSceneLoaded("FormalLevel045");
-
-        currentLevelScene = "FormalLevel045";
-        pendingUnloadScene = "FormalLevel04";
-        successorArrivalConfirmed = false;
-        SceneManager.SetActiveScene(SceneManager.GetSceneByName("FormalLevel045"));
-        OpenAllDoorsInScene("FormalLevel04");
-        CloseLevel045To05Doors();
-        yield return EnsureSceneLoaded("FormalLevel04");
-        yield return WaitForFormalActors();
-        yield return null;
-        FormalCheckpoint checkpoint = FindCheckpoint("FormalLevel045", "L045_Checkpoint");
-        if (checkpoint != null)
-            checkpoint.ActivateCheckpoint();
-
-        FormalLevelController level045 = FormalLevelActors.FindLevelController(SceneManager.GetSceneByName("FormalLevel045"));
-        if (level045 != null)
-            level045.ResetLevel();
-
-        BeginLevel045PursuitSequence();
-        operationInProgress = false;
-    }
-
-    static FormalCheckpoint FindCheckpoint(string sceneName, string checkpointName)
-    {
-        Scene scene = SceneManager.GetSceneByName(sceneName);
-        if (!scene.isLoaded)
-            return null;
-
-        foreach (GameObject root in scene.GetRootGameObjects())
-            foreach (FormalCheckpoint checkpoint in root.GetComponentsInChildren<FormalCheckpoint>(true))
-                if (checkpoint.name == checkpointName)
-                    return checkpoint;
-
-        return null;
-    }
-
-    IEnumerator EnsureSceneLoaded(string sceneName)
-    {
-        Scene scene = SceneManager.GetSceneByName(sceneName);
-        if (!scene.isLoaded)
-        {
-            string scenePath = "Assets/MoMing/FormalLevels/" + sceneName + ".unity";
-            yield return SceneManager.LoadSceneAsync(scenePath, LoadSceneMode.Additive);
-        }
-
-        float timeout = 10f;
-        while (!SceneManager.GetSceneByName(sceneName).isLoaded && timeout > 0f)
-        {
-            timeout -= Time.unscaledDeltaTime;
-            yield return null;
-        }
-    }
-
-    IEnumerator WaitForFormalActors()
-    {
-        float timeout = 5f;
-        while (FormalPlayerActors.Instance == null && timeout > 0f)
-        {
-            timeout -= Time.unscaledDeltaTime;
-            yield return null;
-        }
-    }
-
-    void CloseLevel045To05Doors()
-    {
-        foreach (string sceneName in new[] { "FormalLevel045", "FormalSharedArt_L045_L05" })
-        {
-            Scene scene = SceneManager.GetSceneByName(sceneName);
-            if (!scene.isLoaded)
-                continue;
-
-            foreach (GameObject root in scene.GetRootGameObjects())
-                foreach (FormalDoor door in root.GetComponentsInChildren<FormalDoor>(true))
-                    if (door.name.IndexOf("ToLevel05", StringComparison.OrdinalIgnoreCase) >= 0)
-                        door.SetClosedImmediate();
-        }
-    }
-
-    void OpenAllDoorsInScene(string sceneName)
-    {
-        Scene scene = SceneManager.GetSceneByName(sceneName);
-        if (!scene.isLoaded)
-            return;
-
-        foreach (GameObject root in scene.GetRootGameObjects())
-            foreach (FormalDoor door in root.GetComponentsInChildren<FormalDoor>(true))
-                door.OpenPermanently();
-    }
-
     public void ResetCurrentLevel()
     {
         if (string.IsNullOrEmpty(currentLevelScene))
             return;
 
-        if (currentLevelScene == "FormalLevel045" && pendingUnloadScene == "FormalLevel04")
+        if (!string.IsNullOrEmpty(pendingUnloadScene) && ShouldRetainPredecessor(FindRouteIndex(currentLevelScene)))
         {
             FormalLevelController retainedLevel = FormalLevelActors.FindLevelController(SceneManager.GetSceneByName(currentLevelScene));
             if (retainedLevel != null)
                 retainedLevel.ResetLevel();
 
-            Scene retainedScene = SceneManager.GetSceneByName("FormalLevel04");
+            Scene retainedScene = SceneManager.GetSceneByName(pendingUnloadScene);
             if (retainedScene.isLoaded)
             {
                 foreach (GameObject root in retainedScene.GetRootGameObjects())
@@ -284,7 +202,7 @@ public class FormalGameFlowController : MonoBehaviour
                         monster.ResetPatrol();
             }
 
-            BeginLevel045PursuitSequence();
+            BeginRetainedPredecessorPursuitSequence();
             return;
         }
 
@@ -309,23 +227,6 @@ public class FormalGameFlowController : MonoBehaviour
             Debug.LogWarning($"No shared transition door found from {fromScene} to {toScene}.");
     }
 
-    public void OpenTransitionDoorToSuccessor(string fromScene)
-    {
-        int index = FindRouteIndex(fromScene);
-        if (index < 0 || index + 1 >= routeCatalog.Length)
-            return;
-
-        OpenTransitionDoor(fromScene, routeCatalog[index + 1].sceneName);
-    }
-
-    public void NotifyLevel045DoorOpened()
-    {
-        if (currentLevelScene != "FormalLevel045" || pendingUnloadScene != "FormalLevel04")
-            return;
-
-        BeginLevel045PursuitSequence();
-    }
-
     public void CompleteCurrentLevelConditionsAndAdvance()
     {
         Scene current = SceneManager.GetSceneByName(currentLevelScene);
@@ -342,13 +243,8 @@ public class FormalGameFlowController : MonoBehaviour
         foreach (FormalActuatorTrigger trigger in FindInScene<FormalActuatorTrigger>(current))
             trigger.CompleteImmediately();
 
-        int currentIndex = FindRouteIndex(currentLevelScene);
-        if (currentIndex >= 0 && currentIndex + 1 < routeCatalog.Length)
-        {
-            string successor = routeCatalog[currentIndex + 1].sceneName;
-            OpenTransitionDoor(currentLevelScene, successor);
-            LoadSuccessor(successor);
-        }
+        if (FindRouteSuccessorIndex(currentLevelScene) >= 0)
+            RequestRouteAdvance();
     }
 
     public void OpenAllDoorsInCurrentLevelScope()
@@ -364,32 +260,35 @@ public class FormalGameFlowController : MonoBehaviour
         }
     }
 
-    static T[] FindInScene<T>(Scene scene) where T : Component
+    IEnumerator AdvanceRoutine(string successorScene)
     {
-        List<T> result = new List<T>();
-        foreach (GameObject root in scene.GetRootGameObjects())
-            result.AddRange(root.GetComponentsInChildren<T>(true));
-        return result.ToArray();
+        operationInProgress = true;
+
+        yield return LoadSharedArtForEntries(currentLevelScene, pendingUnloadScene, successorScene);
+        OpenTransitionDoor(currentLevelScene, successorScene);
+
+        yield return LoadLevelRoutineCore(successorScene, null, discardPriorLevel: false, keepPriorLevels: true, manageOperationGuard: false);
+
+        operationInProgress = false;
+        DrainPendingAdvance();
     }
 
-    public void NotifySuccessorCheckpointActivated(string sceneName)
+    void DrainPendingAdvance()
     {
-        if (routeComplete || sceneName != currentLevelScene || operationInProgress)
+        if (string.IsNullOrEmpty(pendingAdvanceFromScene))
             return;
 
-        // Reaching the level-exit checkpoint advances the route: the shared
-        // transition door opens permanently and the successor level loads
-        // additively. Prior levels stay loaded because the dog may still be
-        // inside them; they are only unloaded by an explicit level reset.
-        successorArrivalConfirmed = true;
+        string originScene = pendingAdvanceFromScene;
+        pendingAdvanceFromScene = null;
 
-        int index = FindRouteIndex(sceneName);
-        if (index >= 0 && index + 1 < routeCatalog.Length)
+        if (originScene != currentLevelScene || routeComplete || operationInProgress)
         {
-            string successor = routeCatalog[index + 1].sceneName;
-            OpenTransitionDoor(sceneName, successor);
-            LoadSuccessor(successor);
+            Debug.Log($"[FormalGameFlowController] Discarded stale deferred advance from {originScene}.");
+            return;
         }
+
+        Debug.Log("[FormalGameFlowController] Executing deferred route advance.");
+        RequestRouteAdvance();
     }
 
     IEnumerator RestartCurrentLevelRoutine()
@@ -412,9 +311,15 @@ public class FormalGameFlowController : MonoBehaviour
 
         yield return UnloadUnusedSharedArt();
         operationInProgress = false;
+        DrainPendingAdvance();
     }
 
     IEnumerator LoadLevelRoutine(string sceneName, Action<bool> completed, bool discardPriorLevel, bool keepPriorLevels = false)
+    {
+        return LoadLevelRoutineCore(sceneName, completed, discardPriorLevel, keepPriorLevels, manageOperationGuard: true);
+    }
+
+    IEnumerator LoadLevelRoutineCore(string sceneName, Action<bool> completed, bool discardPriorLevel, bool keepPriorLevels, bool manageOperationGuard)
     {
         FormalRouteEntry target = FindRouteEntryByScene(sceneName);
         if (target == null)
@@ -423,7 +328,9 @@ public class FormalGameFlowController : MonoBehaviour
             yield break;
         }
 
-        operationInProgress = true;
+        if (manageOperationGuard)
+            operationInProgress = true;
+
         string predecessorScene = currentLevelScene;
         string priorPendingScene = pendingUnloadScene;
         if (sceneName != "FormalLevel045")
@@ -445,20 +352,19 @@ public class FormalGameFlowController : MonoBehaviour
             : predecessorScene;
         successorArrivalConfirmed = false;
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentLevelScene));
-        if (string.IsNullOrEmpty(predecessorScene))
+        if (discardPriorLevel || string.IsNullOrEmpty(predecessorScene))
             PlacePlayersAtLoadedLevelSpawn();
         if (!keepPriorLevels)
             yield return UnloadIrrelevantLevels(priorPendingScene);
         if (!discardPriorLevel && predecessorScene != sceneName)
             yield return ArrivalCleanup();
         yield return UnloadUnusedSharedArt();
-        operationInProgress = false;
         completed?.Invoke(true);
 
-        if (gmLevel045Pending)
+        if (manageOperationGuard)
         {
-            gmLevel045Pending = false;
-            StartCoroutine(LoadGmLevel045Routine());
+            operationInProgress = false;
+            DrainPendingAdvance();
         }
     }
 
@@ -471,6 +377,7 @@ public class FormalGameFlowController : MonoBehaviour
 
         yield return UnloadUnusedSharedArt();
         operationInProgress = false;
+        DrainPendingAdvance();
         completed?.Invoke(loaded);
     }
 
@@ -480,7 +387,10 @@ public class FormalGameFlowController : MonoBehaviour
         foreach (string sharedScene in required)
         {
             if (!string.IsNullOrEmpty(sharedScene) && !SceneManager.GetSceneByName(sharedScene).isLoaded)
-                yield return SceneManager.LoadSceneAsync(sharedScene, LoadSceneMode.Additive);
+            {
+                string scenePath = "Assets/MoMing/FormalLevels/" + sharedScene + ".unity";
+                yield return SceneManager.LoadSceneAsync(scenePath, LoadSceneMode.Additive);
+            }
         }
     }
 
@@ -516,7 +426,7 @@ public class FormalGameFlowController : MonoBehaviour
             if (string.IsNullOrEmpty(levelScene))
                 continue;
 
-            if (currentLevelScene == "FormalLevel045" && levelScene == "FormalLevel04")
+            if (ShouldRetainPredecessor(index) && levelScene == predecessor)
                 continue;
 
             Scene retained = SceneManager.GetSceneByName(levelScene);
@@ -619,11 +529,46 @@ public class FormalGameFlowController : MonoBehaviour
 
             foreach (GameObject root in sharedScene.GetRootGameObjects())
                 foreach (FormalDoor door in root.GetComponentsInChildren<FormalDoor>(true))
-                    if (door.name.IndexOf("ToLevel", StringComparison.OrdinalIgnoreCase) >= 0)
+                    if (MatchesRegisteredDoorToken(door.name, to.arrivalTransitionDoorName))
                         return door;
         }
 
         return null;
+    }
+
+    static bool MatchesRegisteredDoorToken(string doorName, string registeredToken)
+    {
+        if (string.IsNullOrEmpty(doorName))
+            return false;
+
+        string token = string.IsNullOrEmpty(registeredToken) ? "ToLevel" : registeredToken;
+        return doorName.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0;
+    }
+
+    string GetRouteSuccessor(string fromScene)
+    {
+        int index = FindRouteSuccessorIndex(fromScene);
+        return index < 0 ? null : routeCatalog[index].sceneName;
+    }
+
+    int FindRouteSuccessorIndex(string fromScene)
+    {
+        int index = FindRouteIndex(fromScene);
+        if (index < 0 || index + 1 >= routeCatalog.Length)
+            return -1;
+        return index + 1;
+    }
+
+    bool ShouldRetainPredecessor(int routeIndex)
+    {
+        return routeIndex >= 0 && routeIndex < routeCatalog.Length &&
+               routeCatalog[routeIndex] != null &&
+               routeCatalog[routeIndex].levelId == RetainedPredecessorLevelId;
+    }
+
+    bool HasArrivalSequence(int routeIndex)
+    {
+        return ShouldRetainPredecessor(routeIndex);
     }
 
     static void AddSharedScenes(HashSet<string> result, FormalRouteEntry entry)
@@ -666,18 +611,24 @@ public class FormalGameFlowController : MonoBehaviour
 
         routeCatalog = new[]
         {
-            Entry("Level01", "FormalLevel01", level01Level02SharedArtScene),
-            Entry("Level02", "FormalLevel02", level01Level02SharedArtScene, level02Level03SharedArtScene),
-            Entry("Level03", "FormalLevel03", level02Level03SharedArtScene, level03Level04SharedArtScene),
-            Entry("Level04", "FormalLevel04", level03Level04SharedArtScene, level04Level045SharedArtScene),
-            Entry("Level04.5", "FormalLevel045", level04Level045SharedArtScene, level045Level05SharedArtScene),
-            Entry("Level05", "FormalLevel05", level045Level05SharedArtScene)
+            Entry("Level01", "FormalLevel01", "", level01Level02SharedArtScene),
+            Entry("Level02", "FormalLevel02", "ToLevel02", level01Level02SharedArtScene, level02Level03SharedArtScene),
+            Entry("Level03", "FormalLevel03", "ToLevel03", level02Level03SharedArtScene, level03Level04SharedArtScene),
+            Entry("Level04", "FormalLevel04", "ToLevel04", level03Level04SharedArtScene, level04Level045SharedArtScene),
+            Entry("Level04.5", "FormalLevel045", "ToLevel045", level04Level045SharedArtScene, level045Level05SharedArtScene),
+            Entry("Level05", "FormalLevel05", "ToLevel05", level045Level05SharedArtScene)
         };
     }
 
-    static FormalRouteEntry Entry(string id, string scene, params string[] sharedScenes)
+    static FormalRouteEntry Entry(string id, string scene, string arrivalDoorToken, params string[] sharedScenes)
     {
-        return new FormalRouteEntry { levelId = id, sceneName = scene, sharedArtScenes = sharedScenes };
+        return new FormalRouteEntry
+        {
+            levelId = id,
+            sceneName = scene,
+            arrivalTransitionDoorName = arrivalDoorToken,
+            sharedArtScenes = sharedScenes
+        };
     }
 
     void PlacePlayersAtLoadedLevelSpawn()
@@ -693,9 +644,9 @@ public class FormalGameFlowController : MonoBehaviour
             control.enabled = enabled;
     }
 
-    void BeginLevel045PursuitSequence()
+    void BeginRetainedPredecessorPursuitSequence()
     {
-        if (currentLevelScene != "FormalLevel045" || pendingUnloadScene != "FormalLevel04")
+        if (!ShouldRetainPredecessor(FindRouteIndex(currentLevelScene)) || string.IsNullOrEmpty(pendingUnloadScene))
             return;
 
         if (level045PursuitRoutine != null)
@@ -734,13 +685,25 @@ public class FormalGameFlowController : MonoBehaviour
         if (actors == null || actors.Human == null)
             yield break;
 
-        Scene level04 = SceneManager.GetSceneByName("FormalLevel04");
-        if (!level04.isLoaded)
+        int currentIndex = FindRouteIndex(currentLevelScene);
+        if (!ShouldRetainPredecessor(currentIndex) || string.IsNullOrEmpty(pendingUnloadScene))
             yield break;
 
-        foreach (GameObject root in level04.GetRootGameObjects())
+        Scene retainedScene = SceneManager.GetSceneByName(pendingUnloadScene);
+        if (!retainedScene.isLoaded)
+            yield break;
+
+        foreach (GameObject root in retainedScene.GetRootGameObjects())
             foreach (MonsterPatrol monster in root.GetComponentsInChildren<MonsterPatrol>(true))
                 monster.BeginForcedChase(actors.Human.transform);
+    }
+
+    static T[] FindInScene<T>(Scene scene) where T : Component
+    {
+        List<T> result = new List<T>();
+        foreach (GameObject root in scene.GetRootGameObjects())
+            result.AddRange(root.GetComponentsInChildren<T>(true));
+        return result.ToArray();
     }
 
     void OnGUI()

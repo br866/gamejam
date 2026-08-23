@@ -20,12 +20,15 @@ public class FormalDoor : MonoBehaviour, IFormalLevelPermanentState, IFormalLeve
     public bool IsComplete { get; private set; }
     public bool IsOpen => IsComplete;
     public Transform VisualPivot => visualPivot;
+    public Collider BlockingCollider => blockingCollider;
     public OpeningDirection Direction => openingDirection;
     public float OpenAngle => openAngle;
     public float OpenSpeed => openSpeed;
     public Quaternion OpenRotation => Quaternion.Euler(0f, SignedOpenAngle, 0f);
     public Quaternion ClosedRotation => Quaternion.identity;
     public float SignedOpenAngle => openingDirection == OpeningDirection.Inward ? openAngle : -openAngle;
+
+    public event System.Action<FormalDoor> StateChanged;
 
     void Awake()
     {
@@ -55,6 +58,7 @@ public class FormalDoor : MonoBehaviour, IFormalLevelPermanentState, IFormalLeve
         IsComplete = true;
         if (blockingCollider != null)
             blockingCollider.enabled = false;
+        RaiseStateChanged();
     }
 
     public void OpenPermanently()
@@ -64,7 +68,10 @@ public class FormalDoor : MonoBehaviour, IFormalLevelPermanentState, IFormalLeve
 
     public void Close()
     {
+        bool wasOpen = IsComplete;
         IsComplete = false;
+        if (wasOpen)
+            RaiseStateChanged();
     }
 
     public void SetOpenImmediate()
@@ -82,9 +89,18 @@ public class FormalDoor : MonoBehaviour, IFormalLevelPermanentState, IFormalLeve
         if (visualPivot == null)
             visualPivot = transform;
 
+        bool wasOpen = IsComplete;
         IsComplete = isOpen;
         visualPivot.localRotation = IsComplete ? OpenRotation : ClosedRotation;
         if (blockingCollider != null)
             blockingCollider.enabled = !IsComplete;
+
+        if (wasOpen != isOpen)
+            RaiseStateChanged();
+    }
+
+    private void RaiseStateChanged()
+    {
+        StateChanged?.Invoke(this);
     }
 }

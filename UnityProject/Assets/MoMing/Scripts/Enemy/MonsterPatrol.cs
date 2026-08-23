@@ -6,7 +6,7 @@ using UnityEngine;
 /// </summary>
 public class MonsterPatrol : MonoBehaviour
 {
-    public enum State { Patrol, Chase }
+    public enum State { Patrol, Chase, Attack }
 
     [Header("Room Bounds (怪物活动范围)")]
     public Vector3 roomCenter = new Vector3(14f, 0f, 0f);
@@ -26,6 +26,12 @@ public class MonsterPatrol : MonoBehaviour
     [Header("Chase")]
     public float chaseSpeed = 4.5f;
     public float chaseStopDistance = 1f;
+
+    [Header("Attack")]
+    public float attackRange = 2f;
+    public float attackWindup = 0.5f;
+    public float attackCooldown = 1f;
+    [SerializeField] private string attackStateName = "";
 
     [Header("Safe Zones")]
     [SerializeField] private Collider[] safeZones;
@@ -125,10 +131,14 @@ public class MonsterPatrol : MonoBehaviour
     private int currentWaypoint = 0;
     private AudioSource audioSource;
     private LevelMonsterNavigation navigation;
+    private MonsterAnimatorDriver animatorDriver;
     private Vector3 startPos;
     private Transform chaseTarget;
     private float lastSeenTime;
     private bool forcedChase;
+    private float attackTimer;
+    private float nextAttackTime;
+    private float forcedRepathCooldown;
 
     void Awake()
     {
@@ -140,6 +150,7 @@ public class MonsterPatrol : MonoBehaviour
 
         audioSource = GetComponent<AudioSource>();
         navigation = GetComponent<LevelMonsterNavigation>();
+        animatorDriver = GetComponent<MonsterAnimatorDriver>();
         startPos = transform.position;
         foreach (Renderer r in GetComponentsInChildren<Renderer>())
             if (r.enabled && r.gameObject.activeInHierarchy)
@@ -295,6 +306,15 @@ public class MonsterPatrol : MonoBehaviour
 
         if (navigation != null)
         {
+            // 寻路失败(如门关闭隔断) → 回到巡逻点保持移动，不石化
+            if (navigation.LastPathFailed)
+            {
+                chaseTarget = null;
+                currentState = State.Patrol;
+                Debug.Log("[Monster] No path to target, returning to patrol waypoints.");
+                return;
+            }
+
             navigation.SetMoveSpeed(chaseSpeed);
             navigation.SetDestination(targetPos);
             if (dist <= chaseStopDistance)
@@ -330,9 +350,14 @@ public class MonsterPatrol : MonoBehaviour
             return;
 
         if (navigation != null)
+        {
             navigation.ClearDestination();
+            navigation.ClearPathFailure();
+            navigation.RescanGraph();
+        }
 
         forcedChase = true;
+        forcedRepathCooldown = 0f;
         chaseTarget = target;
         currentState = State.Chase;
         lastSeenTime = Time.time;
@@ -344,11 +369,37 @@ public class MonsterPatrol : MonoBehaviour
             return;
 
         Vector3 targetPos = chaseTarget.position;
+        float xzDist = Mathf.Sqrt(
+            (targetPos.x - transform.position.x) * (targetPos.x - transform.position.x) +
+            (targetPos.z - transform.position.z) * (targetPos.z - transform.position.z));
+
+        if (xzDist <= chaseStopDistance)
+            return;
+
+        if (navigation != null)
+        {
+            // 寻路失败(门关闭/无连通) → 临时奔向巡逻点保持跑动，稍后重试追击
+            if (navigation.LastPathFailed)
+            {
+                SteerForcedChaseToWaypoint();
+                return;
+            }
+
+            if (forcedRepathCooldown > 0f)
+            {
+                forcedRepathCooldown -= Time.deltaTime;
+                return;
+            }
+
+            navigation.SetMoveSpeed(chaseSpeed);
+            navigation.SetDestination(targetPos);
+            return;
+        }
+
+        // 无导航组件时的直线兜底
         targetPos.y = transform.position.y;
         Vector3 delta = targetPos - transform.position;
         delta.y = 0f;
-        if (delta.sqrMagnitude <= chaseStopDistance * chaseStopDistance)
-            return;
 
         Vector3 direction = delta.normalized;
         transform.rotation = Quaternion.Slerp(
@@ -359,6 +410,29 @@ public class MonsterPatrol : MonoBehaviour
             transform.position,
             targetPos,
             chaseSpeed * Time.deltaTime);
+    }
+
+    void SteerForcedChaseToWaypoint()
+    {
+        if (!HasAssignedWaypoints())
+        {
+            navigation.ClearDestination();
+            return;
+        }
+
+        Transform wp = waypoints[currentWaypoint];
+        Vector3 waypointPos = new Vector3(wp.position.x, startPos.y, wp.position.z);
+
+        if (navigation.HasArrived || !navigation.HasPath)
+        {
+            currentWaypoint = (currentWaypoint + 1) % waypoints.Length;
+            wp = waypoints[currentWaypoint];
+            waypointPos = new Vector3(wp.position.x, startPos.y, wp.position.z);
+        }
+
+        navigation.SetMoveSpeed(chaseSpeed);
+        navigation.SetDestination(waypointPos);
+        forcedRepathCooldown = 1f;
     }
 
     void CheckForPlayers()
@@ -458,8 +532,13 @@ public class MonsterPatrol : MonoBehaviour
     public void ResetPatrol()
     {
         forcedChase = false;
+        forcedRepathCooldown = 0f;
         if (navigation != null)
+        {
+            navigation.CancelPushOut();
             navigation.ClearDestination();
+            navigation.ClearPathFailure();
+        }
         currentState = State.Patrol;
         chaseTarget = null;
         currentWaypoint = 0;

@@ -29,12 +29,16 @@ public class FormalCheckpoint : MonoBehaviour, IFormalLevelPermanentState
 
         ActivateCheckpoint();
 
+        FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
+        if (flow == null)
+            return;
+
+        flow.NotifyCheckpointActivated(gameObject.scene.name);
+
         if (!successorRegistrationPoint)
             return;
 
-        FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
-        if (flow != null)
-            flow.NotifySuccessorCheckpointActivated(gameObject.scene.name);
+        flow.NotifySuccessorCheckpointActivated(gameObject.scene.name);
     }
 
     bool PrerequisitesComplete()

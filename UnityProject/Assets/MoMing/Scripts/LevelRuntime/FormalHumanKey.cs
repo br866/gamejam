@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class FormalHumanKey : MonoBehaviour, IFormalLevelTemporaryState
 {
-    [SerializeField] private string successorScene = "FormalLevel02";
-
     private Vector3 initialPosition;
     private Quaternion initialRotation;
     private bool collected;
@@ -27,10 +25,7 @@ public class FormalHumanKey : MonoBehaviour, IFormalLevelTemporaryState
 
         FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
         if (flow != null)
-        {
-            flow.OpenTransitionDoor("FormalLevel01", successorScene);
-            flow.LoadSuccessor(successorScene);
-        }
+            flow.RequestRouteAdvance();
     }
 
     public void ResetTemporaryState()
