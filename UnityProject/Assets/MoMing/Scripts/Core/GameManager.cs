@@ -43,6 +43,24 @@ public class GameManager : MonoBehaviour
     public Color redVignetteColor = new Color(0.55f, 0.08f, 0.08f, 0.5f);
     [Range(0f, 1f)] public float redVignetteNoiseStrength = 0.6f;
 
+    [Header("Anxiety Dirt Overlay 镜头污渍")]
+    [Tooltip("焦虑升高时在画面上加色叠一层污渍贴图。不走后处理，场景里没有 Global Volume 也能显示")]
+    public bool useDirtOverlay = true;
+    [Tooltip("留空则从 Resources 加载 Dirt Overlay Resource Name")]
+    public Texture dirtOverlayTexture;
+    public string dirtOverlayResourceName = "AnxietyDirtMask";
+    [Tooltip("焦虑归一化值超过这个阈值后污渍才开始出现")]
+    [Range(0f, 1f)] public float dirtStartThreshold = 0.5f;
+    [Tooltip("焦虑 100% 时的叠加强度")]
+    [Range(0f, 2f)] public float dirtOverlayMaxStrength = 0.85f;
+    [Tooltip("强度追赶速度，越大越跟手")]
+    public float dirtSmoothSpeed = 4f;
+    [Tooltip("心跳式脉动幅度：0 = 不脉动")]
+    [Range(0f, 1f)] public float dirtPulseAmount = 0.22f;
+    public float dirtPulseSpeed = 1.6f;
+    [Tooltip("按住这个键强制把污渍拉满，用来验证效果")]
+    public KeyCode forceMaxDirtKey = KeyCode.F3;
+
     [Header("UI References")]
     public Slider anxietyBarSlider;
     public Image darknessOverlay;
@@ -67,6 +85,8 @@ public class GameManager : MonoBehaviour
     private float currentSpotlightIntensity = 0f;
     private float currentVignetteAlpha = 0f;
     private float currentRedVignetteAlpha = 0f;
+    private RawImage dirtOverlay;
+    private float currentDirtOverlayStrength = 0f;
     private bool hasCheckpoint = false;
     private Vector3 checkpointHuman;
     private Vector3 checkpointDog;
@@ -125,6 +145,90 @@ public class GameManager : MonoBehaviour
 
         SetupVignette();
         SetupRedVignette();
+        SetupDirtOverlay();
+    }
+
+    /// <summary>
+    /// 在 Canvas 上建一层加色混合的污渍叠加，随焦虑值变强。
+    /// 不依赖 URP 后处理，所以场景里没有 Global Volume 也能显示。
+    /// </summary>
+    void SetupDirtOverlay()
+    {
+        if (!useDirtOverlay) return;
+
+        if (dirtOverlayTexture == null && !string.IsNullOrEmpty(dirtOverlayResourceName))
+            dirtOverlayTexture = Resources.Load<Texture2D>(dirtOverlayResourceName);
+
+        if (dirtOverlayTexture == null)
+        {
+            Debug.LogWarning("[GameManager] 污渍贴图没找到：Dirt Overlay Texture 为空，" +
+                             "Resources/" + dirtOverlayResourceName + " 也不存在。", this);
+            return;
+        }
+
+        Canvas canvas = GetComponentInParent<Canvas>();
+        if (canvas == null) canvas = FindObjectOfType<Canvas>();
+        if (canvas == null)
+        {
+            GameObject canvasObj = new GameObject("AnxietyOverlayCanvas");
+            canvas = canvasObj.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = -100;   // 压在游戏 UI 底下
+            canvasObj.AddComponent<CanvasScaler>();
+        }
+
+        GameObject dirtObj = new GameObject("AnxietyDirtOverlay");
+        dirtObj.transform.SetParent(canvas.transform, false);
+        dirtOverlay = dirtObj.AddComponent<RawImage>();
+        dirtOverlay.texture = dirtOverlayTexture;
+        dirtOverlay.raycastTarget = false;
+
+        Shader additive = Resources.Load<Shader>("MoMingUIAdditive");
+        if (additive == null) additive = Shader.Find("MoMing/UI Additive");
+        if (additive != null)
+            dirtOverlay.material = new Material(additive);
+        else
+            Debug.LogWarning("[GameManager] 找不到 MoMing/UI Additive shader，" +
+                             "污渍会用默认 alpha 混合，看起来会偏暗。", this);
+
+        RectTransform rt = dirtObj.GetComponent<RectTransform>();
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.one;
+        rt.offsetMin = Vector2.zero;
+        rt.offsetMax = Vector2.zero;
+        // 放在暗角之上
+        dirtObj.transform.SetSiblingIndex(2);
+
+        dirtOverlay.color = new Color(1f, 1f, 1f, 0f);
+    }
+
+    void UpdateDirtOverlay(float normalizedAnxiety)
+    {
+        if (dirtOverlay == null) return;
+
+        bool forced = Input.GetKey(forceMaxDirtKey);
+
+        // 阈值以下为 0，阈值→1 之间映射到 0→1
+        float t = dirtStartThreshold < 1f
+            ? Mathf.Clamp01((normalizedAnxiety - dirtStartThreshold) / (1f - dirtStartThreshold))
+            : (normalizedAnxiety >= 1f ? 1f : 0f);
+        if (forced) t = 1f;
+
+        // 心跳式脉动
+        float pulseMul = 1f;
+        if (dirtPulseAmount > 0f)
+        {
+            float phase = Time.time * dirtPulseSpeed * Mathf.PI * 2f;
+            float wave = 0.5f + 0.5f * Mathf.Sin(phase);
+            pulseMul = Mathf.Lerp(1f - dirtPulseAmount, 1f, wave);
+        }
+
+        float target = dirtOverlayMaxStrength * t * pulseMul;
+        float k = (forced || dirtSmoothSpeed <= 0f)
+            ? 1f
+            : 1f - Mathf.Exp(-dirtSmoothSpeed * Time.deltaTime);
+        currentDirtOverlayStrength = Mathf.Lerp(currentDirtOverlayStrength, target, k);
+        dirtOverlay.color = new Color(1f, 1f, 1f, currentDirtOverlayStrength);
     }
 
     Light CreateSpotlight(string name)
@@ -332,6 +436,7 @@ public class GameManager : MonoBehaviour
         currentAnxiety = Mathf.Clamp(currentAnxiety, 0f, maxAnxiety);
         UpdateAnxietyUI();
         UpdateDarkness();
+        UpdateDirtOverlay(currentAnxiety / maxAnxiety);
 
         if (currentAnxiety >= maxAnxiety)
             ResetLevel();
@@ -454,6 +559,9 @@ public class GameManager : MonoBehaviour
         currentOverlayAlpha = 0f;
         currentVignetteAlpha = 0f;
         currentRedVignetteAlpha = 0f;
+        currentDirtOverlayStrength = 0f;
+        if (dirtOverlay != null)
+            dirtOverlay.color = new Color(1f, 1f, 1f, 0f);
         if (darknessOverlay != null)
             darknessOverlay.color = new Color(0, 0, 0, 0);
         if (spotlightMask != null)
