@@ -29,6 +29,8 @@ public class FormalGameFlowController : MonoBehaviour
     private bool operationInProgress;
     private bool routeComplete;
     private bool successorArrivalConfirmed;
+    private Coroutine level045PursuitRoutine;
+    private bool gmLevel045Pending;
 
     public string CurrentLevelScene => currentLevelScene;
     public IReadOnlyList<FormalRouteEntry> RouteCatalog => routeCatalog;
@@ -52,7 +54,9 @@ public class FormalGameFlowController : MonoBehaviour
         if (routeComplete)
             return;
 
-        if (Input.GetKeyDown(KeyCode.Keypad2))
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+            StartGmLevel045();
+        else if (Input.GetKeyDown(KeyCode.Keypad2))
             GoToNextLevel();
         else if (Input.GetKeyDown(KeyCode.Keypad8))
             GoToPreviousLevel();
@@ -150,10 +154,139 @@ public class FormalGameFlowController : MonoBehaviour
             LoadLevel(entry.sceneName);
     }
 
+    public void StartGmLevel045()
+    {
+        if (currentLevelScene == "FormalLevel045")
+            return;
+
+        if (operationInProgress)
+        {
+            gmLevel045Pending = true;
+            return;
+        }
+
+        StartCoroutine(LoadGmLevel045Routine());
+    }
+
+    IEnumerator LoadGmLevel045Routine()
+    {
+        operationInProgress = true;
+
+        yield return EnsureSceneLoaded("FormalSharedArt_L04_L045");
+        yield return EnsureSceneLoaded("FormalSharedArt_L045_L05");
+        yield return EnsureSceneLoaded("FormalLevel04");
+        yield return EnsureSceneLoaded("FormalLevel045");
+
+        currentLevelScene = "FormalLevel045";
+        pendingUnloadScene = "FormalLevel04";
+        successorArrivalConfirmed = false;
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName("FormalLevel045"));
+        OpenAllDoorsInScene("FormalLevel04");
+        CloseLevel045To05Doors();
+        yield return EnsureSceneLoaded("FormalLevel04");
+        yield return WaitForFormalActors();
+        yield return null;
+        FormalCheckpoint checkpoint = FindCheckpoint("FormalLevel045", "L045_Checkpoint");
+        if (checkpoint != null)
+            checkpoint.ActivateCheckpoint();
+
+        FormalLevelController level045 = FormalLevelActors.FindLevelController(SceneManager.GetSceneByName("FormalLevel045"));
+        if (level045 != null)
+            level045.ResetLevel();
+
+        BeginLevel045PursuitSequence();
+        operationInProgress = false;
+    }
+
+    static FormalCheckpoint FindCheckpoint(string sceneName, string checkpointName)
+    {
+        Scene scene = SceneManager.GetSceneByName(sceneName);
+        if (!scene.isLoaded)
+            return null;
+
+        foreach (GameObject root in scene.GetRootGameObjects())
+            foreach (FormalCheckpoint checkpoint in root.GetComponentsInChildren<FormalCheckpoint>(true))
+                if (checkpoint.name == checkpointName)
+                    return checkpoint;
+
+        return null;
+    }
+
+    IEnumerator EnsureSceneLoaded(string sceneName)
+    {
+        Scene scene = SceneManager.GetSceneByName(sceneName);
+        if (!scene.isLoaded)
+        {
+            string scenePath = "Assets/MoMing/FormalLevels/" + sceneName + ".unity";
+            yield return SceneManager.LoadSceneAsync(scenePath, LoadSceneMode.Additive);
+        }
+
+        float timeout = 10f;
+        while (!SceneManager.GetSceneByName(sceneName).isLoaded && timeout > 0f)
+        {
+            timeout -= Time.unscaledDeltaTime;
+            yield return null;
+        }
+    }
+
+    IEnumerator WaitForFormalActors()
+    {
+        float timeout = 5f;
+        while (FormalPlayerActors.Instance == null && timeout > 0f)
+        {
+            timeout -= Time.unscaledDeltaTime;
+            yield return null;
+        }
+    }
+
+    void CloseLevel045To05Doors()
+    {
+        foreach (string sceneName in new[] { "FormalLevel045", "FormalSharedArt_L045_L05" })
+        {
+            Scene scene = SceneManager.GetSceneByName(sceneName);
+            if (!scene.isLoaded)
+                continue;
+
+            foreach (GameObject root in scene.GetRootGameObjects())
+                foreach (FormalDoor door in root.GetComponentsInChildren<FormalDoor>(true))
+                    if (door.name.IndexOf("ToLevel05", StringComparison.OrdinalIgnoreCase) >= 0)
+                        door.SetClosedImmediate();
+        }
+    }
+
+    void OpenAllDoorsInScene(string sceneName)
+    {
+        Scene scene = SceneManager.GetSceneByName(sceneName);
+        if (!scene.isLoaded)
+            return;
+
+        foreach (GameObject root in scene.GetRootGameObjects())
+            foreach (FormalDoor door in root.GetComponentsInChildren<FormalDoor>(true))
+                door.OpenPermanently();
+    }
+
     public void ResetCurrentLevel()
     {
         if (string.IsNullOrEmpty(currentLevelScene))
             return;
+
+        if (currentLevelScene == "FormalLevel045" && pendingUnloadScene == "FormalLevel04")
+        {
+            FormalLevelController retainedLevel = FormalLevelActors.FindLevelController(SceneManager.GetSceneByName(currentLevelScene));
+            if (retainedLevel != null)
+                retainedLevel.ResetLevel();
+
+            Scene retainedScene = SceneManager.GetSceneByName("FormalLevel04");
+            if (retainedScene.isLoaded)
+            {
+                foreach (GameObject root in retainedScene.GetRootGameObjects())
+                    foreach (MonsterPatrol monster in root.GetComponentsInChildren<MonsterPatrol>(true))
+                        monster.ResetPatrol();
+            }
+
+            BeginLevel045PursuitSequence();
+            return;
+        }
 
         if (!string.IsNullOrEmpty(pendingUnloadScene))
         {
@@ -174,6 +307,23 @@ public class FormalGameFlowController : MonoBehaviour
             door.OpenPermanently();
         else
             Debug.LogWarning($"No shared transition door found from {fromScene} to {toScene}.");
+    }
+
+    public void OpenTransitionDoorToSuccessor(string fromScene)
+    {
+        int index = FindRouteIndex(fromScene);
+        if (index < 0 || index + 1 >= routeCatalog.Length)
+            return;
+
+        OpenTransitionDoor(fromScene, routeCatalog[index + 1].sceneName);
+    }
+
+    public void NotifyLevel045DoorOpened()
+    {
+        if (currentLevelScene != "FormalLevel045" || pendingUnloadScene != "FormalLevel04")
+            return;
+
+        BeginLevel045PursuitSequence();
     }
 
     public void CompleteCurrentLevelConditionsAndAdvance()
@@ -276,6 +426,13 @@ public class FormalGameFlowController : MonoBehaviour
         operationInProgress = true;
         string predecessorScene = currentLevelScene;
         string priorPendingScene = pendingUnloadScene;
+        if (sceneName != "FormalLevel045")
+        {
+            FormalPlayerControl control = FindObjectOfType<FormalPlayerControl>();
+            if (control != null)
+                control.ForceHumanOnly(false);
+        }
+
         yield return LoadSharedArtForEntries(predecessorScene, priorPendingScene, sceneName);
 
         bool alreadyLoaded = SceneManager.GetSceneByName(sceneName).isLoaded;
@@ -292,9 +449,17 @@ public class FormalGameFlowController : MonoBehaviour
             PlacePlayersAtLoadedLevelSpawn();
         if (!keepPriorLevels)
             yield return UnloadIrrelevantLevels(priorPendingScene);
+        if (!discardPriorLevel && predecessorScene != sceneName)
+            yield return ArrivalCleanup();
         yield return UnloadUnusedSharedArt();
         operationInProgress = false;
         completed?.Invoke(true);
+
+        if (gmLevel045Pending)
+        {
+            gmLevel045Pending = false;
+            StartCoroutine(LoadGmLevel045Routine());
+        }
     }
 
     IEnumerator UnloadLevelRoutine(string sceneName, Action<bool> completed)
@@ -335,6 +500,46 @@ public class FormalGameFlowController : MonoBehaviour
         {
             if (!required.Contains(sharedScene) && SceneManager.GetSceneByName(sharedScene).isLoaded)
                 yield return SceneManager.UnloadSceneAsync(sharedScene);
+        }
+    }
+
+    IEnumerator ArrivalCleanup()
+    {
+        int index = FindRouteIndex(currentLevelScene);
+        if (index < 0)
+            yield break;
+
+        string predecessor = index - 1 >= 0 ? routeCatalog[index - 1].sceneName : null;
+        string grandPredecessor = index - 2 >= 0 ? routeCatalog[index - 2].sceneName : null;
+        foreach (string levelScene in new[] { predecessor, grandPredecessor })
+        {
+            if (string.IsNullOrEmpty(levelScene))
+                continue;
+
+            if (currentLevelScene == "FormalLevel045" && levelScene == "FormalLevel04")
+                continue;
+
+            Scene retained = SceneManager.GetSceneByName(levelScene);
+            if (!retained.IsValid() || !retained.isLoaded || levelScene == currentLevelScene)
+                continue;
+
+            foreach (GameObject root in retained.GetRootGameObjects())
+                foreach (FormalDoor door in root.GetComponentsInChildren<FormalDoor>(true))
+                    door.Close();
+        }
+
+        HashSet<string> keep = new HashSet<string> { currentLevelScene };
+        if (!string.IsNullOrEmpty(predecessor))
+            keep.Add(predecessor);
+
+        foreach (FormalRouteEntry entry in routeCatalog)
+        {
+            if (entry == null || string.IsNullOrEmpty(entry.sceneName) || keep.Contains(entry.sceneName))
+                continue;
+
+            Scene stale = SceneManager.GetSceneByName(entry.sceneName);
+            if (stale.IsValid() && stale.isLoaded)
+                yield return SceneManager.UnloadSceneAsync(stale);
         }
     }
 
@@ -486,6 +691,56 @@ public class FormalGameFlowController : MonoBehaviour
     {
         foreach (FormalPlayerControl control in FindObjectsOfType<FormalPlayerControl>())
             control.enabled = enabled;
+    }
+
+    void BeginLevel045PursuitSequence()
+    {
+        if (currentLevelScene != "FormalLevel045" || pendingUnloadScene != "FormalLevel04")
+            return;
+
+        if (level045PursuitRoutine != null)
+            StopCoroutine(level045PursuitRoutine);
+        StartCoroutine(BindLevel045PlayerState());
+        level045PursuitRoutine = StartCoroutine(StartLevel045PursuitAfterDelay());
+    }
+
+    IEnumerator BindLevel045PlayerState()
+    {
+        float timeout = 10f;
+        while (timeout > 0f)
+        {
+            FormalPlayerActors actors = FormalPlayerActors.Instance;
+            FormalPlayerControl control = FindObjectOfType<FormalPlayerControl>();
+            if (actors != null && actors.Human != null && actors.Dog != null && control != null)
+            {
+                control.ForceHumanOnly(true);
+                FormalDogOrbitFollower follower = actors.Dog.GetComponent<FormalDogOrbitFollower>();
+                if (follower == null)
+                    follower = actors.Dog.gameObject.AddComponent<FormalDogOrbitFollower>();
+                follower.BeginOrbit(actors.Human, actors.Dog);
+                yield break;
+            }
+
+            timeout -= Time.unscaledDeltaTime;
+            yield return null;
+        }
+    }
+
+    IEnumerator StartLevel045PursuitAfterDelay()
+    {
+        yield return new WaitForSeconds(10f);
+
+        FormalPlayerActors actors = FormalPlayerActors.Instance;
+        if (actors == null || actors.Human == null)
+            yield break;
+
+        Scene level04 = SceneManager.GetSceneByName("FormalLevel04");
+        if (!level04.isLoaded)
+            yield break;
+
+        foreach (GameObject root in level04.GetRootGameObjects())
+            foreach (MonsterPatrol monster in root.GetComponentsInChildren<MonsterPatrol>(true))
+                monster.BeginForcedChase(actors.Human.transform);
     }
 
     void OnGUI()

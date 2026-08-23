@@ -6,6 +6,7 @@ public class FormalPlayerControl : MonoBehaviour
     [SerializeField] private FormalPlayerActor dog;
     private FormalPlayerActor activeActor;
     private CameraFollow cameraFollow;
+    private bool humanOnly;
 
     public bool IsDogActive => activeActor != null && activeActor.Role == FormalPlayerActor.ActorRole.Dog;
 
@@ -32,7 +33,7 @@ public class FormalPlayerControl : MonoBehaviour
         if (human == null)
             return;
 
-        if (dog != null && Input.GetKeyDown(KeyCode.Tab) && !IsMoverEngaged())
+        if (!humanOnly && dog != null && Input.GetKeyDown(KeyCode.Tab) && !IsMoverEngaged())
         {
             activeActor = activeActor == human ? dog : human;
             SetCameraTarget();
@@ -138,6 +139,29 @@ public class FormalPlayerControl : MonoBehaviour
     bool IsMoverEngaged()
     {
         return FindEngagedRailMover() != null || FindEngagedPushable() != null;
+    }
+
+    public void ForceHumanOnly(bool forced)
+    {
+        humanOnly = forced;
+        if (!forced)
+        {
+            FormalDogOrbitFollower follower = dog != null ? dog.GetComponent<FormalDogOrbitFollower>() : null;
+            if (follower != null)
+                follower.StopOrbit();
+            return;
+        }
+
+        if (human == null)
+            return;
+
+        activeActor = human;
+        human.gameObject.SetActive(true);
+        if (dog != null)
+            dog.gameObject.SetActive(true);
+        SetCameraTarget();
+        if (ActiveRoleChanged != null)
+            ActiveRoleChanged(false);
     }
 
     static FormalCooperativeRailMover FindEngagedRailMover()

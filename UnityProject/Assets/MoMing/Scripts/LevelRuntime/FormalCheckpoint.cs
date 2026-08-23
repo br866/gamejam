@@ -10,13 +10,24 @@ public class FormalCheckpoint : MonoBehaviour, IFormalLevelPermanentState
 
     public bool IsComplete { get; private set; }
 
+    public void ActivateCheckpoint()
+    {
+        if (level == null)
+            level = FormalLevelActors.FindLevelController(gameObject.scene);
+
+        if (level == null || !PrerequisitesComplete())
+            return;
+
+        IsComplete = true;
+        level.SetCheckpoint(humanRespawnAnchor, dogRespawnAnchor);
+    }
+
     void OnTriggerEnter(Collider other)
     {
         if (IsComplete || !FormalLevelActors.IsPlayer(other) || !PrerequisitesComplete())
             return;
 
-        IsComplete = true;
-        level.SetCheckpoint(humanRespawnAnchor, dogRespawnAnchor);
+        ActivateCheckpoint();
 
         if (!successorRegistrationPoint)
             return;

@@ -42,6 +42,13 @@ public class LevelMonsterNavigation : MonoBehaviour
 
     void Awake()
     {
+        MonsterPatrol patrol = GetComponent<MonsterPatrol>();
+        if (patrol != null)
+        {
+            areaCenter = patrol.roomCenter;
+            areaSize = patrol.roomSize;
+        }
+
         seeker = GetComponent<Seeker>();
         if (seeker == null)
             seeker = gameObject.AddComponent<Seeker>();

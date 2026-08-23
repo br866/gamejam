@@ -132,7 +132,8 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
         humanPoint = -1;
         dogPoint = -1;
         IsBlocked = false;
-        body.velocity = Vector3.zero;
+        if (!body.isKinematic)
+            body.velocity = Vector3.zero;
         body.isKinematic = true;
     }
 

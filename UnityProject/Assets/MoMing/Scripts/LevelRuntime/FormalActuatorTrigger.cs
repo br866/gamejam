@@ -5,10 +5,9 @@ using UnityEngine;
 public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState
 {
     [SerializeField] private FormalTriggerRequirement requirement = FormalTriggerRequirement.EitherPlayer;
-    [SerializeField] private FormalMechanismState[] prerequisites;
-    [SerializeField] private FormalMechanismState completionState;
     [SerializeField] private MonoBehaviour[] actuators;
     [SerializeField] private bool permanent = true;
+    [SerializeField] private bool opensTransitionDoor;
     [SerializeField] private string successorScene;
 
     private readonly HashSet<Object> occupants = new HashSet<Object>();
@@ -26,8 +25,7 @@ public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState
     void OnTriggerEnter(Collider other)
     {
         Object occupant = FormalTriggerEligibility.ResolveOccupant(other, requirement);
-        if (occupant == null || !occupants.Add(occupant) || complete ||
-            !PrerequisitesComplete() || !RequirementSatisfied())
+        if (occupant == null || !occupants.Add(occupant) || complete || !RequirementSatisfied())
             return;
 
         CompleteTrigger();
@@ -83,7 +81,7 @@ public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState
 
     void TryComplete()
     {
-        if (complete || !PrerequisitesComplete() || !RequirementSatisfied())
+        if (complete || !RequirementSatisfied())
             return;
 
         CompleteTrigger();
@@ -100,8 +98,6 @@ public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState
     void CompleteTrigger()
     {
         complete = true;
-        if (completionState != null)
-            completionState.Complete();
         foreach (MonoBehaviour behaviour in actuators)
         {
             IFormalLevelActuator actuator = behaviour as IFormalLevelActuator;
@@ -116,25 +112,11 @@ public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState
                 flow.LoadSuccessor(successorScene);
         }
 
-        if (!string.IsNullOrEmpty(successorScene))
+        if (opensTransitionDoor)
         {
             FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
             if (flow != null)
-                flow.LoadSuccessor(successorScene);
+                flow.OpenTransitionDoorToSuccessor(gameObject.scene.name);
         }
-    }
-
-    bool PrerequisitesComplete()
-    {
-        if (prerequisites == null)
-            return true;
-
-        foreach (FormalMechanismState prerequisite in prerequisites)
-        {
-            if (prerequisite == null || !prerequisite.IsComplete)
-                return false;
-        }
-
-        return true;
     }
 }

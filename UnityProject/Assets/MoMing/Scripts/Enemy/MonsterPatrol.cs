@@ -128,6 +128,7 @@ public class MonsterPatrol : MonoBehaviour
     private Vector3 startPos;
     private Transform chaseTarget;
     private float lastSeenTime;
+    private bool forcedChase;
 
     void Awake()
     {
@@ -188,6 +189,13 @@ public class MonsterPatrol : MonoBehaviour
 
     void Update()
     {
+        if (forcedChase)
+        {
+            ForcedChase();
+            TryCatch(chaseTarget, false);
+            return;
+        }
+
         if (currentState == State.Patrol)
         {
             Patrol();
@@ -316,6 +324,43 @@ public class MonsterPatrol : MonoBehaviour
         }
     }
 
+    public void BeginForcedChase(Transform target)
+    {
+        if (target == null)
+            return;
+
+        if (navigation != null)
+            navigation.ClearDestination();
+
+        forcedChase = true;
+        chaseTarget = target;
+        currentState = State.Chase;
+        lastSeenTime = Time.time;
+    }
+
+    void ForcedChase()
+    {
+        if (chaseTarget == null || !chaseTarget.gameObject.activeInHierarchy)
+            return;
+
+        Vector3 targetPos = chaseTarget.position;
+        targetPos.y = transform.position.y;
+        Vector3 delta = targetPos - transform.position;
+        delta.y = 0f;
+        if (delta.sqrMagnitude <= chaseStopDistance * chaseStopDistance)
+            return;
+
+        Vector3 direction = delta.normalized;
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation,
+            Quaternion.LookRotation(direction),
+            8f * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            targetPos,
+            chaseSpeed * Time.deltaTime);
+    }
+
     void CheckForPlayers()
     {
         // 1. 接触抓捕 (XZ平面距离判定，避免Y高度差导致无法抓捕)
@@ -380,15 +425,23 @@ public class MonsterPatrol : MonoBehaviour
 
     bool TryCatch(Transform player)
     {
+        return TryCatch(player, true);
+    }
+
+    bool TryCatch(Transform player, bool requireLineOfSight)
+    {
         if (player == null || !player.gameObject.activeInHierarchy) return false;
         if (IsInSafeZone(player.position)) return false;
-        if (!HasLineOfSight(player)) return false;
+        if (requireLineOfSight && !HasLineOfSight(player)) return false;
         float xzDist = Mathf.Sqrt(
             (player.position.x - transform.position.x) * (player.position.x - transform.position.x) +
             (player.position.z - transform.position.z) * (player.position.z - transform.position.z));
         if (xzDist <= catchRadius)
         {
-            if (GameManager.Instance != null)
+            FormalGameFlowController flow = UnityEngine.Object.FindObjectOfType<FormalGameFlowController>();
+            if (flow != null && flow.CurrentLevelScene == "FormalLevel045")
+                flow.ResetCurrentLevel();
+            else if (GameManager.Instance != null)
                 GameManager.Instance.OnPlayerCaught();
             else
             {
@@ -404,6 +457,9 @@ public class MonsterPatrol : MonoBehaviour
 
     public void ResetPatrol()
     {
+        forcedChase = false;
+        if (navigation != null)
+            navigation.ClearDestination();
         currentState = State.Patrol;
         chaseTarget = null;
         currentWaypoint = 0;

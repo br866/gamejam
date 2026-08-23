@@ -28,8 +28,8 @@ public class FormalLevelController : MonoBehaviour
 
     public void PlacePlayersAtSpawn()
     {
-        MovePlayer(FormalPlayerActors.Instance != null ? FormalPlayerActors.Instance.Human : null, humanSpawn != null ? humanSpawn.position : Vector3.zero);
-        MovePlayer(FormalPlayerActors.Instance != null ? FormalPlayerActors.Instance.Dog : null, dogSpawn != null ? dogSpawn.position : Vector3.zero);
+        MovePlayer(FormalPlayerActors.Instance != null ? FormalPlayerActors.Instance.Human : null, humanSpawn);
+        MovePlayer(FormalPlayerActors.Instance != null ? FormalPlayerActors.Instance.Dog : null, dogSpawn);
     }
 
     public void RegisterTemporaryState(IFormalLevelTemporaryState state)
@@ -81,5 +81,13 @@ public class FormalLevelController : MonoBehaviour
             return;
 
         player.SetPosition(position);
+    }
+
+    static void MovePlayer(FormalPlayerActor player, Transform spawn)
+    {
+        if (player == null || spawn == null)
+            return;
+
+        player.SetPositionAndRotation(spawn.position, spawn.rotation);
     }
 }

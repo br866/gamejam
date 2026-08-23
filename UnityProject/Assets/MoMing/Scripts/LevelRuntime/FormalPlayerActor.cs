@@ -11,6 +11,8 @@ public class FormalPlayerActor : MonoBehaviour
     [SerializeField] private float sprintSpeed = 7f;
     [SerializeField] private float turnSpeed = 12f;
     [SerializeField] private float jumpHeight = 2.2f;
+    [SerializeField] private bool walkOnlyAnimation;
+    [SerializeField] private bool canJump = true;
 
     private Rigidbody body;
     private CapsuleCollider capsule;
@@ -84,7 +86,7 @@ public class FormalPlayerActor : MonoBehaviour
 
     public void Jump()
     {
-        if (!IsGrounded())
+        if (!canJump || !IsGrounded())
             return;
 
         float jumpVelocity = Mathf.Sqrt(2f * Mathf.Abs(Physics.gravity.y) * jumpHeight);
@@ -160,7 +162,8 @@ public class FormalPlayerActor : MonoBehaviour
         if (!animationInitialized || animator == null)
             return;
 
-        string stateName = state == ActorState.Jumping ? "Jump" :
+        string stateName = walkOnlyAnimation ? "Walk" :
+            state == ActorState.Jumping ? "Jump" :
             state == ActorState.Pushing ? "Push" :
             state == ActorState.Pulling ? "Pull" :
             state == ActorState.Linked ? "Walk" :
@@ -222,7 +225,14 @@ public class FormalPlayerActor : MonoBehaviour
 
     public void SetPosition(Vector3 position)
     {
+        SetPositionAndRotation(position, transform.rotation);
+    }
+
+    public void SetPositionAndRotation(Vector3 position, Quaternion rotation)
+    {
         body.position = position;
+        body.rotation = rotation;
+        transform.SetPositionAndRotation(position, rotation);
         if (moverRotationLocked)
         {
             body.rotation = moverRotation;
