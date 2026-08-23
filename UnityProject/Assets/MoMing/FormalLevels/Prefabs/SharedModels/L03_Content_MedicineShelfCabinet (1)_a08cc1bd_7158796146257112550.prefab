@@ -11,12 +11,13 @@ GameObject:
   - component: {fileID: 7974161449197886478}
   - component: {fileID: 5034351969514837701}
   - component: {fileID: 5835790103111184272}
-  m_Layer: 0
+  - component: {fileID: 8910027632823469980}
+  m_Layer: 7
   m_Name: L03_Content_MedicineShelfCabinet (1)_a08cc1bd_7158796146257112550
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &7974161449197886478
 Transform:
@@ -83,3 +84,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &8910027632823469980
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 14248299985757068}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.0045954166, y: 0.0035826522, z: 0.010008435}
+  m_Center: {x: 0.000038796115, y: 0.000023641916, z: -0.0000011462286}
