@@ -27,12 +27,6 @@ namespace AK
         static const AkUniqueID ANXIETY = 4143496951U;
     } // namespace GAME_PARAMETERS
 
-    namespace BANKS
-    {
-        static const AkUniqueID INIT = 1355168291U;
-        static const AkUniqueID MAIN = 3161908922U;
-    } // namespace BANKS
-
     namespace BUSSES
     {
         static const AkUniqueID AMBIENCE = 85412153U;

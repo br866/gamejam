@@ -1,0 +1,49 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Mac",
+  "BasePlatform": "Mac",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "2881789206",
+    "Type": "Event",
+    "GUID": "{5F4D8709-5E11-4AF4-B150-673B2B1C76C0}",
+    "Language": "SFX",
+    "Hash": "{54DCB858-EFC1-EB0D-D6F4-6324596EBAC2}",
+    "ObjectPath": "Play_Key_Pickup",
+    "ShortName": "Play_Key_Pickup",
+    "Path": "Event/Play_Key_Pickup.bnk",
+    "Media": [
+     {
+      "Id": "105672495",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "key_pickup.wav",
+      "Path": "Media/105672495.wem",
+      "CachePath": "A3/{A37B03D3-7578-16B2-E606-A0CE5E83BCCE}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "2881789206",
+      "Name": "Play_Key_Pickup",
+      "ObjectPath": "\\Events\\Default Work Unit\\SFX\\Puzzle\\Play_Key_Pickup",
+      "GUID": "{5F4D8709-5E11-4AF4-B150-673B2B1C76C0}",
+      "MaxAttenuation": "15",
+      "DurationType": "OneShot",
+      "DurationMin": "0.52133334",
+      "DurationMax": "0.52133334",
+      "MediaRefs": [
+       {
+        "Id": "105672495"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{4B5E0445-4DFD-08DD-9758-86121BAEA1DF}"
+ }
+}

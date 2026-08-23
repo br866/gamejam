@@ -1,0 +1,58 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "2201569778",
+    "Type": "Event",
+    "GUID": "{323AC596-A231-49A8-9212-A522D2BD5678}",
+    "Language": "SFX",
+    "Hash": "{9289E135-AE43-13CE-E398-6134DBF85B47}",
+    "ObjectPath": "Play_MUS_Gameplay",
+    "ShortName": "Play_MUS_Gameplay",
+    "Path": "Event/Play_MUS_Gameplay.bnk",
+    "Media": [
+     {
+      "Id": "166705980",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "OST1-Fullscore_115bpm4-4_L41M-P0.wav",
+      "Path": "Media/166705980.wem",
+      "CachePath": "49/{495BB6F3-9137-C3FF-447A-2EB3A9E63329}.wem"
+     },
+     {
+      "Id": "339849344",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "OST1-intro_115bpm4-4_L2M-P0.wav",
+      "Path": "Media/339849344.wem",
+      "CachePath": "EC/{EC439C5A-A862-7A6F-000A-EF125FB9A01D}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "2201569778",
+      "Name": "Play_MUS_Gameplay",
+      "ObjectPath": "\\Events\\Default Work Unit\\Music\\Play_MUS_Gameplay",
+      "GUID": "{323AC596-A231-49A8-9212-A522D2BD5678}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "166705980"
+       },
+       {
+        "Id": "339849344"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{B3CC3969-AC08-FA02-3591-BA01EA109371}"
+ }
+}
