@@ -66,12 +66,13 @@ public class FormalPlayerActor : MonoBehaviour
         if (moverRotationLocked)
             return;
 
-        float speed = sprint && role == ActorRole.Dog ? sprintSpeed : walkSpeed;
+        bool sprinting = sprint && role == ActorRole.Human;
+        float speed = sprinting ? sprintSpeed : walkSpeed;
         body.velocity = new Vector3(direction.x * speed, ClampFall(body.velocity.y), direction.z * speed);
         SetState(!IsGrounded()
             ? ActorState.Jumping
             : direction.sqrMagnitude > 0.01f
-                ? sprint && role == ActorRole.Dog ? ActorState.Sprinting : ActorState.Walking
+                ? sprinting ? ActorState.Sprinting : ActorState.Walking
                 : ActorState.Idle);
 
         if (direction.sqrMagnitude > 0.01f && !moverRotationLocked)

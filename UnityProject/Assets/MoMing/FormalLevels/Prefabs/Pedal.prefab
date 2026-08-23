@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7999660359241871535}
   - component: {fileID: 430567000217604494}
-  - component: {fileID: 14629514947974678}
+  - component: {fileID: 320548926218801290}
   m_Layer: 0
-  m_Name: L01_Mechanism_Pedal
+  m_Name: Pedal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -55,7 +55,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2, y: 1, z: 2}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &14629514947974678
+--- !u!114 &320548926218801290
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -64,10 +64,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 702291881316420071}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d04d96b587b5fe84e9c2ad9130670399, type: 3}
+  m_Script: {fileID: 11500000, guid: e96fd44ad3ac4d1182abb92e7df73e75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  linkedDoor: {fileID: 0}
+  requirement: 1
+  prerequisiteMode: 0
+  prerequisites: []
+  completionState: {fileID: 0}
+  actuators: []
+  permanent: 1
+  opensTransitionDoor: 0
+  successorScene: 
 --- !u!1 &3024104278647572416
 GameObject:
   m_ObjectHideFlags: 0

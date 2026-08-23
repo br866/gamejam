@@ -79,7 +79,7 @@ public class FormalPlayerControl : MonoBehaviour
             return;
         }
 
-        bool sprint = activeActor.Role == FormalPlayerActor.ActorRole.Dog && Input.GetKey(KeyCode.LeftShift);
+        bool sprint = activeActor.Role == FormalPlayerActor.ActorRole.Human && Input.GetKey(KeyCode.LeftShift);
         activeActor.Move(direction, sprint);
     }
 

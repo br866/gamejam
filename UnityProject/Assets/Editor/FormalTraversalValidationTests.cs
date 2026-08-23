@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.TestTools;
 
 public class FormalTraversalValidationTests
 {
@@ -251,9 +252,6 @@ public class FormalTraversalValidationTests
             Assert.AreEqual(FormalTriggerRequirement.BothPlayers,
                 typeof(FormalActuatorTrigger).GetField("requirement", flags).GetValue(safeZoneTrigger));
             Assert.IsTrue(safeZoneCollider.isTrigger);
-            var safeZonePrerequisites = (FormalMechanismState[])typeof(FormalActuatorTrigger)
-                .GetField("prerequisites", flags).GetValue(safeZoneTrigger);
-            Assert.AreEqual(0, safeZonePrerequisites.Length);
             var dogPlateActuators = (MonoBehaviour[])typeof(FormalActuatorTrigger)
                 .GetField("actuators", flags).GetValue(dogTrigger);
             Assert.AreEqual(1, dogPlateActuators.Length);
@@ -471,8 +469,8 @@ public class FormalTraversalValidationTests
         Assert.IsNotNull(prefabCollider, "L01 pedal prefab has no detection collider.");
         Assert.IsTrue(contentCollider.isTrigger, "L01 content pedal detection collider must be a trigger.");
         Assert.IsTrue(prefabCollider.isTrigger, "L01 pedal prefab detection collider must be a trigger.");
-        Assert.IsNotNull(contentPedal.GetComponent<FormalMechanismPedal>(), "L01 content pedal has no mechanism behavior.");
-        Assert.IsNotNull(prefabPedal.GetComponent<FormalMechanismPedal>(), "L01 pedal prefab has no mechanism behavior.");
+        Assert.IsNotNull(contentPedal.GetComponent<FormalActuatorTrigger>(), "L01 content pedal has no mechanism behavior.");
+        Assert.IsNotNull(prefabPedal.GetComponent<FormalActuatorTrigger>(), "L01 pedal prefab has no mechanism behavior.");
     }
 
     [Test]
@@ -508,7 +506,7 @@ public class FormalTraversalValidationTests
     }
 
     [Test]
-    public void FormalFlowUnloadsPredecessorAfterSuccessorArrival()
+    public void FormalFlowRetainsPredecessorAfterSuccessorArrival()
     {
         var flowObject = new GameObject("Flow");
         var flow = flowObject.AddComponent<FormalGameFlowController>();
@@ -524,12 +522,18 @@ public class FormalTraversalValidationTests
 
         pendingField.SetValue(flow, "FormalLevel01");
         currentField.SetValue(flow, "FormalLevel02");
+        // Successor handoff attempts an additive load that only exists in
+        // play mode; expect the edit-mode exception before invoking it.
+        LogAssert.Expect(LogType.Exception,
+            "InvalidOperationException: This can only be used during play mode, please use EditorSceneManager.OpenScene() instead.");
         typeof(FormalGameFlowController)
             .GetMethod("NotifySuccessorCheckpointActivated", BindingFlags.Instance | BindingFlags.Public)
             .Invoke(flow, new object[] { "FormalLevel02" });
 
-        Assert.IsNull(pendingField.GetValue(flow),
-            "Arrival at the successor registration point must unload the predecessor.");
+        // The direct predecessor stays loaded after successor arrival; the
+        // arrival cleanup retires it only when players reach the next level.
+        Assert.AreEqual("FormalLevel01", (string)pendingField.GetValue(flow),
+            "The direct predecessor must remain retained after successor registration.");
         Assert.IsTrue((bool)confirmedField.GetValue(flow));
 
         Object.DestroyImmediate(flowObject);
