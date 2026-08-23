@@ -92,6 +92,15 @@ public class GameHUDManager : MonoBehaviour
                 OpenPauseMenu();
         }
 
+        // 设置面板打开时把暂停菜单收起来，关掉设置后再显示回来。
+        // 否则两层 UI 会叠在一起：设置面板开了，暂停菜单还挡在前面。
+        if (isPaused && pauseMenuRoot != null && settingsPanel != null)
+        {
+            bool showPause = !settingsPanel.activeSelf;
+            if (pauseMenuRoot.activeSelf != showPause)
+                pauseMenuRoot.SetActive(showPause);
+        }
+
         // 挂住/脱离箱子时刷新操作提示
         var pm = PlayerManager.Instance;
         if (pm != null && pm.IsLinkedMode && pm.human != null)
