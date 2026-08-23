@@ -49,6 +49,50 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
             level.RegisterTemporaryState(this);
     }
 
+    void Start()
+    {
+        // 开局就把箱子落到地面：手摆高度经常差一点，物理接管后会和地板穿透互搏抖动。
+        SettleOnGround();
+    }
+
+    /// <summary>
+    /// 垂直落地校正：X/Z 不动，把箱体底面贴到正下方支撑面(地面)上。
+    /// 垂直位置从此由接触自然保持，不再依赖手摆的初始 Y 是否精确。
+    /// </summary>
+    void SettleOnGround()
+    {
+        if (box == null)
+            return;
+
+        Bounds bounds = box.bounds;
+        Vector3 origin = new Vector3(bounds.center.x, bounds.max.y + 1f, bounds.center.z);
+        float distance = bounds.size.y + 20f;
+        RaycastHit[] hits = Physics.RaycastAll(origin, Vector3.down, distance, ~0, QueryTriggerInteraction.Ignore);
+
+        // 取箱体下方最高的支撑面（跳过自身；叠在别的箱子/平台上也能正确落上去）。
+        float supportY = float.NegativeInfinity;
+        foreach (RaycastHit hit in hits)
+        {
+            if (hit.transform.IsChildOf(transform))
+                continue;
+            if (hit.point.y > bounds.max.y + 0.01f)
+                continue;
+            if (hit.point.y > supportY)
+                supportY = hit.point.y;
+        }
+        if (supportY == float.NegativeInfinity)
+            return;
+
+        float delta = supportY - bounds.min.y + 0.01f;
+        if (Mathf.Abs(delta) < 0.0001f)
+            return;
+
+        Vector3 settled = transform.position + Vector3.up * delta;
+        body.position = settled;
+        transform.SetPositionAndRotation(settled, transform.rotation);
+        Physics.SyncTransforms();
+    }
+
     void FixedUpdate()
     {
         if (!IsEngaged)
@@ -128,6 +172,7 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
         IgnoreCrateCollision(actor, true);
         actor.LockMoverInteraction(transform.position);
         actor.SnapToMoverPoint(GetPointPosition(point));
+        SettleOnGround();
         if (human == actor)
             body.isKinematic = false;
         return true;
@@ -184,6 +229,7 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
         body.rotation = initialRotation;
         transform.SetPositionAndRotation(initialPosition, initialRotation);
         Physics.SyncTransforms();
+        SettleOnGround();
     }
 
     void KeepActorsAtPoints()

@@ -16,8 +16,8 @@ public class FormalPlayerActors : MonoBehaviour
         // 人和狗互相不碰撞，避免切换角色时把对方挤开。
         if (human != null && dog != null)
         {
-            Collider humanCollider = human.GetComponent<Collider>();
-            Collider dogCollider = dog.GetComponent<Collider>();
+            Collider humanCollider = human.GetComponentInChildren<Collider>();
+            Collider dogCollider = dog.GetComponentInChildren<Collider>();
             if (humanCollider != null && dogCollider != null)
                 Physics.IgnoreCollision(humanCollider, dogCollider, true);
         }

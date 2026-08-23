@@ -6,25 +6,29 @@ public class FormalPlayerVisualLoader : MonoBehaviour
     [SerializeField] private FormalPlayerActor dog;
     [SerializeField] private GameObject humanVisualPrefab;
     [SerializeField] private GameObject dogVisualPrefab;
-    [SerializeField] private float humanVisualScale = 1f;
-    [SerializeField] private float dogVisualScale = 1f;
     [SerializeField] private Vector3 humanVisualOffset;
     [SerializeField] private Vector3 dogVisualOffset;
 
     void Awake()
     {
-        LoadVisual(human, humanVisualPrefab, "FormalHumanVisual", humanVisualScale, humanVisualOffset);
-        LoadVisual(dog, dogVisualPrefab, "FormalDogVisual", dogVisualScale, dogVisualOffset);
+        LoadVisual(human, humanVisualPrefab, "FormalHumanVisual", humanVisualOffset);
+        LoadVisual(dog, dogVisualPrefab, "FormalDogVisual", dogVisualOffset);
     }
 
-    static void LoadVisual(FormalPlayerActor player, GameObject prefab, string instanceName, float scale, Vector3 offset)
+    static void LoadVisual(FormalPlayerActor player, GameObject prefab, string instanceName, Vector3 offset)
     {
-        if (player == null || prefab == null || player.transform.Find(instanceName) != null)
+        if (player == null || prefab == null)
             return;
 
-        GameObject visual = Instantiate(prefab, player.transform);
+        // 视觉挂到 Body 下，与胶囊共享同一缩放旋钮；无 Body 时回退到根节点。
+        Transform parent = player.transform.Find("Body");
+        if (parent == null)
+            parent = player.transform;
+        if (parent.Find(instanceName) != null)
+            return;
+
+        GameObject visual = Instantiate(prefab, parent);
         visual.name = instanceName;
         visual.transform.localPosition += offset;
-        visual.transform.localScale *= scale;
     }
 }

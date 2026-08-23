@@ -133,7 +133,7 @@ public class FormalPlayerControl : MonoBehaviour
         if (cameraFollow == null || human == null || dog == null)
             return;
 
-        cameraFollow.SetTarget(activeActor.transform);
+        cameraFollow.SetTarget(activeActor.FocusAnchor);
     }
 
     bool IsMoverEngaged()

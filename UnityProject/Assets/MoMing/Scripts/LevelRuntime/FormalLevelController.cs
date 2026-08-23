@@ -80,7 +80,7 @@ public class FormalLevelController : MonoBehaviour
         if (player == null)
             return;
 
-        player.SetPosition(position);
+        player.SetPosition(position - player.MoverAttachOffset);
     }
 
     static void MovePlayer(FormalPlayerActor player, Transform spawn)
@@ -88,6 +88,6 @@ public class FormalLevelController : MonoBehaviour
         if (player == null || spawn == null)
             return;
 
-        player.SetPositionAndRotation(spawn.position, spawn.rotation);
+        player.SetPositionAndRotation(spawn.position - player.MoverAttachOffset, spawn.rotation);
     }
 }
