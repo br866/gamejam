@@ -68,6 +68,17 @@ public class GameManager : MonoBehaviour
     [Header("Checkpoints")]
     public Vector3 levelStartHuman = new Vector3(0f, 1f, -3f);
     public Vector3 levelStartDog = new Vector3(1.5f, 1f, -3f);
+    [Tooltip("用场景里角色实际摆放的位置当出生点，忽略上面手填的坐标。" +
+             "推荐开启，省得场景里摆一个位置、Inspector 里又填另一个")]
+    public bool useSceneSpawnAsLevelStart = true;
+
+    [Header("Fall Safety 掉出世界保护")]
+    [Tooltip("角色掉到世界外面时自动拉回存档点/出生点")]
+    public bool enableFallSafety = true;
+    [Tooltip("角色 y 低于这个值就算掉出去了")]
+    public float fallYThreshold = -20f;
+    [Tooltip("两次救援之间的最短间隔（秒），防止出生点本身就在虚空时无限刷屏")]
+    public float fallRescueCooldown = 1f;
 
     [Header("Scene Transition")]
     public string nextSceneName = "";
@@ -88,6 +99,10 @@ public class GameManager : MonoBehaviour
     private RawImage dirtOverlay;
     private float currentDirtOverlayStrength = 0f;
     private bool hasCheckpoint = false;
+    private Vector3 sceneSpawnHuman;
+    private Vector3 sceneSpawnDog;
+    private bool hasSceneSpawn = false;
+    private float lastFallRescueTime = -999f;
     private Vector3 checkpointHuman;
     private Vector3 checkpointDog;
     private Light humanSpotlight;
@@ -106,6 +121,15 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         mainCam = Camera.main;
+
+        // 先把角色在场景里被摆放的位置记下来，当作出生点用。
+        // 必须在任何东西移动它们之前做。
+        if (humanPlayer != null && dogPlayer != null)
+        {
+            sceneSpawnHuman = humanPlayer.position;
+            sceneSpawnDog = dogPlayer.position;
+            hasSceneSpawn = true;
+        }
 
         // Permanently set camera to solid black background so the void outside rooms is always black
         if (mainCam != null)
@@ -437,6 +461,7 @@ public class GameManager : MonoBehaviour
         UpdateAnxietyUI();
         UpdateDarkness();
         UpdateDirtOverlay(currentAnxiety / maxAnxiety);
+        CheckFallOutOfWorld();
 
         if (currentAnxiety >= maxAnxiety)
             ResetLevel();
@@ -582,20 +607,62 @@ public class GameManager : MonoBehaviour
             humanSpotlight.intensity = 0f;
         if (dogSpotlight != null)
             dogSpotlight.intensity = 0f;
-        Vector3 respawnHuman = hasCheckpoint ? checkpointHuman : levelStartHuman;
-        Vector3 respawnDog = hasCheckpoint ? checkpointDog : levelStartDog;
-        ResetPlayerPositions(respawnHuman, respawnDog);
+        ResetPlayerPositions(RespawnHumanPos, RespawnDogPos);
         OnLevelReset?.Invoke();
         Debug.Log("[GameManager] Level reset.");
     }
 
     public void OnPlayerCaught()
     {
-        Vector3 respawnHuman = hasCheckpoint ? checkpointHuman : levelStartHuman;
-        Vector3 respawnDog = hasCheckpoint ? checkpointDog : levelStartDog;
-        ResetPlayerPositions(respawnHuman, respawnDog);
+        ResetPlayerPositions(RespawnHumanPos, RespawnDogPos);
         currentAnxiety = Mathf.Min(currentAnxiety, maxAnxiety * 0.5f);
         Debug.Log("[GameManager] Player caught! Reset to start.");
+    }
+
+    /// <summary>
+    /// 复活点：优先存档点 → 场景里角色被摆放的位置 → Inspector 里手填的坐标。
+    /// </summary>
+    Vector3 RespawnHumanPos
+    {
+        get
+        {
+            if (hasCheckpoint) return checkpointHuman;
+            if (useSceneSpawnAsLevelStart && hasSceneSpawn) return sceneSpawnHuman;
+            return levelStartHuman;
+        }
+    }
+
+    Vector3 RespawnDogPos
+    {
+        get
+        {
+            if (hasCheckpoint) return checkpointDog;
+            if (useSceneSpawnAsLevelStart && hasSceneSpawn) return sceneSpawnDog;
+            return levelStartDog;
+        }
+    }
+
+    /// <summary>
+    /// 角色掉出世界时把它们拉回来，避免无限下坠。
+    /// 带冷却，万一出生点本身就在虚空里也不会刷屏。
+    /// </summary>
+    void CheckFallOutOfWorld()
+    {
+        if (!enableFallSafety) return;
+        if (Time.time - lastFallRescueTime < fallRescueCooldown) return;
+
+        bool humanFell = humanPlayer != null && humanPlayer.position.y < fallYThreshold;
+        bool dogFell = dogPlayer != null && dogPlayer.position.y < fallYThreshold;
+        if (!humanFell && !dogFell) return;
+
+        lastFallRescueTime = Time.time;
+        ResetPlayerPositions(RespawnHumanPos, RespawnDogPos);
+
+        string source = hasCheckpoint ? "存档点"
+            : (useSceneSpawnAsLevelStart && hasSceneSpawn ? "场景出生点" : "Level Start 坐标");
+        Debug.LogWarning("[GameManager] 角色掉出世界（y < " + fallYThreshold + "），已拉回" + source +
+                         "：human=" + RespawnHumanPos + " dog=" + RespawnDogPos +
+                         "。如果一直重复，说明这个出生点下面也没有地面。", this);
     }
 
     public void OnLevelComplete()
