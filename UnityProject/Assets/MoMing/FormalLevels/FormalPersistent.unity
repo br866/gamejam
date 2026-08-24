@@ -303,6 +303,9 @@ MonoBehaviour:
   anxietyGroup: {fileID: 793960773}
   hideAnxietyBarWhenCalm: 1
   anxietyBarFadeSpeed: 4
+  anxietyFillHead: {fileID: 0}
+  anxietyFillHeadMinX: -345
+  anxietyFillHeadMaxX: 345
   anxietyStateText: {fileID: 1163763694}
   anxietyStateLabels:
   - 
@@ -2328,18 +2331,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   distance: 5.5
-  focusHeight: 1.4
+  angle: 15
+  initialYawOffset: 0
+  followSpeed: 14
   autoFocusHeight: 1
   focusHeightRatio: 0.8
   minFocusHeight: 0.35
   maxFocusHeight: 2
+  focusHeight: 1.4
   autoDistance: 1
   referenceHeight: 1.8
   distanceScaleStrength: 0.5
   distanceBlendSpeed: 6
-  angle: 15
-  initialYawOffset: 0
-  followSpeed: 14
   enableMouseRotation: 1
   mouseSensitivity: 3
   enableMouseTilt: 1
