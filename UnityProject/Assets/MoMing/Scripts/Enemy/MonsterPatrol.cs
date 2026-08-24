@@ -37,7 +37,9 @@ public class MonsterPatrol : MonoBehaviour
     [SerializeField] private Collider[] safeZones;
 
     [Header("Audio")]
-    [SerializeField] private AudioClip footstepClip;
+    [SerializeField] private AK.Wwise.Event footstepEvent;
+    [SerializeField, Min(0.1f)] private float patrolFootstepDistance = 1.8f;
+    [SerializeField, Min(0.1f)] private float chaseFootstepDistance = 2.2f;
     [SerializeField] private AudioClip catchClip;
     [SerializeField] private AudioClip detectClip;
 
@@ -139,6 +141,8 @@ public class MonsterPatrol : MonoBehaviour
     private float attackTimer;
     private float nextAttackTime;
     private float forcedRepathCooldown;
+    private Vector3 lastFootstepPosition;
+    private bool hasWarnedMissingFootstepEvent;
 
     void Awake()
     {
@@ -152,6 +156,7 @@ public class MonsterPatrol : MonoBehaviour
         navigation = GetComponent<LevelMonsterNavigation>();
         animatorDriver = GetComponent<MonsterAnimatorDriver>();
         startPos = transform.position;
+        lastFootstepPosition = startPos;
         foreach (Renderer r in GetComponentsInChildren<Renderer>())
             if (r.enabled && r.gameObject.activeInHierarchy)
             {
@@ -203,6 +208,7 @@ public class MonsterPatrol : MonoBehaviour
         if (forcedChase)
         {
             ForcedChase();
+            HandleFootsteps();
             TryCatch(chaseTarget, false);
             return;
         }
@@ -216,7 +222,33 @@ public class MonsterPatrol : MonoBehaviour
             Chase();
         }
 
+        HandleFootsteps();
         CheckForPlayers();
+    }
+
+    void HandleFootsteps()
+    {
+        Vector3 current = transform.position;
+        Vector3 previous = lastFootstepPosition;
+        current.y = 0f;
+        previous.y = 0f;
+
+        float requiredDistance = forcedChase || currentState == State.Chase
+            ? chaseFootstepDistance
+            : patrolFootstepDistance;
+        if ((current - previous).sqrMagnitude < requiredDistance * requiredDistance)
+            return;
+
+        lastFootstepPosition = transform.position;
+        if (footstepEvent != null && footstepEvent.IsValid())
+        {
+            footstepEvent.Post(gameObject);
+        }
+        else if (!hasWarnedMissingFootstepEvent)
+        {
+            Debug.LogWarning("MonsterPatrol: Footstep Event is not assigned.", this);
+            hasWarnedMissingFootstepEvent = true;
+        }
     }
 
     bool HasAssignedWaypoints()
@@ -551,6 +583,7 @@ public class MonsterPatrol : MonoBehaviour
         chaseTarget = null;
         currentWaypoint = 0;
         transform.position = startPos;
+        lastFootstepPosition = startPos;
     }
 
     bool IsInSafeZone(Vector3 position)
