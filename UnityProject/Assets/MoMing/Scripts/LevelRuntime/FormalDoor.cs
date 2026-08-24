@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
 public class FormalDoor : MonoBehaviour, IFormalLevelPermanentState, IFormalLevelActuator
@@ -29,6 +30,32 @@ public class FormalDoor : MonoBehaviour, IFormalLevelPermanentState, IFormalLeve
     public float SignedOpenAngle => openingDirection == OpeningDirection.Inward ? openAngle : -openAngle;
 
     public event System.Action<FormalDoor> StateChanged;
+
+    /// <summary>
+    /// 按名字片段在所有已加载场景里找一扇门。
+    ///
+    /// 过关门是摆在 SharedArt 场景里的（比如 ToLevel02_door4），关卡场景里的脚本
+    /// 没法在 Inspector 里直接拖跨场景引用，所以留这个按名字找的入口。
+    /// </summary>
+    public static FormalDoor FindByNameToken(string nameToken)
+    {
+        if (string.IsNullOrEmpty(nameToken))
+            return null;
+
+        for (int i = 0; i < SceneManager.sceneCount; i++)
+        {
+            Scene scene = SceneManager.GetSceneAt(i);
+            if (!scene.isLoaded)
+                continue;
+
+            foreach (GameObject root in scene.GetRootGameObjects())
+                foreach (FormalDoor door in root.GetComponentsInChildren<FormalDoor>(true))
+                    if (door.name.IndexOf(nameToken, System.StringComparison.OrdinalIgnoreCase) >= 0)
+                        return door;
+        }
+
+        return null;
+    }
 
     void Awake()
     {

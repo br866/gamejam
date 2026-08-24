@@ -144,6 +144,58 @@ public class FormalGameFlowController : MonoBehaviour
         StartCoroutine(LoadLevelRoutine(sceneName, completed, true));
     }
 
+    /// <summary>
+    /// 「封关」：关掉两关之间那道门，并卸载上一关。
+    /// 由放在新关卡入口的 FormalLevelEntrySeal 在人和狗都进来之后调用。
+    ///
+    /// 为什么不在过关点直接卸载：过关点本身是摆在【上一关】场景里的，
+    /// 触发那一刻玩家还站在上一关的地板上，当场卸载会让人直接掉下去。
+    /// </summary>
+    public bool SealPredecessorLevel(bool closeDoor = true, bool unloadPredecessor = true)
+    {
+        if (routeComplete || string.IsNullOrEmpty(pendingUnloadScene))
+            return false;
+
+        // 第 4.5 关要靠保留上一关做追逐，别封
+        if (ShouldRetainPredecessor(FindRouteIndex(currentLevelScene)))
+            return false;
+
+        if (operationInProgress)
+            return false;
+
+        StartCoroutine(SealPredecessorRoutine(closeDoor, unloadPredecessor));
+        return true;
+    }
+
+    IEnumerator SealPredecessorRoutine(bool closeDoor, bool unloadPredecessor)
+    {
+        operationInProgress = true;
+
+        string predecessor = pendingUnloadScene;
+        pendingUnloadScene = null;
+
+        if (closeDoor)
+        {
+            FormalDoor door = FindTransitionDoor(predecessor, currentLevelScene);
+            if (door != null)
+                door.Close();
+            else
+                Debug.LogWarning($"[FormalGameFlowController] 没找到 {predecessor} -> {currentLevelScene} 的过关门，关不上。");
+        }
+
+        if (unloadPredecessor && !string.IsNullOrEmpty(predecessor) && predecessor != currentLevelScene)
+        {
+            Scene stale = SceneManager.GetSceneByName(predecessor);
+            if (stale.IsValid() && stale.isLoaded)
+                yield return SceneManager.UnloadSceneAsync(stale);
+        }
+
+        yield return UnloadUnusedSharedArt();
+
+        operationInProgress = false;
+        DrainPendingAdvance();
+    }
+
     public void UnloadLevel(string sceneName)
     {
         if (operationInProgress || string.IsNullOrEmpty(sceneName) || sceneName == currentLevelScene)
@@ -163,10 +215,17 @@ public class FormalGameFlowController : MonoBehaviour
         StartCoroutine(UnloadLevelRoutine(sceneName, completed));
     }
 
+    /// <summary>
+    /// 调试用的跳下一关（小键盘 2）。走 LoadLevel 而不是 RequestRouteAdvance：
+    /// 后者是"走过门"的无缝流程，不会传送角色、也保留上一关，
+    /// 用调试键触发就会变成人狗还站在旧关卡、两关同时可见。
+    /// 这里和 GoToPreviousLevel / JumpToLevel 保持一致，硬切并把两人都放到出生点。
+    /// </summary>
     public void GoToNextLevel()
     {
-        if (FindRouteSuccessorIndex(currentLevelScene) >= 0)
-            RequestRouteAdvance();
+        int index = FindRouteSuccessorIndex(currentLevelScene);
+        if (index >= 0)
+            LoadLevel(routeCatalog[index].sceneName);
     }
 
     public void GoToPreviousLevel()

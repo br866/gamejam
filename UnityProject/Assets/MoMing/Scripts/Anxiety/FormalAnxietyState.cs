@@ -202,6 +202,14 @@ public class FormalAnxietyState : MonoBehaviour
         switch (onFull)
         {
             case FullBehaviour.ResetLevel:
+                // 优先弹死亡画面，让玩家知道自己是怎么死的。
+                // 关卡重置交给画面上的「重新开始」按钮，这里不再直接重置。
+                if (FormalDeathScreen.Trigger(FormalDeathScreen.DeathCause.Anxiety))
+                {
+                    ResetAnxiety();
+                    break;
+                }
+
                 var level = FindObjectOfType<FormalLevelController>();
                 if (level != null)
                     level.ResetLevel();

@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
-public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState
+// 加上 IFormalLevelPermanentState，这样踏板可以直接当作
+// FormalDoorInteraction 的前置条件被引用（它本来就有 IsComplete）
+public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState, IFormalLevelPermanentState
 {
     [SerializeField] private FormalTriggerRequirement requirement = FormalTriggerRequirement.EitherPlayer;
     [SerializeField] private MonoBehaviour[] actuators;

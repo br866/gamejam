@@ -20,6 +20,7 @@ public static class FormalUIBuilder
     const string PauseDir = UiDir + "3暂停界面/";
     const string AnxDir = UiDir + "实机界面ui拆分/1焦虑值/";
     const string TutorialDir = UiDir + "4玩法介绍界面/";
+    const string DeathDir = UiDir + "9玩家死亡ui/";
     const string SettingsPrefabPath = "Assets/MoMing/Prefabs/SettingsPanel.prefab";
 
     [MenuItem("Tools/默名/构建正式关 UI (FormalPersistent)")]
@@ -79,6 +80,7 @@ public static class FormalUIBuilder
         pauseMenu.mainMenuButton = pauseBtns.mainMenuBtn;
         pauseMenu.mainMenuSceneName = "Start";
 
+        BuildDeathScreen(root.transform, root);
         BuildTutorialPopup(root.transform, root);
 
         // 焦虑的屏幕表现：污渍 + 红晕（挂在 Canvas 上，遮罩由脚本自己建）
@@ -254,6 +256,69 @@ public static class FormalUIBuilder
         colors.disabledColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
         colors.fadeDuration = 0.12f;
         btn.colors = colors;
+
+        var nav = btn.navigation;
+        nav.mode = Navigation.Mode.None;
+        btn.navigation = nav;
+
+        return btn;
+    }
+
+    // ---------------- 死亡画面 ----------------
+
+    static void BuildDeathScreen(Transform parent, GameObject controllerHost)
+    {
+        var death = NewUI("DeathScreen", parent);
+        Stretch(Rt(death));
+        var group = death.AddComponent<CanvasGroup>();
+        group.alpha = 0f;
+
+        var bg = NewImage("Background", death.transform,
+            LoadSprite(DeathDir + "death-screen-background-clean.png"), Color.white, true);
+        Stretch(Rt(bg.gameObject));
+
+        var title = NewImage("Title", death.transform, null, Color.white, false);
+        title.preserveAspect = true;
+        Place(Rt(title.gameObject), Center, Center, new Vector2(0f, 200f), new Vector2(880f, 300f));
+
+        var restart = MakeDeathOption("RestartButton", death.transform,
+            DeathDir + "restart-selected.png", new Vector2(0f, -20f), new Vector2(380f, 150f));
+        var mainMenu = MakeDeathOption("MainMenuButton", death.transform,
+            DeathDir + "main-menu.png", new Vector2(0f, -190f), new Vector2(320f, 150f));
+
+        var hint = NewText("Hint", death.transform,
+            "\u2191 \u2193 \u9009\u62E9\u3000\u3000Enter \u786E\u8BA4", 20,
+            TextAnchor.MiddleCenter, new Color(0.72f, 0.69f, 0.64f, 0.7f));
+        Place(Rt(hint.gameObject), Center, Center, new Vector2(0f, -430f), new Vector2(600f, 32f));
+
+        var screen = controllerHost.AddComponent<FormalDeathScreen>();
+        screen.root = death;
+        screen.group = group;
+        screen.titleImage = title;
+        screen.caughtTitle = LoadSprite(DeathDir + "death-title.png");
+        screen.anxietyTitle = LoadSprite(DeathDir + "anxiety-death-title-you-are-lost.png");
+        screen.restartButton = restart;
+        screen.mainMenuButton = mainMenu;
+        screen.restartImage = restart.targetGraphic as Image;
+        screen.mainMenuImage = mainMenu.targetGraphic as Image;
+        screen.mainMenuSceneName = "Start";
+
+        death.SetActive(false);
+    }
+
+    /// <summary>
+    /// 死亡画面的选项。选中状态靠颜色区分（脚本控制），
+    /// 所以这里把 Button 的 transition 关掉，免得和脚本抢着改颜色。
+    /// </summary>
+    static Button MakeDeathOption(string name, Transform parent, string spritePath, Vector2 pos, Vector2 size)
+    {
+        var img = NewImage(name, parent, LoadSprite(spritePath), Color.white, true);
+        img.preserveAspect = true;
+        Place(Rt(img.gameObject), Center, Center, pos, size);
+
+        var btn = img.gameObject.AddComponent<Button>();
+        btn.targetGraphic = img;
+        btn.transition = Selectable.Transition.None;
 
         var nav = btn.navigation;
         nav.mode = Navigation.Mode.None;

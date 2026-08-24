@@ -512,6 +512,14 @@ public class MonsterPatrol : MonoBehaviour
             (player.position.z - transform.position.z) * (player.position.z - transform.position.z));
         if (xzDist <= catchRadius)
         {
+            // 正式关卡：先弹死亡画面。Trigger 内部会挡住重复触发，
+            // 所以不用担心怪物每帧都调一次。旧场景没有这个组件，会自动落到下面的老逻辑。
+            if (FormalDeathScreen.Trigger(FormalDeathScreen.DeathCause.Caught))
+            {
+                PlayAudio(catchClip);
+                return true;
+            }
+
             FormalGameFlowController flow = UnityEngine.Object.FindObjectOfType<FormalGameFlowController>();
             if (flow != null && flow.CurrentLevelScene == "FormalLevel045")
                 flow.ResetCurrentLevel();
