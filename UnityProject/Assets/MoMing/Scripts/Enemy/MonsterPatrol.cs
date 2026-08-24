@@ -136,6 +136,8 @@ public class MonsterPatrol : MonoBehaviour
     private MonsterAnimatorDriver animatorDriver;
     private Vector3 startPos;
     private Transform chaseTarget;
+    private Transform forcedHumanTarget;
+    private Transform forcedDogTarget;
     private float lastSeenTime;
     private bool forcedChase;
     private float attackTimer;
@@ -166,6 +168,23 @@ public class MonsterPatrol : MonoBehaviour
         ResolveFormalSafeZones();
     }
 
+    void Start()
+    {
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnLevelReset += ResetPatrol;
+
+        FormalLevelController level = FormalLevelActors.FindLevelController(gameObject.scene);
+        if (level != null)
+            level.RegisterTemporaryState(new FormalMonsterResetState(this));
+    }
+
+    void OnDestroy()
+    {
+        ReleaseExecutionTarget();
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnLevelReset -= ResetPatrol;
+    }
+
     void ResolveFormalSafeZones()
     {
         if (safeZones != null && safeZones.Length > 0)
@@ -187,24 +206,14 @@ public class MonsterPatrol : MonoBehaviour
         safeZones = resolved.ToArray();
     }
 
-    void Start()
-    {
-        if (GameManager.Instance != null)
-            GameManager.Instance.OnLevelReset += ResetPatrol;
-
-        FormalLevelController level = FormalLevelActors.FindLevelController(gameObject.scene);
-        if (level != null)
-            level.RegisterTemporaryState(new FormalMonsterResetState(this));
-    }
-
-    void OnDestroy()
-    {
-        if (GameManager.Instance != null)
-            GameManager.Instance.OnLevelReset -= ResetPatrol;
-    }
-
     void Update()
     {
+        if (currentState == State.Attack)
+        {
+            UpdateAttack();
+            return;
+        }
+
         if (forcedChase)
         {
             ForcedChase();
@@ -334,7 +343,13 @@ public class MonsterPatrol : MonoBehaviour
         }
 
         Vector3 targetPos = new Vector3(chaseTarget.position.x, startPos.y, chaseTarget.position.z);
-        float dist = Vector3.Distance(transform.position, targetPos);
+        float xzDist = HorizontalDistance(transform.position, chaseTarget.position);
+
+        if (xzDist <= attackRange && Time.time >= nextAttackTime && HasLineOfSight(chaseTarget))
+        {
+            BeginAttack(chaseTarget);
+            return;
+        }
 
         if (navigation != null)
         {
@@ -349,12 +364,12 @@ public class MonsterPatrol : MonoBehaviour
 
             navigation.SetMoveSpeed(chaseSpeed);
             navigation.SetDestination(targetPos);
-            if (dist <= chaseStopDistance)
+            if (xzDist <= chaseStopDistance)
                 navigation.ClearDestination();
             return;
         }
 
-        if (dist > chaseStopDistance)
+        if (xzDist > chaseStopDistance)
         {
             Vector3 dir = (targetPos - transform.position).normalized;
             if (dir != Vector3.zero)
@@ -381,6 +396,27 @@ public class MonsterPatrol : MonoBehaviour
         if (target == null)
             return;
 
+        forcedHumanTarget = null;
+        forcedDogTarget = null;
+
+        BeginForcedChaseInternal(target);
+    }
+
+    public void BeginForcedChase(Transform humanTarget, Transform dogTarget)
+    {
+        forcedHumanTarget = humanTarget;
+        forcedDogTarget = dogTarget;
+
+        Transform target = SelectForcedChaseTarget();
+        if (target == null)
+            return;
+
+        BeginForcedChaseInternal(target);
+    }
+
+    void BeginForcedChaseInternal(Transform target)
+    {
+
         if (navigation != null)
         {
             navigation.ClearDestination();
@@ -397,13 +433,21 @@ public class MonsterPatrol : MonoBehaviour
 
     void ForcedChase()
     {
+        Transform nearestTarget = SelectForcedChaseTarget();
+        if (nearestTarget != null)
+            chaseTarget = nearestTarget;
+
         if (chaseTarget == null || !chaseTarget.gameObject.activeInHierarchy)
             return;
 
         Vector3 targetPos = chaseTarget.position;
-        float xzDist = Mathf.Sqrt(
-            (targetPos.x - transform.position.x) * (targetPos.x - transform.position.x) +
-            (targetPos.z - transform.position.z) * (targetPos.z - transform.position.z));
+        float xzDist = HorizontalDistance(transform.position, targetPos);
+
+        if (xzDist <= attackRange && Time.time >= nextAttackTime && HasLineOfSight(chaseTarget))
+        {
+            BeginAttack(chaseTarget);
+            return;
+        }
 
         if (xzDist <= chaseStopDistance)
             return;
@@ -442,6 +486,27 @@ public class MonsterPatrol : MonoBehaviour
             transform.position,
             targetPos,
             chaseSpeed * Time.deltaTime);
+    }
+
+    Transform SelectForcedChaseTarget()
+    {
+        bool humanValid = forcedHumanTarget != null && forcedHumanTarget.gameObject.activeInHierarchy;
+        bool dogValid = forcedDogTarget != null && forcedDogTarget.gameObject.activeInHierarchy;
+        if (!humanValid && !dogValid)
+            return chaseTarget;
+        if (!humanValid)
+            return forcedDogTarget;
+        if (!dogValid)
+            return forcedHumanTarget;
+
+        float humanDistance = HorizontalDistance(transform.position, forcedHumanTarget.position);
+        float dogDistance = HorizontalDistance(transform.position, forcedDogTarget.position);
+        const float tieTolerance = 0.1f;
+        if ((chaseTarget == forcedHumanTarget || chaseTarget == forcedDogTarget) &&
+            Mathf.Abs(humanDistance - dogDistance) <= tieTolerance)
+            return chaseTarget;
+
+        return humanDistance <= dogDistance ? forcedHumanTarget : forcedDogTarget;
     }
 
     void SteerForcedChaseToWaypoint()
@@ -537,41 +602,149 @@ public class MonsterPatrol : MonoBehaviour
     bool TryCatch(Transform player, bool requireLineOfSight)
     {
         if (player == null || !player.gameObject.activeInHierarchy) return false;
-        if (IsInSafeZone(player.position)) return false;
         if (requireLineOfSight && !HasLineOfSight(player)) return false;
         float xzDist = Mathf.Sqrt(
             (player.position.x - transform.position.x) * (player.position.x - transform.position.x) +
             (player.position.z - transform.position.z) * (player.position.z - transform.position.z));
         if (xzDist <= catchRadius)
         {
-            // 正式关卡：先弹死亡画面。Trigger 内部会挡住重复触发，
-            // 所以不用担心怪物每帧都调一次。旧场景没有这个组件，会自动落到下面的老逻辑。
-            if (FormalDeathScreen.Trigger(FormalDeathScreen.DeathCause.Caught))
-            {
-                PlayAudio(catchClip);
-                return true;
-            }
-
-            FormalGameFlowController flow = UnityEngine.Object.FindObjectOfType<FormalGameFlowController>();
-            if (flow != null && flow.CurrentLevelScene == "FormalLevel045")
-                flow.ResetCurrentLevel();
-            else if (GameManager.Instance != null)
-                GameManager.Instance.OnPlayerCaught();
-            else
-            {
-                FormalLevelController level = FormalLevelActors.FindLevelController(gameObject.scene);
-                if (level != null)
-                    level.ResetLevel();
-            }
-            PlayAudio(catchClip);
+            BeginAttack(player);
             return true;
         }
         return false;
     }
 
+    void BeginAttack(Transform target)
+    {
+        if (target == null || currentState == State.Attack || Time.time < nextAttackTime)
+            return;
+
+        if (IsInSafeZone(target.position))
+            return;
+
+        executionTarget = target.GetComponentInParent<FormalPlayerActor>();
+        if (executionTarget != null)
+            executionTarget.AcquireExecutionLock();
+
+        chaseTarget = target;
+        currentState = State.Attack;
+        attackTimer = Mathf.Max(0f, attackWindup);
+
+        Debug.Log("[Monster][ATK] begin windup=" + attackWindup + "s target=" + target.name);
+
+        if (navigation != null)
+            navigation.ClearDestination();
+        FaceTarget(target);
+
+        if (animatorDriver != null && !string.IsNullOrEmpty(attackStateName))
+            animatorDriver.PlayLockedState(attackStateName, attackWindup + 0.25f);
+    }
+
+    void UpdateAttack()
+    {
+        if (!IsAttackTargetValid(chaseTarget))
+        {
+            Debug.Log("[Monster][ATK] cancel reason=target invalid pos=" +
+                      (chaseTarget != null ? chaseTarget.position.ToString("F1") : "null"));
+            CancelAttack();
+            return;
+        }
+
+        FaceTarget(chaseTarget);
+
+        attackTimer -= Time.deltaTime;
+        if (attackTimer > 0f)
+            return;
+
+        Transform target = chaseTarget;
+        EndAttack();
+        chaseTarget = null;
+        currentState = State.Patrol;
+
+        ExecuteCatch();
+        Debug.Log("[Monster] Attack hit " + (target != null ? target.name : "target") + ".");
+    }
+
+    void CancelAttack()
+    {
+        EndAttack();
+        if (forcedChase)
+            return;
+
+        chaseTarget = null;
+        currentState = State.Patrol;
+        Debug.Log("[Monster] Attack cancelled, returning to patrol.");
+    }
+
+    void EndAttack()
+    {
+        if (animatorDriver != null)
+            animatorDriver.ClearAnimationLock();
+        ReleaseExecutionTarget();
+        nextAttackTime = Time.time + Mathf.Max(0f, attackCooldown);
+    }
+
+    bool IsAttackTargetValid(Transform target)
+    {
+        if (target == null || !target.gameObject.activeInHierarchy) return false;
+        return true;
+    }
+
+    void ReleaseExecutionTarget()
+    {
+        if (executionTarget == null)
+            return;
+
+        executionTarget.ReleaseExecutionLock();
+        executionTarget = null;
+    }
+
+    static float HorizontalDistance(Vector3 from, Vector3 to)
+    {
+        float x = to.x - from.x;
+        float z = to.z - from.z;
+        return Mathf.Sqrt(x * x + z * z);
+    }
+
+    void FaceTarget(Transform target)
+    {
+        Vector3 dir = target.position - transform.position;
+        dir.y = 0f;
+        if (dir.sqrMagnitude < 0.0001f)
+            return;
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation,
+            Quaternion.LookRotation(dir),
+            10f * Time.deltaTime);
+    }
+
+    void ExecuteCatch()
+    {
+        Debug.Log("[Monster][ATK] windup done, executing catch");
+
+        // 正式关卡：先弹死亡画面。Trigger 内部会挡住重复触发，
+        // 所以不用担心怪物每帧都调一次。旧场景没有这个组件，会自动落到下面的老逻辑。
+        if (FormalDeathScreen.Trigger(FormalDeathScreen.DeathCause.Caught))
+        {
+            PlayAudio(catchClip);
+            return;
+        }
+
+        FormalGameFlowController flow = UnityEngine.Object.FindObjectOfType<FormalGameFlowController>();
+        if (flow != null)
+            flow.ResetCurrentLevel();
+        else if (GameManager.Instance != null)
+            GameManager.Instance.OnPlayerCaught();
+        else
+            Debug.LogError("[MonsterPatrol] Formal monster capture requires FormalGameFlowController for shared recovery.", this);
+        PlayAudio(catchClip);
+    }
+
     public void ResetPatrol()
     {
         forcedChase = false;
+        forcedHumanTarget = null;
+        forcedDogTarget = null;
         forcedRepathCooldown = 0f;
         if (navigation != null)
         {
@@ -592,10 +765,8 @@ public class MonsterPatrol : MonoBehaviour
             return false;
 
         foreach (Collider safeZone in safeZones)
-        {
             if (safeZone != null && safeZone.bounds.Contains(position))
                 return true;
-        }
 
         return false;
     }

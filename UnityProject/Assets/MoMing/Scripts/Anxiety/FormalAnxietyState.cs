@@ -19,7 +19,7 @@ public class FormalAnxietyState : MonoBehaviour
     {
         /// <summary>只发事件，由别人决定怎么处理</summary>
         None,
-        /// <summary>调用当前关卡的 FormalLevelController.ResetLevel()</summary>
+        /// <summary>通过 FormalGameFlowController 请求当前关的统一重生。</summary>
         ResetLevel,
     }
 
@@ -210,11 +210,11 @@ public class FormalAnxietyState : MonoBehaviour
                     break;
                 }
 
-                var level = FindObjectOfType<FormalLevelController>();
-                if (level != null)
-                    level.ResetLevel();
+                FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
+                if (flow != null)
+                    flow.ResetCurrentLevel();
                 else
-                    Debug.LogWarning("[FormalAnxietyState] 焦虑涨满，但场景里找不到 FormalLevelController。");
+                    Debug.LogWarning("[FormalAnxietyState] 焦虑涨满，但场景里找不到 FormalGameFlowController。");
                 ResetAnxiety();
                 break;
 

@@ -1690,7 +1690,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58e9393a17fd2584faea47c9e908efec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialLevelScene: FormalLevel01
+  initialLevelScene: FormalLevel04
   routeCatalog:
   - levelId: Level01
     sceneName: FormalLevel01
@@ -1726,6 +1726,7 @@ MonoBehaviour:
     sharedArtScenes:
     - FormalSharedArt_L045_L05
     arrivalTransitionDoorName: ToLevel05
+  level02TransitionDiagnostics: 1
   level01Level02SharedArtScene: FormalSharedArt_L01_L02
   level02Level03SharedArtScene: FormalSharedArt_L02_L03
   level03Level04SharedArtScene: FormalSharedArt_L03_L04
@@ -2315,7 +2316,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  distance: 8
+  distance: 30
   angle: 20
   followSpeed: 8
   enableMouseRotation: 1

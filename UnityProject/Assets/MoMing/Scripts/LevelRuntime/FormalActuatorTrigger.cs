@@ -11,11 +11,20 @@ public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState, 
     [SerializeField] private bool permanent = true;
     [SerializeField] private bool opensTransitionDoor;
     [SerializeField] private string successorScene;
+    [Tooltip("完成后只预加载正式路线的下一关，保持角色位置并等待实体进入目标关入口确认。")]
+    [SerializeField] private bool preloadRouteSuccessor;
 
     private readonly HashSet<Object> occupants = new HashSet<Object>();
     private bool complete;
 
     public bool IsComplete => complete;
+    public string SuccessorScene => successorScene;
+
+    /// <summary>供场景自有的实体门出口绑定在运行时配置，不修改源 Prefab。</summary>
+    public void SetPreloadRouteSuccessor(bool enabled)
+    {
+        preloadRouteSuccessor = enabled;
+    }
 
     void Awake()
     {
@@ -89,15 +98,15 @@ public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState, 
         CompleteTrigger();
     }
 
-    public void CompleteImmediately()
+    public void CompleteImmediately(bool triggerRouteOutput = true)
     {
         if (complete)
             return;
 
-        CompleteTrigger();
+        CompleteTrigger(triggerRouteOutput);
     }
 
-    void CompleteTrigger()
+    void CompleteTrigger(bool triggerRouteOutput = true)
     {
         complete = true;
         foreach (MonoBehaviour behaviour in actuators)
@@ -107,12 +116,32 @@ public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState, 
                 actuator.Open();
         }
 
-        bool requestsRouteAdvance = opensTransitionDoor || !string.IsNullOrEmpty(successorScene);
-        if (!requestsRouteAdvance)
+        if (!triggerRouteOutput)
             return;
 
         FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
-        if (flow != null)
-            flow.RequestRouteAdvance();
+        if (flow == null)
+            return;
+
+        // 实体过门优先：加载后继关但不切换当前关、更不摆放角色。
+        if (preloadRouteSuccessor)
+        {
+            Debug.Log(
+                $"[PhysicalDoorTransition] exit-trigger trigger='{name}' scene='{gameObject.scene.name}' " +
+                $"mode=preload successor='{successorScene}'.",
+                this);
+            flow.PreloadRouteSuccessor(this, openTransitionDoor: true);
+            return;
+        }
+
+        bool requestsRouteAdvance = opensTransitionDoor || !string.IsNullOrEmpty(successorScene);
+        if (requestsRouteAdvance)
+        {
+            Debug.LogWarning(
+                $"[PhysicalDoorTransition] exit-trigger trigger='{name}' scene='{gameObject.scene.name}' " +
+                $"mode=direct successor='{successorScene}' preload={preloadRouteSuccessor}.",
+                this);
+            flow.RequestRouteAdvance(this);
+        }
     }
 }

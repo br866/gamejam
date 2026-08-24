@@ -4,7 +4,14 @@ using UnityEngine;
 public class FormalCrateDoorTrigger : MonoBehaviour
 {
     [SerializeField] private FormalDoor door;
+    private bool preloadRouteSuccessor;
     private bool completed;
+
+    /// <summary>由场景自有的实体出口绑定在运行时设置，不改动 Prefab 资源。</summary>
+    public void SetPreloadRouteSuccessor(bool enabled)
+    {
+        preloadRouteSuccessor = enabled;
+    }
 
     void Awake()
     {
@@ -40,7 +47,19 @@ public class FormalCrateDoorTrigger : MonoBehaviour
 
         FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
         if (flow != null)
-            flow.RequestRouteAdvance();
+        {
+            if (preloadRouteSuccessor)
+            {
+                Debug.Log(
+                    $"[PhysicalDoorTransition] crate-exit trigger='{name}' scene='{gameObject.scene.name}' mode=preload.",
+                    this);
+                flow.PreloadRouteSuccessor(this, openTransitionDoor: true);
+            }
+            else
+            {
+                flow.RequestRouteAdvance(this);
+            }
+        }
         else
             Debug.LogError("[FormalCrateDoorTrigger] FormalGameFlowController not found.");
     }

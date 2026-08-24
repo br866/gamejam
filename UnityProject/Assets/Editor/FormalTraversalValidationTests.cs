@@ -53,8 +53,8 @@ public class FormalTraversalValidationTests
                 FormalLevelController[] controllers = FindInScene<FormalLevelController>(scene);
                 Assert.AreEqual(1, controllers.Length, $"{scene.name} must have exactly one level controller.");
                 Assert.AreEqual(routeScene.Id, controllers[0].LevelId, $"{scene.name} has an unexpected route id.");
-                Assert.IsNotNull(GetControllerTransform(controllers[0], "humanSpawn"), $"{scene.name} has no human spawn reference.");
-                Assert.IsNotNull(GetControllerTransform(controllers[0], "dogSpawn"), $"{scene.name} has no dog spawn reference.");
+                Assert.IsNotNull(GetControllerTransform(controllers[0], "humanRespawnAnchor"), $"{scene.name} has no human initial respawn reference.");
+                Assert.IsNotNull(GetControllerTransform(controllers[0], "dogRespawnAnchor"), $"{scene.name} has no dog initial respawn reference.");
                 Assert.IsNotNull(FindTransform(scene, routeScene.ContentRoot), $"{scene.name} has no content root.");
                 Assert.IsNotNull(FindTransform(scene, routeScene.CollisionRoot), $"{scene.name} has no collision root.");
                 Assert.AreEqual(0, FindInScene<FormalPlayerActors>(scene).Length,
@@ -80,11 +80,11 @@ public class FormalTraversalValidationTests
         level.SetCheckpoint(humanAnchor, dogAnchor);
 
         var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-        var human = (Vector3)typeof(FormalLevelController).GetField("checkpointHuman", flags).GetValue(level);
-        var dog = (Vector3)typeof(FormalLevelController).GetField("checkpointDog", flags).GetValue(level);
+        var human = (Transform)typeof(FormalLevelController).GetField("checkpointHumanAnchor", flags).GetValue(level);
+        var dog = (Transform)typeof(FormalLevelController).GetField("checkpointDogAnchor", flags).GetValue(level);
 
-        Assert.AreEqual(humanAnchor.position, human);
-        Assert.AreEqual(dogAnchor.position, dog);
+        Assert.AreSame(humanAnchor, human);
+        Assert.AreSame(dogAnchor, dog);
 
         Object.DestroyImmediate(dogAnchor.gameObject);
         Object.DestroyImmediate(humanAnchor.gameObject);
@@ -384,8 +384,8 @@ public class FormalTraversalValidationTests
         {
             foreach (var anchor in root.GetComponentsInChildren<Transform>(true))
             {
-                if (anchor.name != "HumanSpawn" && anchor.name != "DogSpawn" &&
-                    anchor.name != "HumanRespawnAnchor" && anchor.name != "DogRespawnAnchor")
+                if (!anchor.name.EndsWith("HumanRespawnAnchor") &&
+                    !anchor.name.EndsWith("DogRespawnAnchor"))
                     continue;
 
                 Assert.IsTrue(
@@ -415,28 +415,28 @@ public class FormalTraversalValidationTests
         var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
         Physics.SyncTransforms();
 
-        Transform humanSpawn = null;
+        Transform humanInitialRespawn = null;
         Transform humanCheckpoint = null;
 
         foreach (var root in scene.GetRootGameObjects())
         {
             foreach (var transform in root.GetComponentsInChildren<Transform>(true))
             {
-                if (transform.name == "HumanSpawn")
-                    humanSpawn = transform;
-                else if (transform.name == "HumanRespawnAnchor")
+                if (transform.name.EndsWith("InitialHumanRespawnAnchor"))
+                    humanInitialRespawn = transform;
+                else if (transform.name.EndsWith("HumanRespawnAnchor"))
                     humanCheckpoint = transform;
             }
         }
 
-        Assert.IsNotNull(humanSpawn, $"{scene.name} has no human entrance anchor.");
+        Assert.IsNotNull(humanInitialRespawn, $"{scene.name} has no human initial respawn anchor.");
         Assert.IsNotNull(humanCheckpoint, $"{scene.name} has no human checkpoint anchor.");
 
-        var direction = humanCheckpoint.position - humanSpawn.position;
+        var direction = humanCheckpoint.position - humanInitialRespawn.position;
         Assert.IsFalse(
             Physics.CapsuleCast(
-                humanSpawn.position + Vector3.up * 0.51f,
-                humanSpawn.position + Vector3.up * 1.49f,
+                humanInitialRespawn.position + Vector3.up * 0.51f,
+                humanInitialRespawn.position + Vector3.up * 1.49f,
                 0.49f,
                 direction.normalized,
                 direction.magnitude,

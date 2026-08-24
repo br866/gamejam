@@ -3,17 +3,24 @@ using UnityEngine;
 
 public class FormalLevelController : MonoBehaviour
 {
+    const float GroundProbeOriginY = 500f;
+    const float GroundProbeDistance = 1000f;
+    static readonly Quaternion RespawnRotation = Quaternion.LookRotation(Vector3.left, Vector3.up);
+
     [SerializeField] private string levelId;
-    [SerializeField] private Transform humanSpawn;
-    [SerializeField] private Transform dogSpawn;
+    [SerializeField] private Transform humanRespawnAnchor;
+    [SerializeField] private Transform dogRespawnAnchor;
 
     private readonly List<IFormalLevelTemporaryState> temporaryStates = new List<IFormalLevelTemporaryState>();
-    private Vector3 checkpointHuman;
-    private Vector3 checkpointDog;
+    private Transform checkpointHumanAnchor;
+    private Transform checkpointDogAnchor;
     private bool hasCheckpoint;
+    private bool recoveryInProgress;
 
     public string LevelId => levelId;
     public bool HasCheckpoint => hasCheckpoint;
+    public Transform HumanRespawnAnchor => humanRespawnAnchor;
+    public Transform DogRespawnAnchor => dogRespawnAnchor;
 
     void Awake()
     {
@@ -23,13 +30,21 @@ public class FormalLevelController : MonoBehaviour
     void Start()
     {
         if (FindObjectsOfType<FormalLevelController>().Length == 1)
-            PlacePlayersAtSpawn();
+            PlacePlayersAtRespawnAnchors();
     }
 
-    public void PlacePlayersAtSpawn()
+    public bool PlacePlayersAtRespawnAnchors()
     {
-        MovePlayer(FormalPlayerActors.Instance != null ? FormalPlayerActors.Instance.Human : null, humanSpawn);
-        MovePlayer(FormalPlayerActors.Instance != null ? FormalPlayerActors.Instance.Dog : null, dogSpawn);
+        return PlacePlayers(humanRespawnAnchor, dogRespawnAnchor);
+    }
+
+    public bool PlacePlayerAtRespawnAnchor(FormalPlayerActor actor, Transform anchor)
+    {
+        if (!TryResolveGroundPosition(anchor, actor, out Vector3 position))
+            return false;
+
+        actor.SetPositionAndRotation(position, RespawnRotation);
+        return true;
     }
 
     public void RegisterTemporaryState(IFormalLevelTemporaryState state)
@@ -40,34 +55,41 @@ public class FormalLevelController : MonoBehaviour
 
     public void SetCheckpoint(Transform humanAnchor, Transform dogAnchor)
     {
-        checkpointHuman = humanAnchor != null
-            ? humanAnchor.position
-            : humanSpawn != null ? humanSpawn.position : Vector3.zero;
-        checkpointDog = dogAnchor != null
-            ? dogAnchor.position
-            : dogSpawn != null ? dogSpawn.position : checkpointHuman;
-        hasCheckpoint = true;
+        checkpointHumanAnchor = humanAnchor != null ? humanAnchor : humanRespawnAnchor;
+        checkpointDogAnchor = dogAnchor != null ? dogAnchor : dogRespawnAnchor;
+        hasCheckpoint = checkpointHumanAnchor != null && checkpointDogAnchor != null;
+
+        if (!hasCheckpoint)
+            Debug.LogError($"[FormalLevelController] {levelId} checkpoint has no complete human/dog respawn-anchor pair.", this);
+    }
+
+    public bool RequestRecovery()
+    {
+        if (recoveryInProgress)
+            return false;
+
+        recoveryInProgress = true;
+        try
+        {
+            foreach (IFormalLevelTemporaryState state in temporaryStates)
+                state.ResetTemporaryState();
+
+            if (FormalAnxietyState.Instance != null)
+                FormalAnxietyState.Instance.ResetAnxiety();
+
+            Transform humanAnchor = hasCheckpoint ? checkpointHumanAnchor : humanRespawnAnchor;
+            Transform dogAnchor = hasCheckpoint ? checkpointDogAnchor : dogRespawnAnchor;
+            return PlacePlayers(humanAnchor, dogAnchor);
+        }
+        finally
+        {
+            recoveryInProgress = false;
+        }
     }
 
     public void ResetLevel()
     {
-        foreach (IFormalLevelTemporaryState state in temporaryStates)
-            state.ResetTemporaryState();
-
-        // 关卡重置 = 这一次的尝试作废，焦虑必须跟着归零。
-        // 不清的话：从暂停菜单「重新开始」之后焦虑还挂在满值，
-        // 人狗刚被传回出生点、距离还没更新的那一帧就会又判定涨满，直接死循环。
-        if (FormalAnxietyState.Instance != null)
-            FormalAnxietyState.Instance.ResetAnxiety();
-
-        if (!hasCheckpoint)
-        {
-            PlacePlayersAtSpawn();
-            return;
-        }
-
-        MovePlayer(FormalPlayerActors.Instance != null ? FormalPlayerActors.Instance.Human : null, checkpointHuman);
-        MovePlayer(FormalPlayerActors.Instance != null ? FormalPlayerActors.Instance.Dog : null, checkpointDog);
+        RequestRecovery();
     }
 
     void RegisterChildren()
@@ -81,19 +103,50 @@ public class FormalLevelController : MonoBehaviour
         }
     }
 
-    static void MovePlayer(FormalPlayerActor player, Vector3 position)
+    bool PlacePlayers(Transform humanAnchor, Transform dogAnchor)
     {
-        if (player == null)
-            return;
+        FormalPlayerActors actors = FormalPlayerActors.Instance;
+        if (actors == null || actors.Human == null || actors.Dog == null)
+        {
+            Debug.LogError($"[FormalLevelController] {levelId} cannot place players because the shared actor pair is unavailable.", this);
+            return false;
+        }
 
-        player.SetPosition(position - player.MoverAttachOffset);
+        if (!TryResolveGroundPosition(humanAnchor, actors.Human, out Vector3 humanPosition) ||
+            !TryResolveGroundPosition(dogAnchor, actors.Dog, out Vector3 dogPosition))
+            return false;
+
+        actors.Human.SetPositionAndRotation(humanPosition, RespawnRotation);
+        actors.Dog.SetPositionAndRotation(dogPosition, RespawnRotation);
+        return true;
     }
 
-    static void MovePlayer(FormalPlayerActor player, Transform spawn)
+    bool TryResolveGroundPosition(Transform anchor, FormalPlayerActor actor, out Vector3 position)
     {
-        if (player == null || spawn == null)
-            return;
+        position = default;
+        if (anchor == null || actor == null)
+        {
+            Debug.LogError($"[FormalLevelController] {levelId} has a missing respawn anchor or actor.", this);
+            return false;
+        }
 
-        player.SetPositionAndRotation(spawn.position - player.MoverAttachOffset, spawn.rotation);
+        Vector3 origin = new Vector3(anchor.position.x, GroundProbeOriginY, anchor.position.z);
+        RaycastHit[] hits = Physics.RaycastAll(origin, Vector3.down, GroundProbeDistance,
+            Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+        System.Array.Sort(hits, (left, right) => left.distance.CompareTo(right.distance));
+
+        foreach (RaycastHit hit in hits)
+        {
+            Collider collider = hit.collider;
+            if (collider == null || collider.isTrigger || !collider.enabled ||
+                collider.GetComponentInParent<FormalPlayerActor>() != null)
+                continue;
+
+            position = new Vector3(anchor.position.x, hit.point.y, anchor.position.z) - actor.MoverAttachOffset;
+            return true;
+        }
+
+        Debug.LogError($"[FormalLevelController] {levelId}/{anchor.name} has no valid ground below its XZ position; player placement was refused.", anchor);
+        return false;
     }
 }

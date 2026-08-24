@@ -44,7 +44,10 @@ public class FormalPlayerControl : MonoBehaviour
         }
 
         if (Input.GetKeyDown(KeyCode.Space) && !IsMoverEngaged())
-            activeActor.Jump();
+        {
+            if (!activeActor.IsExecutionLocked)
+                activeActor.Jump();
+        }
     }
 
     /// <summary>
@@ -71,6 +74,12 @@ public class FormalPlayerControl : MonoBehaviour
     {
         if (activeActor == null)
             return;
+
+        if (activeActor.IsExecutionLocked)
+        {
+            activeActor.Stop();
+            return;
+        }
 
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
@@ -102,6 +111,9 @@ public class FormalPlayerControl : MonoBehaviour
 
     void ToggleMoverEngagement()
     {
+        if (activeActor == null || activeActor.IsExecutionLocked)
+            return;
+
         foreach (FormalCooperativeRailMover mover in FindObjectsOfType<FormalCooperativeRailMover>())
         {
             if (mover.IsAttached(activeActor))

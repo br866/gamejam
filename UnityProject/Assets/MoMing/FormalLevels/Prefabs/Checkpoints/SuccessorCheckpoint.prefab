@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 61862656225779008}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.375, y: 0, z: 0}
+  m_LocalPosition: {x: -0.36, y: 0, z: -0.569}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -40,7 +40,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7059743468741404496}
-  - component: {fileID: 3076953101864354585}
   - component: {fileID: 1946189716976920747}
   - component: {fileID: 5705006078096634810}
   - component: {fileID: 4568444335705342108}
@@ -68,14 +67,6 @@ Transform:
   - {fileID: 2329765555411739311}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &3076953101864354585
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 323873711695009049}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!65 &1946189716976920747
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -152,12 +143,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   level: {fileID: 0}
-   humanRespawnAnchor: {fileID: 0}
-   dogRespawnAnchor: {fileID: 0}
-   prerequisites:
-   - {fileID: 0}
-   - {fileID: 0}
-   successorRegistrationPoint: 1
+  owningLevelScene: FormalLevel02
+  prerequisites: []
 --- !u!1 &688859709299463981
 GameObject:
   m_ObjectHideFlags: 0
@@ -183,7 +170,7 @@ Transform:
   m_GameObject: {fileID: 688859709299463981}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.375, y: 0, z: 0}
+  m_LocalPosition: {x: -0.36, y: 0, z: 0.508}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
