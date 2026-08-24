@@ -38,6 +38,16 @@ Arrival confirmation and predecessor cleanup will report separate outcomes. When
 
 Alternative: leave the seal armed when predecessor retention blocks cleanup. Rejected because it retries forever and does not represent the completed arrival state.
 
+### Let L05_Checkpoint commit recovery and release retained Level 4 only
+
+L05_Checkpoint is reached after players have physically crossed the L4.5-to-L5 door, but before the two-player Level 5 arrival seal. It commits Level 5 as the recovery level without placement, then releases `retainedPhysicalPredecessorScene` (Level 4) directly, leaving `pendingUnloadScene` (Level 4.5) untouched. This makes a subsequent death recover to the L05 checkpoint, removes the L4 monsters when the pursuit segment is over, and preserves L4.5 for the rest of the route.
+
+Alternative: use the Level 5 arrival seal to unload both prior levels. Rejected because L4.5 must remain loaded and checkpoint timing is the intended end of the retained-L4 pursuit segment.
+
+### Re-establish Level 4 before Level 4.5 recovery when needed
+
+While Level 4.5 is the active pursuit level, Level 4 is a runtime dependency rather than an optional predecessor. Recovery will verify the retained scene is loaded; if not, it reloads the retained Level 4 scene and then resumes the normal dog-following and delayed-monster sequence.
+
 ### Preserve direct GM entry points
 
 GM commands continue to call their direct load path rather than the source-scene physical-exit policy. Direct loading cancels any pending physical transition as it does today.
@@ -54,7 +64,7 @@ Alternative: route GM commands through preload. Rejected because testers need de
 
 1. Extend the scene-owned physical-exit policy and route exit integration points.
 2. Configure Level 4 and Level 4.5 policy components, and add the Level 4.5 scene-owned arrival seal.
-3. Add edit-mode coverage for both exit paths, retained arrival, and GM interruption.
-4. Verify the two routes in Play Mode, including physical crossing by both actors and direct GM jumps.
+3. Add edit-mode coverage for both exit paths, retained arrival, L05 checkpoint recovery commit and retained-L4 cleanup, L4.5 recovery preservation, and GM interruption.
+4. Verify the two routes in Play Mode, including physical crossing by both actors, L4-only cleanup and L5 recovery at L05_Checkpoint, and direct GM jumps.
 
 Rollback consists of removing the two scene policy components and the Level 4.5 entry seal, then reverting the generic policy integration together; no Prefab migration is involved.

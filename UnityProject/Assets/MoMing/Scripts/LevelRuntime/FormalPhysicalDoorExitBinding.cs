@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// 场景自有的实体门出口绑定。
 ///
-/// 它在源关卡加载时，按目标关卡名把现有出口机关切为“开门后预加载”，
+/// 它在源关卡加载时，按目标关卡名把现有出口机关和箱子门切为“开门后预加载”，
 /// 避免修改嵌套 Prefab 资源。目标关卡入口的 FormalLevelEntrySeal 负责双人到达确认。
 /// </summary>
 [AddComponentMenu("MoMing/Formal Physical Door Exit Binding")]
@@ -20,7 +20,8 @@ public class FormalPhysicalDoorExitBinding : MonoBehaviour
             return;
         }
 
-        int boundCount = 0;
+        int actuatorCount = 0;
+        int crateDoorCount = 0;
         Scene scene = gameObject.scene;
         foreach (GameObject root in scene.GetRootGameObjects())
         {
@@ -30,20 +31,27 @@ public class FormalPhysicalDoorExitBinding : MonoBehaviour
                     continue;
 
                 trigger.SetPreloadRouteSuccessor(true);
-                boundCount++;
+                actuatorCount++;
+            }
+
+            foreach (FormalCrateDoorTrigger trigger in root.GetComponentsInChildren<FormalCrateDoorTrigger>(true))
+            {
+                trigger.SetPreloadRouteSuccessor(true);
+                crateDoorCount++;
             }
         }
 
-        if (boundCount == 0)
+        if (actuatorCount == 0 && crateDoorCount == 0)
         {
             Debug.LogError(
-                $"[PhysicalDoorTransition] exit-binding scene='{scene.name}' found no actuator targeting '{successorScene}'.",
+                $"[PhysicalDoorTransition] exit-binding scene='{scene.name}' found no route-producing exit targeting '{successorScene}'.",
                 this);
             return;
         }
 
         Debug.Log(
-            $"[PhysicalDoorTransition] exit-binding scene='{scene.name}' target='{successorScene}' bound={boundCount}.",
+            $"[PhysicalDoorTransition] exit-binding scene='{scene.name}' target='{successorScene}' " +
+            $"actuators={actuatorCount} crateDoors={crateDoorCount}.",
             this);
     }
 }

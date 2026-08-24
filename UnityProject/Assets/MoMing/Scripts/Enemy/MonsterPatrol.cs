@@ -134,6 +134,8 @@ public class MonsterPatrol : MonoBehaviour
     private MonsterAnimatorDriver animatorDriver;
     private Vector3 startPos;
     private Transform chaseTarget;
+    private Transform forcedHumanTarget;
+    private Transform forcedDogTarget;
     private float lastSeenTime;
     private bool forcedChase;
     private float attackTimer;
@@ -362,6 +364,27 @@ public class MonsterPatrol : MonoBehaviour
         if (target == null)
             return;
 
+        forcedHumanTarget = null;
+        forcedDogTarget = null;
+
+        BeginForcedChaseInternal(target);
+    }
+
+    public void BeginForcedChase(Transform humanTarget, Transform dogTarget)
+    {
+        forcedHumanTarget = humanTarget;
+        forcedDogTarget = dogTarget;
+
+        Transform target = SelectForcedChaseTarget();
+        if (target == null)
+            return;
+
+        BeginForcedChaseInternal(target);
+    }
+
+    void BeginForcedChaseInternal(Transform target)
+    {
+
         if (navigation != null)
         {
             navigation.ClearDestination();
@@ -378,6 +401,10 @@ public class MonsterPatrol : MonoBehaviour
 
     void ForcedChase()
     {
+        Transform nearestTarget = SelectForcedChaseTarget();
+        if (nearestTarget != null)
+            chaseTarget = nearestTarget;
+
         if (chaseTarget == null || !chaseTarget.gameObject.activeInHierarchy)
             return;
 
@@ -427,6 +454,27 @@ public class MonsterPatrol : MonoBehaviour
             transform.position,
             targetPos,
             chaseSpeed * Time.deltaTime);
+    }
+
+    Transform SelectForcedChaseTarget()
+    {
+        bool humanValid = forcedHumanTarget != null && forcedHumanTarget.gameObject.activeInHierarchy;
+        bool dogValid = forcedDogTarget != null && forcedDogTarget.gameObject.activeInHierarchy;
+        if (!humanValid && !dogValid)
+            return chaseTarget;
+        if (!humanValid)
+            return forcedDogTarget;
+        if (!dogValid)
+            return forcedHumanTarget;
+
+        float humanDistance = HorizontalDistance(transform.position, forcedHumanTarget.position);
+        float dogDistance = HorizontalDistance(transform.position, forcedDogTarget.position);
+        const float tieTolerance = 0.1f;
+        if ((chaseTarget == forcedHumanTarget || chaseTarget == forcedDogTarget) &&
+            Mathf.Abs(humanDistance - dogDistance) <= tieTolerance)
+            return chaseTarget;
+
+        return humanDistance <= dogDistance ? forcedHumanTarget : forcedDogTarget;
     }
 
     void SteerForcedChaseToWaypoint()
@@ -663,6 +711,8 @@ public class MonsterPatrol : MonoBehaviour
     public void ResetPatrol()
     {
         forcedChase = false;
+        forcedHumanTarget = null;
+        forcedDogTarget = null;
         forcedRepathCooldown = 0f;
         if (navigation != null)
         {

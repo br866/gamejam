@@ -34,11 +34,14 @@ public class FormalGameFlowController : MonoBehaviour
     private bool routeComplete;
     private bool successorArrivalConfirmed;
     private Coroutine level045PursuitRoutine;
+    private Coroutine level045PlayerBindingRoutine;
     private string pendingAdvanceFromScene;
     private UnityEngine.Object pendingAdvanceSource;
     private string pendingAdvanceOriginStack;
     private string pendingPhysicalTransitionFromScene;
     private string pendingPhysicalTransitionToScene;
+    private string retainedPhysicalPredecessorScene;
+    private bool retainedPredecessorReleasedAtLevel05Checkpoint;
 
     public string CurrentLevelScene => currentLevelScene;
     public IReadOnlyList<FormalRouteEntry> RouteCatalog => routeCatalog;
@@ -245,8 +248,17 @@ public class FormalGameFlowController : MonoBehaviour
         pendingPhysicalTransitionToScene = null;
         currentLevelScene = arrivalScene;
         pendingUnloadScene = predecessor;
+        if (ShouldRetainPredecessor(FindRouteIndex(arrivalScene)))
+            retainedPhysicalPredecessorScene = predecessor;
         successorArrivalConfirmed = true;
         SceneManager.SetActiveScene(target);
+
+        // L4.5 的检查点可能位于入口确认区之前。实体过门时，它会在本关
+        // 成为当前关卡前先完成，无法再通知一次；因此以成功的到达确认作为
+        // 追击序列的可靠起点。
+        if (HasArrivalSequence(FindRouteIndex(arrivalScene)))
+            BeginRetainedPredecessorPursuitSequence();
+
         Debug.Log($"[FormalGameFlowController] Physical arrival confirmed: {predecessor} -> {arrivalScene}.", source);
         return true;
     }
@@ -287,6 +299,8 @@ public class FormalGameFlowController : MonoBehaviour
     {
         pendingPhysicalTransitionFromScene = null;
         pendingPhysicalTransitionToScene = null;
+        retainedPhysicalPredecessorScene = null;
+        retainedPredecessorReleasedAtLevel05Checkpoint = false;
     }
 
     public void ReportTransitionDoorOpened(FormalDoor door)
@@ -334,13 +348,61 @@ public class FormalGameFlowController : MonoBehaviour
 
     public void NotifyCheckpointActivated(string sceneName)
     {
-        if (routeComplete || sceneName != currentLevelScene)
+        if (routeComplete)
+            return;
+
+        if (ReleaseRetainedPredecessorAtLevel05Checkpoint(sceneName))
+            return;
+
+        if (sceneName != currentLevelScene)
             return;
 
         if (!HasArrivalSequence(FindRouteIndex(currentLevelScene)))
             return;
 
         BeginRetainedPredecessorPursuitSequence();
+    }
+
+    bool ReleaseRetainedPredecessorAtLevel05Checkpoint(string sceneName)
+    {
+        if (sceneName != "FormalLevel05" || operationInProgress ||
+            pendingPhysicalTransitionToScene != sceneName ||
+            string.IsNullOrEmpty(retainedPhysicalPredecessorScene))
+            return false;
+
+        Scene level05 = SceneManager.GetSceneByName(sceneName);
+        if (!level05.isLoaded)
+            return false;
+
+        string predecessor = currentLevelScene;
+        string retainedSceneName = retainedPhysicalPredecessorScene;
+        pendingPhysicalTransitionFromScene = null;
+        pendingPhysicalTransitionToScene = null;
+        currentLevelScene = sceneName;
+        pendingUnloadScene = predecessor;
+        successorArrivalConfirmed = true;
+        SceneManager.SetActiveScene(level05);
+        foreach (FormalPlayerControl control in FindObjectsOfType<FormalPlayerControl>())
+            control.ForceHumanOnly(false);
+        retainedPhysicalPredecessorScene = null;
+        retainedPredecessorReleasedAtLevel05Checkpoint = true;
+        StartCoroutine(UnloadRetainedPredecessorAtLevel05Checkpoint(retainedSceneName));
+        Debug.Log($"[L05RetainedCleanup] checkpoint committed: {predecessor} -> {sceneName}; no player placement.", this);
+        return true;
+    }
+
+    IEnumerator UnloadRetainedPredecessorAtLevel05Checkpoint(string retainedSceneName)
+    {
+        operationInProgress = true;
+
+        Scene retained = SceneManager.GetSceneByName(retainedSceneName);
+        if (retained.IsValid() && retained.isLoaded)
+            yield return SceneManager.UnloadSceneAsync(retained);
+
+        yield return UnloadUnusedSharedArt();
+        operationInProgress = false;
+        Debug.Log($"[L05RetainedCleanup] unloaded retained scene '{retainedSceneName}'; Level 4.5 remains loaded.", this);
+        DrainPendingAdvance();
     }
 
     public void NotifySuccessorCheckpointActivated(string sceneName, UnityEngine.Object source = null)
@@ -406,9 +468,15 @@ public class FormalGameFlowController : MonoBehaviour
         if (routeComplete || string.IsNullOrEmpty(pendingUnloadScene))
             return false;
 
-        // 第 4.5 关要靠保留上一关做追逐，别封
+        // 第 4.5 关要靠保留上一关做追逐。实体入场已确认，调用方可完成封条，
+        // 但这里不关闭门也不卸载前关。
         if (ShouldRetainPredecessor(FindRouteIndex(currentLevelScene)))
-            return false;
+            return true;
+
+        // L05_Checkpoint has already released the pursuit-only retained L4.
+        // The L5 entry seal confirms physical arrival but deliberately keeps L4.5.
+        if (currentLevelScene == "FormalLevel05" && retainedPredecessorReleasedAtLevel05Checkpoint)
+            return true;
 
         if (operationInProgress)
             return false;
@@ -423,6 +491,8 @@ public class FormalGameFlowController : MonoBehaviour
 
         string predecessor = pendingUnloadScene;
         pendingUnloadScene = null;
+        string retainedPredecessor = retainedPhysicalPredecessorScene;
+        retainedPhysicalPredecessorScene = null;
 
         if (closeDoor)
         {
@@ -438,6 +508,14 @@ public class FormalGameFlowController : MonoBehaviour
             Scene stale = SceneManager.GetSceneByName(predecessor);
             if (stale.IsValid() && stale.isLoaded)
                 yield return SceneManager.UnloadSceneAsync(stale);
+        }
+
+        if (unloadPredecessor && !string.IsNullOrEmpty(retainedPredecessor) &&
+            retainedPredecessor != currentLevelScene && retainedPredecessor != predecessor)
+        {
+            Scene retained = SceneManager.GetSceneByName(retainedPredecessor);
+            if (retained.IsValid() && retained.isLoaded)
+                yield return SceneManager.UnloadSceneAsync(retained);
         }
 
         yield return UnloadUnusedSharedArt();
@@ -510,15 +588,10 @@ public class FormalGameFlowController : MonoBehaviour
 
             if (ShouldRetainPredecessor(FindRouteIndex(currentLevelScene)))
             {
-                Scene retainedScene = SceneManager.GetSceneByName(pendingUnloadScene);
-                if (retainedScene.isLoaded)
-                {
-                    foreach (GameObject root in retainedScene.GetRootGameObjects())
-                        foreach (MonsterPatrol monster in root.GetComponentsInChildren<MonsterPatrol>(true))
-                            monster.ResetPatrol();
-                }
-
-                BeginRetainedPredecessorPursuitSequence();
+                string retainedSceneName = !string.IsNullOrEmpty(retainedPhysicalPredecessorScene)
+                    ? retainedPhysicalPredecessorScene
+                    : pendingUnloadScene;
+                StartCoroutine(RestoreRetainedPredecessorForLevel045Recovery(retainedSceneName));
             }
             return;
         }
@@ -526,6 +599,30 @@ public class FormalGameFlowController : MonoBehaviour
         FormalLevelController level = FormalLevelActors.FindLevelController(SceneManager.GetSceneByName(currentLevelScene));
         if (level != null)
             level.RequestRecovery();
+    }
+
+    IEnumerator RestoreRetainedPredecessorForLevel045Recovery(string retainedSceneName)
+    {
+        if (string.IsNullOrEmpty(retainedSceneName))
+            yield break;
+
+        Scene retainedScene = SceneManager.GetSceneByName(retainedSceneName);
+        if (!retainedScene.isLoaded)
+        {
+            operationInProgress = true;
+            yield return LoadSharedArtForEntries(currentLevelScene, retainedSceneName, null);
+            retainedScene = SceneManager.GetSceneByName(retainedSceneName);
+            if (!retainedScene.isLoaded)
+                yield return SceneManager.LoadSceneAsync(retainedSceneName, LoadSceneMode.Additive);
+            operationInProgress = false;
+            Debug.Log($"[L045Pursuit] restored retained scene '{retainedSceneName}' for recovery.", this);
+        }
+
+        foreach (GameObject root in retainedScene.GetRootGameObjects())
+            foreach (MonsterPatrol monster in root.GetComponentsInChildren<MonsterPatrol>(true))
+                monster.ResetPatrol();
+
+        BeginRetainedPredecessorPursuitSequence(restart: true);
     }
 
     public void OpenTransitionDoor(string fromScene, string toScene)
@@ -964,15 +1061,37 @@ public class FormalGameFlowController : MonoBehaviour
             control.enabled = enabled;
     }
 
-    void BeginRetainedPredecessorPursuitSequence()
+    void BeginRetainedPredecessorPursuitSequence(bool restart = false)
     {
         if (!ShouldRetainPredecessor(FindRouteIndex(currentLevelScene)) || string.IsNullOrEmpty(pendingUnloadScene))
+        {
+            Debug.LogWarning(
+                $"[L045Pursuit] not-started current='{currentLevelScene}' retained='{pendingUnloadScene}'.",
+                this);
             return;
+        }
 
         if (level045PursuitRoutine != null)
+        {
+            if (!restart)
+            {
+                Debug.Log($"[L045Pursuit] already-running retained='{pendingUnloadScene}'; timer preserved.", this);
+                return;
+            }
+
             StopCoroutine(level045PursuitRoutine);
-        StartCoroutine(BindLevel045PlayerState());
+            level045PursuitRoutine = null;
+        }
+
+        if (level045PlayerBindingRoutine != null)
+        {
+            StopCoroutine(level045PlayerBindingRoutine);
+            level045PlayerBindingRoutine = null;
+        }
+
+        level045PlayerBindingRoutine = StartCoroutine(BindLevel045PlayerState());
         level045PursuitRoutine = StartCoroutine(StartLevel045PursuitAfterDelay());
+        Debug.Log($"[L045Pursuit] started retained='{pendingUnloadScene}' restart={restart}; attack-delay=10s.", this);
     }
 
     IEnumerator BindLevel045PlayerState()
@@ -989,12 +1108,17 @@ public class FormalGameFlowController : MonoBehaviour
                 if (follower == null)
                     follower = actors.Dog.gameObject.AddComponent<FormalDogOrbitFollower>();
                 follower.BeginOrbit(actors.Human, actors.Dog);
+                level045PlayerBindingRoutine = null;
+                Debug.Log("[L045Pursuit] dog-following bound to human.", this);
                 yield break;
             }
 
             timeout -= Time.unscaledDeltaTime;
             yield return null;
         }
+
+        level045PlayerBindingRoutine = null;
+        Debug.LogWarning("[L045Pursuit] dog-following failed: player actors were unavailable for 10 seconds.", this);
     }
 
     IEnumerator StartLevel045PursuitAfterDelay()
@@ -1003,19 +1127,36 @@ public class FormalGameFlowController : MonoBehaviour
 
         FormalPlayerActors actors = FormalPlayerActors.Instance;
         if (actors == null || actors.Human == null)
+        {
+            Debug.LogWarning("[L045Pursuit] attack-not-started: human actor is unavailable after delay.", this);
             yield break;
+        }
 
         int currentIndex = FindRouteIndex(currentLevelScene);
         if (!ShouldRetainPredecessor(currentIndex) || string.IsNullOrEmpty(pendingUnloadScene))
+        {
+            Debug.LogWarning(
+                $"[L045Pursuit] attack-not-started: current='{currentLevelScene}' retained='{pendingUnloadScene}'.",
+                this);
             yield break;
+        }
 
         Scene retainedScene = SceneManager.GetSceneByName(pendingUnloadScene);
         if (!retainedScene.isLoaded)
+        {
+            Debug.LogWarning($"[L045Pursuit] attack-not-started: retained scene '{pendingUnloadScene}' is not loaded.", this);
             yield break;
+        }
 
+        int monsters = 0;
         foreach (GameObject root in retainedScene.GetRootGameObjects())
             foreach (MonsterPatrol monster in root.GetComponentsInChildren<MonsterPatrol>(true))
-                monster.BeginForcedChase(actors.Human.transform);
+            {
+                monsters++;
+                monster.BeginForcedChase(actors.Human.transform, actors.Dog != null ? actors.Dog.transform : null);
+            }
+
+        Debug.Log($"[L045Pursuit] forced-chase issued to {monsters} monster(s) in '{retainedScene.name}'.", this);
     }
 
     static T[] FindInScene<T>(Scene scene) where T : Component

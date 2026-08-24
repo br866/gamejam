@@ -7,7 +7,8 @@ Level 4 to Level 4.5 and Level 4.5 to Level 5 still use direct route advancement
 - Extend physical shared-door progression through Level 4, Level 4.5, and Level 5: completion preloads the successor and opens the matching shared door without moving players.
 - Confirm each transition only after both players physically reach the successor entry area.
 - Introduce a scene-owned, generic exit policy that covers every configured route-producing exit in a source scene, including actuator and crate-door exits, without editing prefab assets.
-- Add a Level 4.5 arrival area and make retained-predecessor arrival confirmation complete cleanly while retaining Level 4 for pursuit.
+- Add a Level 4.5 arrival area and make retained-predecessor arrival confirmation complete cleanly while retaining Level 4 for pursuit; release only that retained Level 4 when L05_Checkpoint is reached, while retaining Level 4.5.
+- Make L05_Checkpoint commit Level 5 as the recovery level without moving players, and make Level 4.5 recovery restore its retained Level 4 pursuit scene if it is unexpectedly absent.
 - Preserve keypad GM direct jumps (2, 6, and 8) as independent immediate transitions with normal player placement.
 
 ## Capabilities
