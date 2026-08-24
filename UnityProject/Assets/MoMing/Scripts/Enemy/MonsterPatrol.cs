@@ -656,11 +656,7 @@ public class MonsterPatrol : MonoBehaviour
         else if (GameManager.Instance != null)
             GameManager.Instance.OnPlayerCaught();
         else
-        {
-            FormalLevelController level = FormalLevelActors.FindLevelController(gameObject.scene);
-            if (level != null)
-                level.ResetLevel();
-        }
+            Debug.LogError("[MonsterPatrol] Formal monster capture requires FormalGameFlowController for shared recovery.", this);
         PlayAudio(catchClip);
     }
 
