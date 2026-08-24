@@ -17,6 +17,7 @@ public class FormalGameFlowController : MonoBehaviour
 
     [SerializeField] private string initialLevelScene = "FormalLevel01";
     [SerializeField] private FormalRouteEntry[] routeCatalog;
+    [SerializeField] private bool level02TransitionDiagnostics;
 
     // Kept as serialized migration inputs for existing FormalPersistent scenes.
     [SerializeField] private string level01Level02SharedArtScene = "FormalSharedArt_L01_L02";
@@ -34,11 +35,16 @@ public class FormalGameFlowController : MonoBehaviour
     private bool successorArrivalConfirmed;
     private Coroutine level045PursuitRoutine;
     private string pendingAdvanceFromScene;
+    private UnityEngine.Object pendingAdvanceSource;
+    private string pendingAdvanceOriginStack;
+    private string pendingPhysicalTransitionFromScene;
+    private string pendingPhysicalTransitionToScene;
 
     public string CurrentLevelScene => currentLevelScene;
     public IReadOnlyList<FormalRouteEntry> RouteCatalog => routeCatalog;
     public bool IsRouteComplete => routeComplete;
     public bool SuccessorArrivalConfirmed => successorArrivalConfirmed;
+    public bool HasPendingPhysicalTransition => !string.IsNullOrEmpty(pendingPhysicalTransitionToScene);
 
     void Awake()
     {
@@ -54,6 +60,11 @@ public class FormalGameFlowController : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Keypad7))
+            ToggleDogSpeedMultiplier();
+        else if (Input.GetKeyDown(KeyCode.Keypad4))
+            ReportLevel02GateStatus();
+
         if (routeComplete)
             return;
 
@@ -67,21 +78,258 @@ public class FormalGameFlowController : MonoBehaviour
             CompleteCurrentLevelConditionsAndAdvance();
     }
 
+    void ToggleDogSpeedMultiplier()
+    {
+        FormalPlayerActor dog = FormalPlayerActors.Instance != null
+            ? FormalPlayerActors.Instance.Dog
+            : null;
+        if (dog == null)
+            dog = FindDogActor();
+        if (dog == null)
+        {
+            Debug.LogWarning("[L02GateGM] Dog speed toggle failed: dog actor is unavailable.", this);
+            return;
+        }
+
+        bool accelerate = dog.RuntimeMovementSpeedMultiplier < 5f;
+        dog.SetRuntimeMovementSpeedMultiplier(accelerate ? 5f : 1f);
+        Debug.Log($"[L02GateGM] Dog speed multiplier: {dog.RuntimeMovementSpeedMultiplier:0}x " +
+                  $"(base {dog.ConfiguredWalkSpeed:0.##}).", dog);
+    }
+
+    void ReportLevel02GateStatus()
+    {
+        const string level02 = "FormalLevel02";
+        const string prefix = "[L02GateGM]";
+        if (currentLevelScene != level02)
+        {
+            Debug.Log($"{prefix} L2 is inactive (active='{currentLevelScene ?? "<none>"}').", this);
+            return;
+        }
+
+        Scene levelScene = SceneManager.GetSceneByName(level02);
+        if (!levelScene.isLoaded)
+        {
+            Debug.LogWarning($"{prefix} L2 scene is not loaded.", this);
+            return;
+        }
+
+        FormalDoorInteraction gate = null;
+        foreach (FormalDoorInteraction interaction in FindInScene<FormalDoorInteraction>(levelScene))
+        {
+            if (!string.IsNullOrEmpty(interaction.DoorNameToken) &&
+                interaction.DoorNameToken.IndexOf("ToLevel03", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                gate = interaction;
+                break;
+            }
+        }
+
+        if (gate == null)
+        {
+            Debug.LogWarning($"{prefix} Missing L2 E-interaction targeting ToLevel03.", this);
+            return;
+        }
+
+        FormalActuatorTrigger safeZone = gate.GetComponent<FormalActuatorTrigger>();
+        FormalActuatorTrigger pedal = null;
+        List<string> prerequisiteStates = new List<string>();
+        int prerequisiteIndex = 0;
+        foreach (MonoBehaviour prerequisite in gate.Prerequisites)
+        {
+            if (prerequisite == null)
+            {
+                prerequisiteStates.Add($"#{prerequisiteIndex}=NULL");
+                prerequisiteIndex++;
+                continue;
+            }
+
+            IFormalLevelPermanentState state = prerequisite as IFormalLevelPermanentState;
+            prerequisiteStates.Add(
+                $"#{prerequisiteIndex}={prerequisite.GetType().Name} '{prerequisite.name}' " +
+                (state == null ? "(does not implement permanent state)" : $"complete={state.IsComplete}"));
+            FormalActuatorTrigger trigger = prerequisite as FormalActuatorTrigger;
+            if (trigger != null && trigger != safeZone)
+                pedal = trigger;
+            prerequisiteIndex++;
+        }
+
+        string pedalState = pedal == null ? "not identified as FormalActuatorTrigger" : pedal.IsComplete ? "complete" : "MISSING";
+        string safeZoneState = safeZone == null ? "MISSING REFERENCE" : safeZone.IsComplete ? "complete" : "MISSING";
+        string occupancyState = gate.HasEligibleOccupant ? "human inside" : "MISSING (human must press E inside)";
+        FormalDoor targetDoor = gate.TargetDoor;
+        string doorState = targetDoor == null ? "MISSING REFERENCE" : $"resolved '{targetDoor.name}'";
+        bool readyForE = gate.ArePrerequisitesComplete && targetDoor != null && !gate.IsOpened;
+
+        Debug.Log(
+            $"{prefix} L2->L3 gate: pedal={pedalState}; safe-zone(two players)={safeZoneState}; " +
+            $"E-occupancy={occupancyState}; target-door={doorState}; " +
+            $"prerequisites=[{string.Join("; ", prerequisiteStates.ToArray())}]; " +
+            (gate.IsOpened ? "door already opened." : readyForE ? "READY: human can press E to open." : "NOT READY."),
+            gate);
+    }
+
+    FormalPlayerActor FindDogActor()
+    {
+        foreach (FormalPlayerActor actor in FindObjectsOfType<FormalPlayerActor>())
+            if (actor.Role == FormalPlayerActor.ActorRole.Dog)
+                return actor;
+
+        return null;
+    }
+
     public void RequestRouteAdvance()
+    {
+        RequestRouteAdvance(null);
+    }
+
+    public void RequestRouteAdvance(UnityEngine.Object source)
     {
         string successor = GetRouteSuccessor(currentLevelScene);
         if (string.IsNullOrEmpty(successor))
             return;
+
+        LogLevel02AdvanceRequest(source, successor);
 
         if (operationInProgress)
         {
             if (!string.IsNullOrEmpty(pendingAdvanceFromScene))
                 Debug.Log($"[FormalGameFlowController] Replacing deferred advance from {pendingAdvanceFromScene} with request from {currentLevelScene}.");
             pendingAdvanceFromScene = currentLevelScene;
+            pendingAdvanceSource = source;
+            pendingAdvanceOriginStack = IsDiagnosingLevel02Transition() && successor == "FormalLevel03"
+                ? Environment.StackTrace
+                : null;
             return;
         }
 
         StartCoroutine(AdvanceRoutine(successor));
+    }
+
+    /// <summary>
+    /// 正常实体门使用：只把下一关加法加载进来，保持 currentLevelScene 和角色位置不变。
+    /// </summary>
+    public bool PreloadRouteSuccessor(UnityEngine.Object source = null, bool openTransitionDoor = false)
+    {
+        if (routeComplete || operationInProgress || HasPendingPhysicalTransition)
+            return false;
+
+        string successor = GetRouteSuccessor(currentLevelScene);
+        if (string.IsNullOrEmpty(successor))
+            return false;
+
+        pendingPhysicalTransitionFromScene = currentLevelScene;
+        pendingPhysicalTransitionToScene = successor;
+        Debug.Log(
+            $"[PhysicalDoorTransition] preload-request source={DescribeTransitionSource(source)} " +
+            $"from='{currentLevelScene}' to='{successor}' openDoor={openTransitionDoor}.",
+            source);
+        StartCoroutine(PreloadSuccessorRoutine(currentLevelScene, successor, openTransitionDoor));
+        return true;
+    }
+
+    /// <summary>由预加载目标关卡入口的双人触发区调用；不摆放角色。</summary>
+    public bool ConfirmPreloadedPhysicalArrival(string arrivalScene, UnityEngine.Object source = null)
+    {
+        if (operationInProgress || string.IsNullOrEmpty(arrivalScene) ||
+            pendingPhysicalTransitionFromScene != currentLevelScene ||
+            pendingPhysicalTransitionToScene != arrivalScene)
+            return false;
+
+        Scene target = SceneManager.GetSceneByName(arrivalScene);
+        if (!target.isLoaded)
+            return false;
+
+        string predecessor = currentLevelScene;
+        pendingPhysicalTransitionFromScene = null;
+        pendingPhysicalTransitionToScene = null;
+        currentLevelScene = arrivalScene;
+        pendingUnloadScene = predecessor;
+        successorArrivalConfirmed = true;
+        SceneManager.SetActiveScene(target);
+        Debug.Log($"[FormalGameFlowController] Physical arrival confirmed: {predecessor} -> {arrivalScene}.", source);
+        return true;
+    }
+
+    IEnumerator PreloadSuccessorRoutine(string originScene, string successorScene, bool openTransitionDoor)
+    {
+        operationInProgress = true;
+        yield return LoadSharedArtForEntries(originScene, pendingUnloadScene, successorScene);
+
+        if (openTransitionDoor)
+        {
+            FormalDoor door = FindTransitionDoor(originScene, successorScene);
+            if (door != null)
+            {
+                door.OpenPermanently();
+                Debug.Log(
+                    $"[PhysicalDoorTransition] door-opened from='{originScene}' to='{successorScene}' door='{door.name}'.",
+                    door);
+            }
+            else
+            {
+                Debug.LogWarning(
+                    $"[PhysicalDoorTransition] door-missing from='{originScene}' to='{successorScene}'.",
+                    this);
+            }
+        }
+
+        Scene successor = SceneManager.GetSceneByName(successorScene);
+        if (!successor.isLoaded)
+            yield return SceneManager.LoadSceneAsync(successorScene, LoadSceneMode.Additive);
+
+        operationInProgress = false;
+        if (pendingPhysicalTransitionFromScene != originScene || pendingPhysicalTransitionToScene != successorScene)
+            yield return UnloadUnusedSharedArt();
+    }
+
+    void CancelPendingPhysicalTransition()
+    {
+        pendingPhysicalTransitionFromScene = null;
+        pendingPhysicalTransitionToScene = null;
+    }
+
+    public void ReportTransitionDoorOpened(FormalDoor door)
+    {
+        if (!IsDiagnosingLevel02Transition() || door == null ||
+            door.name.IndexOf("ToLevel03", StringComparison.OrdinalIgnoreCase) < 0)
+            return;
+
+        Debug.Log(
+            $"[L02TransitionDiagnostics] door-opened door='{door.name}' scene='{door.gameObject.scene.name}' " +
+            $"active='{currentLevelScene}' busy={operationInProgress}\n{Environment.StackTrace}",
+            door);
+    }
+
+    void LogLevel02AdvanceRequest(UnityEngine.Object source, string successor)
+    {
+        if (!IsDiagnosingLevel02Transition() || successor != "FormalLevel03")
+            return;
+
+        Component sourceComponent = source as Component;
+        string sourceDescription = source == null
+            ? "<unspecified>"
+            : $"{source.GetType().Name} '{source.name}'" +
+              (sourceComponent == null ? string.Empty : $" scene='{sourceComponent.gameObject.scene.name}'");
+        Debug.Log(
+            $"[L02TransitionDiagnostics] advance-request source={sourceDescription} " +
+            $"active='{currentLevelScene}' successor='{successor}' busy={operationInProgress} " +
+            $"pending='{pendingAdvanceFromScene}'\n{Environment.StackTrace}",
+            source);
+    }
+
+    bool IsDiagnosingLevel02Transition()
+    {
+        return level02TransitionDiagnostics && currentLevelScene == "FormalLevel02";
+    }
+
+    static string DescribeTransitionSource(UnityEngine.Object source)
+    {
+        Component component = source as Component;
+        return source == null
+            ? "<unspecified>"
+            : $"{source.GetType().Name} '{source.name}'" +
+              (component == null ? string.Empty : $" scene='{component.gameObject.scene.name}'");
     }
 
     public void NotifyCheckpointActivated(string sceneName)
@@ -95,13 +343,13 @@ public class FormalGameFlowController : MonoBehaviour
         BeginRetainedPredecessorPursuitSequence();
     }
 
-    public void NotifySuccessorCheckpointActivated(string sceneName)
+    public void NotifySuccessorCheckpointActivated(string sceneName, UnityEngine.Object source = null)
     {
         if (routeComplete || sceneName != currentLevelScene)
             return;
 
         successorArrivalConfirmed = true;
-        RequestRouteAdvance();
+        RequestRouteAdvance(source);
     }
 
     public void CompleteRoute()
@@ -130,6 +378,7 @@ public class FormalGameFlowController : MonoBehaviour
         if (operationInProgress)
             return;
 
+        CancelPendingPhysicalTransition();
         StartCoroutine(LoadLevelRoutine(sceneName, null, true));
     }
 
@@ -141,6 +390,7 @@ public class FormalGameFlowController : MonoBehaviour
             return;
         }
 
+        CancelPendingPhysicalTransition();
         StartCoroutine(LoadLevelRoutine(sceneName, completed, true));
     }
 
@@ -247,39 +497,35 @@ public class FormalGameFlowController : MonoBehaviour
         if (string.IsNullOrEmpty(currentLevelScene))
             return;
 
-        // 下面有一条异步重载关卡的分支走不到 FormalLevelController.ResetLevel()，
+        // 下面有一条异步重载关卡的分支走不到 FormalLevelController.RequestRecovery()，
         // 所以这里先无条件清一次焦虑。
         if (FormalAnxietyState.Instance != null)
             FormalAnxietyState.Instance.ResetAnxiety();
 
-        if (!string.IsNullOrEmpty(pendingUnloadScene) && ShouldRetainPredecessor(FindRouteIndex(currentLevelScene)))
+        if (!string.IsNullOrEmpty(pendingUnloadScene))
         {
             FormalLevelController retainedLevel = FormalLevelActors.FindLevelController(SceneManager.GetSceneByName(currentLevelScene));
             if (retainedLevel != null)
-                retainedLevel.ResetLevel();
+                retainedLevel.RequestRecovery();
 
-            Scene retainedScene = SceneManager.GetSceneByName(pendingUnloadScene);
-            if (retainedScene.isLoaded)
+            if (ShouldRetainPredecessor(FindRouteIndex(currentLevelScene)))
             {
-                foreach (GameObject root in retainedScene.GetRootGameObjects())
-                    foreach (MonsterPatrol monster in root.GetComponentsInChildren<MonsterPatrol>(true))
-                        monster.ResetPatrol();
+                Scene retainedScene = SceneManager.GetSceneByName(pendingUnloadScene);
+                if (retainedScene.isLoaded)
+                {
+                    foreach (GameObject root in retainedScene.GetRootGameObjects())
+                        foreach (MonsterPatrol monster in root.GetComponentsInChildren<MonsterPatrol>(true))
+                            monster.ResetPatrol();
+                }
+
+                BeginRetainedPredecessorPursuitSequence();
             }
-
-            BeginRetainedPredecessorPursuitSequence();
-            return;
-        }
-
-        if (!string.IsNullOrEmpty(pendingUnloadScene))
-        {
-            if (!operationInProgress)
-                StartCoroutine(RestartCurrentLevelRoutine());
             return;
         }
 
         FormalLevelController level = FormalLevelActors.FindLevelController(SceneManager.GetSceneByName(currentLevelScene));
         if (level != null)
-            level.ResetLevel();
+            level.RequestRecovery();
     }
 
     public void OpenTransitionDoor(string fromScene, string toScene)
@@ -304,11 +550,13 @@ public class FormalGameFlowController : MonoBehaviour
         foreach (FormalMechanismState state in FindInScene<FormalMechanismState>(current))
             state.Complete();
 
+        // 小键盘 6 是直接跳关：只完成机关状态，不能让实体过门逻辑先启动预加载。
         foreach (FormalActuatorTrigger trigger in FindInScene<FormalActuatorTrigger>(current))
-            trigger.CompleteImmediately();
+            trigger.CompleteImmediately(triggerRouteOutput: false);
 
-        if (FindRouteSuccessorIndex(currentLevelScene) >= 0)
-            RequestRouteAdvance();
+        int successorIndex = FindRouteSuccessorIndex(currentLevelScene);
+        if (successorIndex >= 0)
+            LoadLevel(routeCatalog[successorIndex].sceneName);
     }
 
     public void OpenAllDoorsInCurrentLevelScope()
@@ -343,7 +591,11 @@ public class FormalGameFlowController : MonoBehaviour
             return;
 
         string originScene = pendingAdvanceFromScene;
+        UnityEngine.Object originSource = pendingAdvanceSource;
+        string originStack = pendingAdvanceOriginStack;
         pendingAdvanceFromScene = null;
+        pendingAdvanceSource = null;
+        pendingAdvanceOriginStack = null;
 
         if (originScene != currentLevelScene || routeComplete || operationInProgress)
         {
@@ -352,7 +604,12 @@ public class FormalGameFlowController : MonoBehaviour
         }
 
         Debug.Log("[FormalGameFlowController] Executing deferred route advance.");
-        RequestRouteAdvance();
+        if (IsDiagnosingLevel02Transition() && !string.IsNullOrEmpty(originStack))
+            Debug.Log(
+                $"[L02TransitionDiagnostics] deferred-origin source='{originSource}' " +
+                $"origin='{originScene}'\n{originStack}",
+                originSource);
+        RequestRouteAdvance(originSource);
     }
 
     IEnumerator RestartCurrentLevelRoutine()
@@ -371,7 +628,7 @@ public class FormalGameFlowController : MonoBehaviour
         successorArrivalConfirmed = false;
         FormalLevelController level = FormalLevelActors.FindLevelController(SceneManager.GetSceneByName(currentLevelScene));
         if (level != null)
-            level.ResetLevel();
+            level.RequestRecovery();
 
         yield return UnloadUnusedSharedArt();
         operationInProgress = false;
@@ -416,8 +673,7 @@ public class FormalGameFlowController : MonoBehaviour
             : predecessorScene;
         successorArrivalConfirmed = false;
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(currentLevelScene));
-        if (discardPriorLevel || string.IsNullOrEmpty(predecessorScene))
-            PlacePlayersAtLoadedLevelSpawn();
+        PlacePlayersAtLoadedLevelSpawn();
         if (!keepPriorLevels)
             yield return UnloadIrrelevantLevels(priorPendingScene);
         if (!discardPriorLevel && predecessorScene != sceneName)
@@ -699,7 +955,7 @@ public class FormalGameFlowController : MonoBehaviour
     {
         FormalLevelController level = FormalLevelActors.FindLevelController(SceneManager.GetSceneByName(currentLevelScene));
         if (level != null)
-            level.PlacePlayersAtSpawn();
+            level.PlacePlayersAtRespawnAnchors();
     }
 
     void SetFormalControlsEnabled(bool enabled)

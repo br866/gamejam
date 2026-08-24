@@ -36,6 +36,10 @@ public class FormalDoorInteraction : MonoBehaviour
     [SerializeField] private FormalTriggerRequirement requirement = FormalTriggerRequirement.HumanOnly;
     [Tooltip("开过之后就不再提示，也不能再按")]
     [SerializeField] private bool onceOnly = true;
+    [Tooltip("开启门后立刻开始当前正式路线的下一关过渡。")]
+    [SerializeField] private bool advanceRouteOnOpen;
+    [Tooltip("开启门后预加载下一关，但保持玩家位置，等待实体穿过入口后再确认切关。")]
+    [SerializeField] private bool preloadRouteSuccessorOnOpen;
 
     [Header("提示文字（留空=不提示）")]
     [SerializeField] private string promptReady = "按 E 开门";
@@ -67,6 +71,14 @@ public class FormalDoorInteraction : MonoBehaviour
     bool HasKey => requiredKey == null || requiredKey.IsCollected;
     bool CanOpen => PrerequisitesComplete && HasKey;
     bool PlayerInside => occupants.Count > 0;
+
+    // 供 L2 GM 诊断读取，不改变门的交互判断。
+    public string DoorNameToken => doorNameToken;
+    public IReadOnlyList<MonoBehaviour> Prerequisites => prerequisites;
+    public bool ArePrerequisitesComplete => PrerequisitesComplete;
+    public bool HasEligibleOccupant => PlayerInside;
+    public bool IsOpened => opened;
+    public FormalDoor TargetDoor => ResolvedDoor;
 
     void OnTriggerEnter(Collider other)
     {
@@ -145,6 +157,19 @@ public class FormalDoorInteraction : MonoBehaviour
         target.OpenPermanently();
         opened = true;
         ShowHint(promptOpened);
+
+        if (preloadRouteSuccessorOnOpen)
+        {
+            FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
+            if (flow != null)
+                flow.PreloadRouteSuccessor(this);
+        }
+        else if (advanceRouteOnOpen)
+        {
+            FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
+            if (flow != null)
+                flow.RequestRouteAdvance(this);
+        }
     }
 
     void RefreshPrompt()
