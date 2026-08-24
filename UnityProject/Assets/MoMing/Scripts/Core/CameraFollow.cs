@@ -23,9 +23,6 @@ public class CameraFollow : MonoBehaviour
     [Tooltip("相机与角色的距离。第三人称建议 4~7，室内窄场景可以更小")]
     public float distance = 5.5f;
 
-    [Tooltip("焦点抬高多少米：对准角色的胸口/头，而不是脚底。建议 1.2~1.8")]
-    public float focusHeight = 1.4f;
-
     [Tooltip("初始俯仰角（0=平视，正数=从上往下俯视）")]
     [FormerlySerializedAs("tiltAngle")]
     public float angle = 15f;
@@ -35,6 +32,36 @@ public class CameraFollow : MonoBehaviour
 
     [Tooltip("相机位置跟随速度，越大越跟手（建议 10~20）")]
     public float followSpeed = 14f;
+
+    [Header("按角色身高自适应（人 / 狗）")]
+    [Tooltip("开启后，焦点高度自动按角色碰撞体的实际身高算，狗矮就自动压低视线")]
+    public bool autoFocusHeight = true;
+
+    [Tooltip("焦点高度 = 角色身高 × 这个比例。0.8 ≈ 肩膀/头部，1.0 = 头顶")]
+    [Range(0.1f, 1.2f)]
+    public float focusHeightRatio = 0.8f;
+
+    [Tooltip("自适应结果的下限（狗太矮时不至于贴地）")]
+    public float minFocusHeight = 0.35f;
+
+    [Tooltip("自适应结果的上限")]
+    public float maxFocusHeight = 2f;
+
+    [Tooltip("关掉 autoFocusHeight 时使用的固定焦点高度")]
+    public float focusHeight = 1.4f;
+
+    [Tooltip("距离也跟着身高缩放：矮的角色相机自动靠近一点")]
+    public bool autoDistance = true;
+
+    [Tooltip("参考身高：身高等于这个值的角色用上面填的 distance 原值")]
+    public float referenceHeight = 1.8f;
+
+    [Tooltip("距离缩放强度。0 = 距离完全不变；1 = 严格按身高比例缩放")]
+    [Range(0f, 1f)]
+    public float distanceScaleStrength = 0.5f;
+
+    [Tooltip("切换角色时，距离过渡的速度（越大切得越快）")]
+    public float distanceBlendSpeed = 6f;
 
     [Header("鼠标视角 (360°)")]
     [Tooltip("鼠标 X：绕角色水平旋转，无限制 360°")]
@@ -120,6 +147,13 @@ public class CameraFollow : MonoBehaviour
     private float pitch = 15f;
     private float zoomDistance;          // 玩家滚轮调出来的目标距离
     private float currentDistance;       // 考虑防穿墙后的实际距离
+    private float baseDistanceSmoothed;  // 未考虑防穿墙、但已按身高缩放并平滑过的距离
+    private bool baseDistanceInit = false;
+
+    // 角色身高缓存：Transform -> (身高, 焦点高度)。只在切换角色时量一次。
+    private Transform measuredA, measuredB;
+    private float heightA = -1f, heightB = -1f;
+    private float focusHeightA, focusHeightB;
     private Vector3 velocityRef = Vector3.zero;
     private Transform targetB;
     private bool isLinked = false;
@@ -164,6 +198,9 @@ public class CameraFollow : MonoBehaviour
         // 暂停时（菜单打开）完全冻结镜头：不响应鼠标、不跟随。
         // 双保险 —— 时间停摆(timeScale==0) 或 暂停菜单打开(IsPaused) 任一成立就直接 return。
         if (Time.timeScale == 0f || GameHUDManager.IsPaused) return;
+
+        // 按角色实际身高更新焦点高度 / 距离（内部有缓存，只在换角色时真正测量）
+        RefreshTargetMetrics();
 
         // 第一帧：把相机瞬间摆到角色正后方，避免从编辑器摆放的位置滑过来
         if (!camPosInitialized)
@@ -251,21 +288,161 @@ public class CameraFollow : MonoBehaviour
 
     #region Camera Logic
 
-    Vector3 GetDesiredFocus()
+    #region 身高自适应
+
+    /// <summary>
+    /// 量一个角色的"身高"：取它自己和所有子物体上非触发器碰撞体的包围盒顶点，
+    /// 减去 transform 原点（角色脚底）的高度。没有碰撞体就退回用 Renderer。
+    /// 只在切换角色时调用一次，不是每帧 —— 动画会让包围盒抖动。
+    /// </summary>
+    /// <returns>量到的身高；量不到（物体还没激活等）返回 -1，调用方下一帧会重试。</returns>
+    float MeasureHeight(Transform t)
     {
-        if (isHinting && hintTarget != null)
-            return hintTarget.position + Vector3.up * focusHeight;
+        if (t == null) return -1f;
 
-        if (isLinked && targetB != null)
-            return (target.position + targetB.position) * 0.5f + Vector3.up * focusHeight;
+        bool found = false;
+        float top = t.position.y;
 
-        return target.position + Vector3.up * focusHeight;
+        var cols = t.GetComponentsInChildren<Collider>();
+        foreach (var c in cols)
+        {
+            if (c == null || !c.enabled || c.isTrigger) continue;
+            if (!c.gameObject.activeInHierarchy) continue;
+            if (c.bounds.max.y > top) top = c.bounds.max.y;
+            found = true;
+        }
+
+        if (!found)
+        {
+            var rends = t.GetComponentsInChildren<Renderer>();
+            foreach (var r in rends)
+            {
+                if (r == null || !r.enabled) continue;
+                if (!r.gameObject.activeInHierarchy) continue;
+                if (r.bounds.max.y > top) top = r.bounds.max.y;
+                found = true;
+            }
+        }
+
+        if (!found) return -1f;
+        return Mathf.Max(top - t.position.y, 0.1f);
     }
 
-    /// <summary>联动模式下，两人离得越远，相机自动往后退一点，保证两人都在画面里。</summary>
+    /// <summary>算出某个角色该用的焦点高度：优先看它身上的 CameraTargetProfile 覆盖。</summary>
+    float ComputeFocusHeight(Transform t, float height)
+    {
+        var profile = t != null ? t.GetComponent<CameraTargetProfile>() : null;
+        if (profile != null && profile.overrideFocusHeight)
+            return profile.focusHeight;
+
+        if (!autoFocusHeight)
+            return focusHeight;
+
+        return Mathf.Clamp(height * focusHeightRatio, minFocusHeight, maxFocusHeight);
+    }
+
+    /// <summary>
+    /// 切换角色 / 每帧兜底：量身高并缓存。量失败（角色还没激活）时不写缓存，下一帧自动重试。
+    /// </summary>
+    void RefreshTargetMetrics()
+    {
+        if (target != measuredA || heightA < 0f)
+        {
+            float h = MeasureHeight(target);
+            if (h > 0f)
+            {
+                measuredA = target;
+                heightA = h;
+                focusHeightA = ComputeFocusHeight(target, h);
+            }
+        }
+
+        if (targetB == null)
+        {
+            measuredB = null;
+            heightB = -1f;
+            focusHeightB = 0f;
+        }
+        else if (targetB != measuredB || heightB < 0f)
+        {
+            float h = MeasureHeight(targetB);
+            if (h > 0f)
+            {
+                measuredB = targetB;
+                heightB = h;
+                focusHeightB = ComputeFocusHeight(targetB, h);
+            }
+        }
+    }
+
+    /// <summary>当前该用的焦点高度。联动模式取两人里较高的那个，保证两人都在画面里。</summary>
+    float ActiveFocusHeight()
+    {
+        if (heightA < 0f) return focusHeight;   // 还没量到，先用固定值兜底
+
+        if (isLinked && heightB > 0f)
+            return Mathf.Max(focusHeightA, focusHeightB);
+
+        return focusHeightA;
+    }
+
+    /// <summary>当前该用的身高（用于距离缩放）。</summary>
+    float ActiveHeight()
+    {
+        if (heightA < 0f) return referenceHeight;
+
+        if (isLinked && heightB > 0f)
+            return Mathf.Max(heightA, heightB);
+
+        return heightA;
+    }
+
+    /// <summary>强制重新测量角色身高。改了角色模型/碰撞体后可以手动调一次。</summary>
+    public void RemeasureTargets()
+    {
+        heightA = -1f;
+        heightB = -1f;
+        measuredA = null;
+        measuredB = null;
+        RefreshTargetMetrics();
+    }
+
+    #endregion
+
+    Vector3 GetDesiredFocus()
+    {
+        float fh = ActiveFocusHeight();
+
+        if (isHinting && hintTarget != null)
+            return hintTarget.position + Vector3.up * fh;
+
+        if (isLinked && targetB != null)
+            return (target.position + targetB.position) * 0.5f + Vector3.up * fh;
+
+        return target.position + Vector3.up * fh;
+    }
+
+    /// <summary>
+    /// 相机基准距离：滚轮值 → 按角色身高缩放 → 联动模式按双人间距额外拉远。
+    /// 狗矮，所以自动比人靠近一点，视野比例才对得上。
+    /// </summary>
     float GetBaseDistance()
     {
         float d = enableZoom ? zoomDistance : distance;
+
+        if (autoDistance && referenceHeight > 0.01f)
+        {
+            var profile = target != null ? target.GetComponent<CameraTargetProfile>() : null;
+            if (profile != null && profile.overrideDistanceScale)
+            {
+                d *= profile.distanceScale;
+            }
+            else
+            {
+                float ratio = ActiveHeight() / referenceHeight;
+                d *= Mathf.Lerp(1f, ratio, distanceScaleStrength);
+            }
+        }
 
         if (isLinked && targetB != null && linkedDistanceBonus > 0f)
         {
@@ -274,7 +451,7 @@ public class CameraFollow : MonoBehaviour
             d += Vector3.Distance(a, b) * linkedDistanceBonus;
         }
 
-        return d;
+        return Mathf.Max(d, minCollisionDistance);
     }
 
     void UpdateCameraTransform(Vector3 focusPos)
@@ -283,7 +460,19 @@ public class CameraFollow : MonoBehaviour
         Quaternion orbit = Quaternion.Euler(pitch, yaw, 0f);
         Vector3 dir = orbit * Vector3.back;   // 从焦点指向相机的方向（角色背后）
 
-        float wanted = GetBaseDistance();
+        // 基准距离先做一次平滑：这样切人/切狗时相机是"推拉"过去的，不会瞬移
+        float wantedRaw = GetBaseDistance();
+        if (!baseDistanceInit)
+        {
+            baseDistanceSmoothed = wantedRaw;
+            baseDistanceInit = true;
+        }
+        else
+        {
+            baseDistanceSmoothed = Mathf.Lerp(
+                baseDistanceSmoothed, wantedRaw, 1f - Mathf.Exp(-distanceBlendSpeed * Time.deltaTime));
+        }
+        float wanted = baseDistanceSmoothed;
 
         // 2) 防穿墙：用 SphereCast 而不是 Raycast，避免擦着墙角/柱子边缘钻出去
         float resolved = wanted;
