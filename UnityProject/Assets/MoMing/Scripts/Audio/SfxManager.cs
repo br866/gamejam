@@ -57,18 +57,6 @@ public class SfxManager : MonoBehaviour
     private readonly Dictionary<string, AudioClip[]> _groups = new Dictionary<string, AudioClip[]>();
     private readonly HashSet<string> _missing = new HashSet<string>();
 
-    /// <summary>没有场景手动挂载时自动生成一个，跨场景保留。跟 MusicManager 同一套路。</summary>
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    static void AutoSpawn()
-    {
-        if (Instance != null) return;
-        if (FindObjectOfType<SfxManager>() != null) return;
-
-        GameObject go = new GameObject("SfxManager (Auto)");
-        go.AddComponent<SfxManager>();
-        DontDestroyOnLoad(go);
-    }
-
     void Awake()
     {
         if (Instance != null && Instance != this)

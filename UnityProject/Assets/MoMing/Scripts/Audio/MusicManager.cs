@@ -78,23 +78,6 @@ public class MusicManager : MonoBehaviour
     /// <summary>设置 BGM 总音量(0~1)，由 SettingsManager 的“音乐”滑块调用。</summary>
     public void SetMusicVolume(float v) { _musicVol = Mathf.Clamp01(v); }
 
-    /// <summary>
-    /// 没有任何场景手动挂载 MusicManager 时，运行时自动生成一个并跨场景保留。
-    /// 这样不用改四个正式场景的 YAML，也不会因为忘挂而没声。
-    /// 若你之后在某个场景里手动拖了一个，这里会检测到并让路。
-    /// </summary>
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    static void AutoSpawn()
-    {
-        if (Instance != null) return;
-        if (FindObjectOfType<MusicManager>() != null) return;
-
-        GameObject go = new GameObject("MusicManager (Auto)");
-        MusicManager mm = go.AddComponent<MusicManager>(); // AddComponent 会立即跑 Awake
-        mm.dontDestroyOnLoad = true;
-        DontDestroyOnLoad(go);
-    }
-
     void Awake()
     {
         // 简单单例：跨场景保留时，防止重复实例

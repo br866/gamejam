@@ -88,7 +88,7 @@ public class FormalLevelEntrySeal : MonoBehaviour
 
             sealDone = true;
             if (logWhenSealed)
-                Debug.Log($"[FormalLevelEntrySeal] {gameObject.scene.name} 实体进关已确认，上一关卸载。", this);
+                Debug.Log($"[FormalLevelEntrySeal] {gameObject.scene.name} 实体进关已确认，前关已按本关策略处理。", this);
             return;
         }
 
