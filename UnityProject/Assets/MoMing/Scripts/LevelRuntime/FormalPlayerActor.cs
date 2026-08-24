@@ -30,10 +30,13 @@ public class FormalPlayerActor : MonoBehaviour
     private bool idleVariation;
     private bool moverAttachPointResolved;
     private int executionLockCount;
+    private float runtimeMovementSpeedMultiplier = 1f;
 
     public ActorRole Role => role;
     public ActorState State => state;
     public bool IsExecutionLocked => executionLockCount > 0;
+    public float ConfiguredWalkSpeed => walkSpeed;
+    public float RuntimeMovementSpeedMultiplier => runtimeMovementSpeedMultiplier;
 
     /// <summary>相机注视点；未配置时回退到根节点。</summary>
     public Transform FocusAnchor => focusAnchor != null ? focusAnchor : transform;
@@ -128,6 +131,8 @@ public class FormalPlayerActor : MonoBehaviour
 
         bool sprinting = sprint && role == ActorRole.Human;
         float speed = sprinting ? sprintSpeed : walkSpeed;
+        if (role == ActorRole.Dog)
+            speed *= runtimeMovementSpeedMultiplier;
         body.velocity = new Vector3(direction.x * speed, ClampFall(body.velocity.y), direction.z * speed);
         SetState(!IsGrounded()
             ? ActorState.Jumping
@@ -206,6 +211,14 @@ public class FormalPlayerActor : MonoBehaviour
         if (moverRotationLocked)
             body.constraints = constraintsBeforeMoverLock;
         moverRotationLocked = false;
+    }
+
+    /// <summary>仅供测试工具临时调整；不会改写 Inspector 中配置的基础速度。</summary>
+    public void SetRuntimeMovementSpeedMultiplier(float multiplier)
+    {
+        runtimeMovementSpeedMultiplier = float.IsNaN(multiplier) || float.IsInfinity(multiplier)
+            ? 1f
+            : Mathf.Max(0f, multiplier);
     }
 
     /// <summary>

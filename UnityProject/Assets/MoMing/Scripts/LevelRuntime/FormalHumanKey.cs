@@ -121,7 +121,7 @@ public class FormalHumanKey : MonoBehaviour, IFormalLevelTemporaryState
 
         FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
         if (flow != null)
-            flow.RequestRouteAdvance();
+            flow.RequestRouteAdvance(this);
     }
 
     public void ResetTemporaryState()
