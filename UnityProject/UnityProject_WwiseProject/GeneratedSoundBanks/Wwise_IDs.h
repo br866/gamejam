@@ -19,6 +19,7 @@ namespace AK
         static const AkUniqueID PLAY_FOOTSTEP_HUMAN = 1846914642U;
         static const AkUniqueID PLAY_KEY_PICKUP = 2881789206U;
         static const AkUniqueID PLAY_MUSICMODE = 3324110046U;
+        static const AkUniqueID PLAY_TITLE_MUSIC = 2604896900U;
         static const AkUniqueID STOP_CRATE_PUSH = 708504560U;
     } // namespace EVENTS
 
@@ -53,7 +54,8 @@ namespace AK
 
     namespace GAME_PARAMETERS
     {
-        static const AkUniqueID ANXIETY = 4143496951U;
+        static const AkUniqueID MUSICVOLUME = 2346531308U;
+        static const AkUniqueID SFXVOLUME = 988953028U;
     } // namespace GAME_PARAMETERS
 
     namespace BUSSES

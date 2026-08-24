@@ -3,9 +3,14 @@
 	<GameParameters>
 		<WorkUnit Name="Default Work Unit" ID="{BAB7FD8F-4B1D-4FF0-8565-8E6CC388556F}" PersistMode="Standalone">
 			<ChildrenList>
-				<GameParameter Name="Anxiety" ID="{19F97BBC-96A2-467C-98C6-C4CC546EB40A}">
+				<GameParameter Name="MusicVolume" ID="{19F97BBC-96A2-467C-98C6-C4CC546EB40A}">
 					<PropertyList>
-						<Property Name="InitialValue" Type="Real64" Value="0"/>
+						<Property Name="InitialValue" Type="Real64" Value="100"/>
+					</PropertyList>
+				</GameParameter>
+				<GameParameter Name="SFXVolume" ID="{8C118964-3C92-454F-B702-367221925079}">
+					<PropertyList>
+						<Property Name="InitialValue" Type="Real64" Value="100"/>
 					</PropertyList>
 				</GameParameter>
 			</ChildrenList>

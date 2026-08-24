@@ -10,7 +10,7 @@
     "Type": "Event",
     "GUID": "{DDA519D5-801F-4A50-95C6-43FA7821210E}",
     "Language": "SFX",
-    "Hash": "{B5F5C2BB-ECD6-1EE7-ACAD-70F4B59683AC}",
+    "Hash": "{1E6EDC82-46E1-B240-DC4B-C9EDB0B5508A}",
     "ObjectPath": "Play_MusicMode",
     "ShortName": "Play_MusicMode",
     "Path": "Event/Play_MusicMode.bnk",
@@ -345,6 +345,29 @@
           ]
          }
         ]
+       },
+       {
+        "SwitchValue": {
+         "GroupType": "State",
+         "GroupId": "222311475",
+         "Id": "579523862",
+         "GUID": "{102BF61E-DDCF-4A14-996B-F0AE331A3EBB}"
+        },
+        "Children": [
+         {
+          "SwitchValue": {
+           "GroupType": "State",
+           "GroupId": "1446207487",
+           "Id": "748895195",
+           "GUID": "{5F890215-638F-4D76-A3CB-626139D1C1F3}"
+          },
+          "MediaRefs": [
+           {
+            "Id": "691338881"
+           }
+          ]
+         }
+        ]
        }
       ]
      }
@@ -411,6 +434,6 @@
     ]
    }
   ],
-  "FileHash": "{382A4913-31F0-9EDB-AAF2-A00F71728C8C}"
+  "FileHash": "{656BA963-D473-96EE-A718-A50B6FFB9F92}"
  }
 }

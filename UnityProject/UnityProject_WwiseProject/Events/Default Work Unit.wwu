@@ -16,6 +16,17 @@
 								</Action>
 							</ChildrenList>
 						</Event>
+						<Event Name="Play_Title_Music" ID="{C8B6CB64-9710-4F95-95B2-6016AD7FD971}">
+							<ChildrenList>
+								<Action Name="" ID="{D2BD637F-D2A4-48B5-82AD-34AE9DFAB667}" ShortID="156304403">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="Title_Music" ID="{037F9DCB-4691-4A79-8715-85B8F9227281}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
 					</ChildrenList>
 				</Folder>
 				<Folder Name="SFX" ID="{408478FE-1361-4AEA-B641-1A089677C69D}" ShortID="433650339">
