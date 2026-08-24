@@ -11,12 +11,12 @@ Formal route floors are pure visual meshes; walkability comes from dozens of han
   2. Disable all colliders on the `NavGround` layer except carriers of `FormalGroundVolume`
   3. Audit coverage: report walkable surfaces beyond volume bounds and art surfaces whose top deviates from `topHeight`
   4. Copy first-selected volume's `topHeight` onto other selected volumes
-- Layer semantics: `NavGround` = "legacy/auxiliary floor colliders". Manual stakeholder audit retags Default-layer floor proxies to NavGround before running the disable tool.
+- Final approach: one very large authoritative BoxCollider in `FormalPersistent` covers the entire route. Legacy floor colliders are left untouched — no retag or disable pass is needed because the global volume provides all walkable support.
 
 ## Capabilities
 
 ### New Capabilities
-- `formal-ground-volume`: Defines unified ground collision for the Formal route: a single authoritative ground surface, NavGround disable semantics, and coverage auditing.
+- `formal-ground-volume`: Defines unified ground collision for the Formal route: a single large authoritative ground surface with coverage auditing tooling. Legacy-floor disable semantics were designed but intentionally not applied; the volume supersedes legacy proxies without touching them.
 
 ### Modified Capabilities
 <!-- None. -->
@@ -25,4 +25,4 @@ Formal route floors are pure visual meshes; walkability comes from dozens of han
 
 - New: `Assets/MoMing/Scripts/Environment/FormalGroundVolume.cs` (runtime, ExecuteAlways) and editor tools under `Assets/MoMing/Scripts/Editor/`.
 - `FormalPersistent.unity`: one new GameObject with the volume.
-- Requires stakeholder-run retag of legacy floor proxies to NavGround; A* graph re-bake after swap (height-sampling mask must include the new ground layer).
+- A* graph re-bake may be needed after swap if height-sampling mask does not include the volume's layer.

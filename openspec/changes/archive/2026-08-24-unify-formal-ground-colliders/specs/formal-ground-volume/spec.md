@@ -1,6 +1,6 @@
 ## Purpose
 
-Defines unified ground collision for the Formal route: one authoritative ground surface at a single editable height, NavGround-layer disable semantics for legacy floor colliders, and tooling that audits coverage.
+Defines unified ground collision for the Formal route: one large authoritative ground surface at a single editable height that supersedes all legacy floor colliders without disabling them, plus tooling that audits coverage.
 
 ## ADDED Requirements
 
@@ -11,9 +11,16 @@ The Formal persistent scene SHALL contain exactly one `FormalGroundVolume` whose
 - **WHEN** the volume's height field is changed in the inspector
 - **THEN** the collider's walkable top moves to the new world Y and stays a thin slab extending downward
 
-#### Scenario: Single instance
+#### Scenario: Single instance covers route
 - **WHEN** any Formal level combination is loaded additively
-- **THEN** exactly one ground volume is active and it provides support everywhere within its bounds
+- **THEN** exactly one active ground volume exists in `FormalPersistent` and its collider footprint covers every level's walkable area
+
+### Requirement: Legacy colliders remain untouched
+The unified volume SHALL provide walkable support by physically overlapping legacy floor colliders. No retagging, disabling, or removal of legacy colliders SHALL be performed.
+
+#### Scenario: Legacy proxies coexist
+- **WHEN** legacy floor colliders exist alongside the active volume
+- **THEN** they remain enabled on their original layers, and gameplay support is provided by the authoritative volume
 
 ### Requirement: NavGround disable semantics
 The disable tool SHALL disable colliders only on GameObjects assigned to the `NavGround` layer, and SHALL skip any GameObject carrying a `FormalGroundVolume`. The operation SHALL be journaled for rollback.
