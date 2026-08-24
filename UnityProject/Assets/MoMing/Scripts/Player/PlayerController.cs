@@ -7,6 +7,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public enum CharacterType { Human, Dog }
+    public enum GroundSurface { WaxedTile, LowPileCarpet }
 
     [Header("Character")]
     public CharacterType characterType = CharacterType.Human;
@@ -16,13 +17,24 @@ public class PlayerController : MonoBehaviour
     public float sprintSpeed = 8f;
     public float rotationSpeed = 10f;
     public float jumpHeight = 2f;
+    [Tooltip("上升时的重力倍率：越大跳得越干脆、滞空越短（峰值仍保持 jumpHeight）")]
+    public float riseGravityMultiplier = 2f;
+    [Tooltip("下落时的重力倍率：通常比上升更大，落得比升得快，消除“月球”飘感")]
+    public float fallGravityMultiplier = 3f;
     public float groundCheckDistance = 0.15f;
 
     [Header("Interaction")]
     public float interactRange = 1.5f;
 
     [Header("Audio")]
+    [Tooltip("留空即可：留空时自动用 Resources/SFX/Footsteps 里的多变体素材随机播放")]
     [SerializeField] private AudioClip footstepClip;
+
+    [Tooltip("脚下是什么地面，决定用哪一组脚步声")]
+    public GroundSurface footstepSurface = GroundSurface.WaxedTile;
+
+    [Tooltip("走多远算一步。越小步子越密；疾跑时自然会变密")]
+    public float footstepDistance = 1.2f;
 
     private Rigidbody rb;
     private Collider col;
@@ -36,6 +48,7 @@ public class PlayerController : MonoBehaviour
     private float pendingSpeed;
     private Quaternion pendingRot;
     private bool hasPendingRot;
+    private Vector3 lastStepPos;
 
     void Awake()
     {
@@ -43,10 +56,14 @@ public class PlayerController : MonoBehaviour
         col = GetComponent<Collider>();
         rb.constraints = RigidbodyConstraints.FreezeRotation;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
+        lastStepPos = transform.position;
     }
 
     void Update()
     {
+        // 放在 isActive 判断之前：跟随中的狗在移动时也该有脚步声
+        HandleFootsteps();
+
         if (!isActive) return;
 
         HandleMovementInput();
@@ -61,6 +78,15 @@ public class PlayerController : MonoBehaviour
         {
             float checkDist = col.bounds.extents.y + groundCheckDistance;
             isGrounded = Physics.Raycast(transform.position, Vector3.down, checkDist);
+        }
+
+        // 额外重力：让跳跃更干脆、下落更快，消除“月球”飘感。
+        // Physics.gravity 已施加 1 倍，这里补上 (倍率-1) 倍：上升用 riseGravityMultiplier，
+        // 下落用更大的 fallGravityMultiplier，所以落得比升得快，顶点不再拖沓。
+        if (!isGrounded && rb != null)
+        {
+            float mult = (rb.velocity.y < 0f) ? fallGravityMultiplier : riseGravityMultiplier;
+            rb.velocity += Vector3.up * Physics.gravity.y * (mult - 1f) * Time.fixedDeltaTime;
         }
 
         if (!isActive) return;
@@ -105,12 +131,39 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>按移动距离触发脚步声。用距离而不是计时，疾跑时步频自动变密。</summary>
+    void HandleFootsteps()
+    {
+        if (!isGrounded) return;
+
+        Vector3 a = transform.position; a.y = 0f;
+        Vector3 b = lastStepPos;        b.y = 0f;
+        if ((a - b).sqrMagnitude < footstepDistance * footstepDistance) return;
+        lastStepPos = transform.position;
+
+        // Inspector 里拖了单个素材就用它，否则走 Resources 里的多变体随机
+        if (footstepClip != null)
+        {
+            SfxManager.PlayClipAt(footstepClip, transform.position);
+            return;
+        }
+
+        string prefix;
+        if (characterType == CharacterType.Dog)
+            prefix = (footstepSurface == GroundSurface.WaxedTile) ? Sfx.DogTile : Sfx.DogCarpet;
+        else
+            prefix = (footstepSurface == GroundSurface.WaxedTile) ? Sfx.HumanTile : Sfx.HumanCarpet;
+
+        SfxManager.PlayRandom(Sfx.FootstepFolder, prefix, transform.position);
+    }
+
     void HandleJump()
     {
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
-            float g = Physics.gravity.y;
-            float jumpVel = Mathf.Sqrt(2f * Mathf.Abs(g) * jumpHeight);
+            // 用“上升有效重力”反推初速，保证跳跃峰值≈jumpHeight
+            float gUp = Mathf.Abs(Physics.gravity.y) * riseGravityMultiplier;
+            float jumpVel = Mathf.Sqrt(2f * gUp * jumpHeight);
             rb.velocity = new Vector3(rb.velocity.x, jumpVel, rb.velocity.z);
         }
     }

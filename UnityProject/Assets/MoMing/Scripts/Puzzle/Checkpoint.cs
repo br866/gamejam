@@ -70,8 +70,8 @@ public class Checkpoint : MonoBehaviour
 
     void PlayAudio(AudioClip clip)
     {
-        if (clip != null && audioSource != null)
-            audioSource.PlayOneShot(clip);
+        // 统一走音效入口，受“音效”滑块控制（与 BGM 分开）
+        SettingsManager.PlaySfx(audioSource, clip);
     }
 
     public bool IsActivated => isActivated;

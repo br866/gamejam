@@ -6,7 +6,7 @@ using UnityEngine;
 /// </summary>
 public class MonsterPatrol : MonoBehaviour
 {
-    public enum State { Patrol, Chase }
+    public enum State { Patrol, Chase, Attack }
 
     [Header("Room Bounds (怪物活动范围)")]
     public Vector3 roomCenter = new Vector3(14f, 0f, 0f);
@@ -27,34 +27,169 @@ public class MonsterPatrol : MonoBehaviour
     public float chaseSpeed = 4.5f;
     public float chaseStopDistance = 1f;
 
+    [Header("Attack")]
+    public float attackRange = 2f;
+    public float attackWindup = 0.5f;
+    public float attackCooldown = 1f;
+    [SerializeField] private string attackStateName = "";
+
+    [Header("Safe Zones")]
+    [SerializeField] private Collider[] safeZones;
+
     [Header("Audio")]
     [SerializeField] private AudioClip footstepClip;
     [SerializeField] private AudioClip catchClip;
     [SerializeField] private AudioClip detectClip;
 
+    [Header("Line of Sight")]
+    [SerializeField] private LayerMask sightBlockMask;
+    [SerializeField] private float eyeHeight = 1.5f;
+
     [Header("Detection Gizmos")]
     public bool showDetectionGizmos = true;
     public Color fieldOfViewGizmoColor = new Color(1f, 0.85f, 0f, 0.9f);
 
+    [Header("Room Bounds Gizmos")]
+    public bool showRoomBounds = true;
+    public Color roomBoundsGizmoColor = new Color(0f, 1f, 0.55f, 0.9f);
+
+    bool HasLineOfSight(Transform target)
+    {
+        Vector3 from = transform.position;
+        if (visualRenderer != null)
+            from.y = visualRenderer.bounds.min.y + eyeHeight;
+
+        Vector3 to = target.position + Vector3.up * (eyeHeight * 0.5f);
+        int mask = sightBlockMask.value != 0 ? sightBlockMask.value : ~0;
+        mask &= ~(1 << gameObject.layer);
+        mask &= ~(1 << target.gameObject.layer);
+
+        if (Physics.Linecast(from, to, out RaycastHit hitInfo, mask, QueryTriggerInteraction.Ignore))
+        {
+            if (hitInfo.collider.transform == target || hitInfo.collider.transform.IsChildOf(transform))
+                return true;
+            return false;
+        }
+
+        return true;
+    }
+
+    void OnDrawGizmos()
+    {
+        if (showDetectionGizmos)
+        {
+            Gizmos.color = fieldOfViewGizmoColor;
+            Vector3 origin = transform.position;
+            Vector3 flatForward = transform.forward;
+            flatForward.y = 0f;
+            flatForward.Normalize();
+            if (flatForward.sqrMagnitude < 0.001f)
+                flatForward = Vector3.forward;
+
+            float half = fieldOfView * 0.5f;
+            Vector3 dirLeft = Quaternion.Euler(0f, -half, 0f) * flatForward;
+            Vector3 dirRight = Quaternion.Euler(0f, half, 0f) * flatForward;
+            Gizmos.DrawRay(origin, dirLeft * detectionRange);
+            Gizmos.DrawRay(origin, dirRight * detectionRange);
+
+            const int segments = 20;
+            Vector3 previous = origin + dirLeft * detectionRange;
+            for (int i = 1; i <= segments; i++)
+            {
+                float angle = Mathf.Lerp(-half, half, i / (float)segments);
+                Vector3 next = origin + Quaternion.Euler(0f, angle, 0f) * flatForward * detectionRange;
+                Gizmos.DrawLine(previous, next);
+                previous = next;
+            }
+        }
+
+        if (!showRoomBounds)
+            return;
+
+        float y = Application.isPlaying ? startPos.y : transform.position.y;
+        Vector3 center = new Vector3(roomCenter.x, y, roomCenter.z);
+        Vector3 size = new Vector3(roomSize.x, 0.05f, roomSize.z);
+        Gizmos.color = roomBoundsGizmoColor;
+        Gizmos.DrawWireCube(center, size);
+
+        if (waypoints != null)
+        {
+            Gizmos.color = Color.cyan;
+            foreach (Transform waypoint in waypoints)
+                if (waypoint != null)
+                    Gizmos.DrawWireSphere(waypoint.position, 0.35f);
+        }
+    }
+
     private State currentState = State.Patrol;
+    private Renderer visualRenderer;
+
+    public bool IsChasing
+    {
+        get { return currentState == State.Chase; }
+    }
     private int currentWaypoint = 0;
     private AudioSource audioSource;
     private LevelMonsterNavigation navigation;
+    private MonsterAnimatorDriver animatorDriver;
     private Vector3 startPos;
     private Transform chaseTarget;
     private float lastSeenTime;
+    private bool forcedChase;
+    private float attackTimer;
+    private float nextAttackTime;
+    private float forcedRepathCooldown;
 
     void Awake()
     {
+        if (!HasAssignedWaypoints())
+        {
+            enabled = false;
+            return;
+        }
+
         audioSource = GetComponent<AudioSource>();
         navigation = GetComponent<LevelMonsterNavigation>();
+        animatorDriver = GetComponent<MonsterAnimatorDriver>();
         startPos = transform.position;
+        foreach (Renderer r in GetComponentsInChildren<Renderer>())
+            if (r.enabled && r.gameObject.activeInHierarchy)
+            {
+                visualRenderer = r;
+                break;
+            }
+        ResolveFormalSafeZones();
+    }
+
+    void ResolveFormalSafeZones()
+    {
+        if (safeZones != null && safeZones.Length > 0)
+            return;
+
+        FormalActuatorTrigger[] triggers = FindObjectsOfType<FormalActuatorTrigger>(true);
+        var resolved = new System.Collections.Generic.List<Collider>();
+        foreach (FormalActuatorTrigger trigger in triggers)
+        {
+            if (trigger.gameObject.scene != gameObject.scene ||
+                trigger.gameObject.name.IndexOf("SafeZone", System.StringComparison.OrdinalIgnoreCase) < 0)
+                continue;
+
+            Collider zone = trigger.GetComponent<Collider>();
+            if (zone != null)
+                resolved.Add(zone);
+        }
+
+        safeZones = resolved.ToArray();
     }
 
     void Start()
     {
         if (GameManager.Instance != null)
             GameManager.Instance.OnLevelReset += ResetPatrol;
+
+        FormalLevelController level = FormalLevelActors.FindLevelController(gameObject.scene);
+        if (level != null)
+            level.RegisterTemporaryState(new FormalMonsterResetState(this));
     }
 
     void OnDestroy()
@@ -65,7 +200,14 @@ public class MonsterPatrol : MonoBehaviour
 
     void Update()
     {
-        if (currentState == State.Patrol && waypoints != null && waypoints.Length > 0)
+        if (forcedChase)
+        {
+            ForcedChase();
+            TryCatch(chaseTarget, false);
+            return;
+        }
+
+        if (currentState == State.Patrol)
         {
             Patrol();
         }
@@ -75,6 +217,20 @@ public class MonsterPatrol : MonoBehaviour
         }
 
         CheckForPlayers();
+    }
+
+    bool HasAssignedWaypoints()
+    {
+        if (waypoints == null || waypoints.Length == 0)
+            return false;
+
+        foreach (Transform waypoint in waypoints)
+        {
+            if (waypoint == null)
+                return false;
+        }
+
+        return true;
     }
 
     // 判断某点是否在房间范围内
@@ -137,7 +293,7 @@ public class MonsterPatrol : MonoBehaviour
         }
 
         // 目标离开房间 → 丢失目标
-        if (!IsInRoom(chaseTarget.position))
+        if (!IsInRoom(chaseTarget.position) || IsInSafeZone(chaseTarget.position))
         {
             chaseTarget = null;
             currentState = State.Patrol;
@@ -150,6 +306,15 @@ public class MonsterPatrol : MonoBehaviour
 
         if (navigation != null)
         {
+            // 寻路失败(如门关闭隔断) → 回到巡逻点保持移动，不石化
+            if (navigation.LastPathFailed)
+            {
+                chaseTarget = null;
+                currentState = State.Patrol;
+                Debug.Log("[Monster] No path to target, returning to patrol waypoints.");
+                return;
+            }
+
             navigation.SetMoveSpeed(chaseSpeed);
             navigation.SetDestination(targetPos);
             if (dist <= chaseStopDistance)
@@ -179,6 +344,97 @@ public class MonsterPatrol : MonoBehaviour
         }
     }
 
+    public void BeginForcedChase(Transform target)
+    {
+        if (target == null)
+            return;
+
+        if (navigation != null)
+        {
+            navigation.ClearDestination();
+            navigation.ClearPathFailure();
+            navigation.RescanGraph();
+        }
+
+        forcedChase = true;
+        forcedRepathCooldown = 0f;
+        chaseTarget = target;
+        currentState = State.Chase;
+        lastSeenTime = Time.time;
+    }
+
+    void ForcedChase()
+    {
+        if (chaseTarget == null || !chaseTarget.gameObject.activeInHierarchy)
+            return;
+
+        Vector3 targetPos = chaseTarget.position;
+        float xzDist = Mathf.Sqrt(
+            (targetPos.x - transform.position.x) * (targetPos.x - transform.position.x) +
+            (targetPos.z - transform.position.z) * (targetPos.z - transform.position.z));
+
+        if (xzDist <= chaseStopDistance)
+            return;
+
+        if (navigation != null)
+        {
+            // 寻路失败(门关闭/无连通) → 临时奔向巡逻点保持跑动，稍后重试追击
+            if (navigation.LastPathFailed)
+            {
+                SteerForcedChaseToWaypoint();
+                return;
+            }
+
+            if (forcedRepathCooldown > 0f)
+            {
+                forcedRepathCooldown -= Time.deltaTime;
+                return;
+            }
+
+            navigation.SetMoveSpeed(chaseSpeed);
+            navigation.SetDestination(targetPos);
+            return;
+        }
+
+        // 无导航组件时的直线兜底
+        targetPos.y = transform.position.y;
+        Vector3 delta = targetPos - transform.position;
+        delta.y = 0f;
+
+        Vector3 direction = delta.normalized;
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation,
+            Quaternion.LookRotation(direction),
+            8f * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            targetPos,
+            chaseSpeed * Time.deltaTime);
+    }
+
+    void SteerForcedChaseToWaypoint()
+    {
+        if (!HasAssignedWaypoints())
+        {
+            navigation.ClearDestination();
+            return;
+        }
+
+        Transform wp = waypoints[currentWaypoint];
+        Vector3 waypointPos = new Vector3(wp.position.x, startPos.y, wp.position.z);
+
+        if (navigation.HasArrived || !navigation.HasPath)
+        {
+            currentWaypoint = (currentWaypoint + 1) % waypoints.Length;
+            wp = waypoints[currentWaypoint];
+            waypointPos = new Vector3(wp.position.x, startPos.y, wp.position.z);
+        }
+
+        navigation.SetMoveSpeed(chaseSpeed);
+        navigation.SetDestination(waypointPos);
+        forcedRepathCooldown = 1f;
+    }
+
     void CheckForPlayers()
     {
         // 1. 接触抓捕 (XZ平面距离判定，避免Y高度差导致无法抓捕)
@@ -188,14 +444,21 @@ public class MonsterPatrol : MonoBehaviour
             if (TryCatch(GameManager.Instance.dogPlayer)) return;
         }
 
+        if (FormalPlayerActors.Instance != null)
+        {
+            if (TryCatch(FormalPlayerActors.Instance.Human != null ? FormalPlayerActors.Instance.Human.transform : null)) return;
+            if (TryCatch(FormalPlayerActors.Instance.Dog != null ? FormalPlayerActors.Instance.Dog.transform : null)) return;
+        }
+
         // 2. 检测玩家：必须同时满足(在房间内) AND (在锥形视野内)
         Collider[] detectionHits = Physics.OverlapSphere(transform.position, detectionRange);
         foreach (var hit in detectionHits)
         {
-            if (hit.CompareTag("Player"))
+            FormalPlayerActor formalPlayer = FormalLevelActors.ResolvePlayer(hit);
+            if (hit.CompareTag("Player") || formalPlayer != null)
             {
                 // 玩家不在怪物房间内 → 不检测
-                if (!IsInRoom(hit.transform.position))
+                if (!IsInRoom(hit.transform.position) || IsInSafeZone(hit.transform.position))
                     continue;
 
                 // XZ平面计算，忽略Y高度差
@@ -210,7 +473,7 @@ public class MonsterPatrol : MonoBehaviour
 
                 bool inSight = angle <= fieldOfView * 0.5f;
 
-                if (inSight)
+                if (inSight && HasLineOfSight(hit.transform))
                 {
                     bool wasChasing = currentState == State.Chase;
                     chaseTarget = hit.transform;
@@ -236,14 +499,38 @@ public class MonsterPatrol : MonoBehaviour
 
     bool TryCatch(Transform player)
     {
+        return TryCatch(player, true);
+    }
+
+    bool TryCatch(Transform player, bool requireLineOfSight)
+    {
         if (player == null || !player.gameObject.activeInHierarchy) return false;
+        if (IsInSafeZone(player.position)) return false;
+        if (requireLineOfSight && !HasLineOfSight(player)) return false;
         float xzDist = Mathf.Sqrt(
             (player.position.x - transform.position.x) * (player.position.x - transform.position.x) +
             (player.position.z - transform.position.z) * (player.position.z - transform.position.z));
         if (xzDist <= catchRadius)
         {
-            if (GameManager.Instance != null)
+            // 正式关卡：先弹死亡画面。Trigger 内部会挡住重复触发，
+            // 所以不用担心怪物每帧都调一次。旧场景没有这个组件，会自动落到下面的老逻辑。
+            if (FormalDeathScreen.Trigger(FormalDeathScreen.DeathCause.Caught))
+            {
+                PlayAudio(catchClip);
+                return true;
+            }
+
+            FormalGameFlowController flow = UnityEngine.Object.FindObjectOfType<FormalGameFlowController>();
+            if (flow != null && flow.CurrentLevelScene == "FormalLevel045")
+                flow.ResetCurrentLevel();
+            else if (GameManager.Instance != null)
                 GameManager.Instance.OnPlayerCaught();
+            else
+            {
+                FormalLevelController level = FormalLevelActors.FindLevelController(gameObject.scene);
+                if (level != null)
+                    level.ResetLevel();
+            }
             PlayAudio(catchClip);
             return true;
         }
@@ -252,49 +539,47 @@ public class MonsterPatrol : MonoBehaviour
 
     public void ResetPatrol()
     {
+        forcedChase = false;
+        forcedRepathCooldown = 0f;
+        if (navigation != null)
+        {
+            navigation.CancelPushOut();
+            navigation.ClearDestination();
+            navigation.ClearPathFailure();
+        }
         currentState = State.Patrol;
         chaseTarget = null;
         currentWaypoint = 0;
         transform.position = startPos;
     }
 
-    void OnDrawGizmos()
+    bool IsInSafeZone(Vector3 position)
     {
-        if (!showDetectionGizmos)
-            return;
+        if (safeZones == null)
+            return false;
 
-        // 房间范围
-        Gizmos.color = new Color(0f, 0.5f, 1f, 0.15f);
-        Gizmos.DrawCube(roomCenter, roomSize);
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireCube(roomCenter, roomSize);
-
-        // 抓捕范围
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, catchRadius);
-
-        // 视野锥和最大检测范围
-        Gizmos.color = fieldOfViewGizmoColor;
-        Vector3 origin = transform.position + Vector3.up * 0.1f;
-        Vector3 flatForward = transform.forward;
-        flatForward.y = 0f;
-        flatForward.Normalize();
-        Vector3 leftDir = Quaternion.Euler(0f, -fieldOfView * 0.5f, 0f) * flatForward;
-        Vector3 rightDir = Quaternion.Euler(0f, fieldOfView * 0.5f, 0f) * flatForward;
-        Gizmos.DrawRay(origin, leftDir * detectionRange);
-        Gizmos.DrawRay(origin, rightDir * detectionRange);
-
-        const int arcSegments = 16;
-        Vector3 previous = origin + leftDir * detectionRange;
-        for (int i = 1; i <= arcSegments; i++)
+        foreach (Collider safeZone in safeZones)
         {
-            float angle = Mathf.Lerp(-fieldOfView * 0.5f, fieldOfView * 0.5f, i / (float)arcSegments);
-            Vector3 point = origin + Quaternion.Euler(0f, angle, 0f) * flatForward * detectionRange;
-            Gizmos.DrawLine(previous, point);
-            previous = point;
+            if (safeZone != null && safeZone.bounds.Contains(position))
+                return true;
         }
 
-        Gizmos.color = new Color(fieldOfViewGizmoColor.r, fieldOfViewGizmoColor.g, fieldOfViewGizmoColor.b, 0.25f);
-        Gizmos.DrawWireSphere(transform.position, detectionRange);
+        return false;
     }
+
+    class FormalMonsterResetState : IFormalLevelTemporaryState
+    {
+        readonly MonsterPatrol patrol;
+
+        public FormalMonsterResetState(MonsterPatrol patrol)
+        {
+            this.patrol = patrol;
+        }
+
+        public void ResetTemporaryState()
+        {
+            patrol.ResetPatrol();
+        }
+    }
+
 }

@@ -43,6 +43,24 @@ public class GameManager : MonoBehaviour
     public Color redVignetteColor = new Color(0.55f, 0.08f, 0.08f, 0.5f);
     [Range(0f, 1f)] public float redVignetteNoiseStrength = 0.6f;
 
+    [Header("Anxiety Dirt Overlay 镜头污渍")]
+    [Tooltip("焦虑升高时在画面上加色叠一层污渍贴图。不走后处理，场景里没有 Global Volume 也能显示")]
+    public bool useDirtOverlay = true;
+    [Tooltip("留空则从 Resources 加载 Dirt Overlay Resource Name")]
+    public Texture dirtOverlayTexture;
+    public string dirtOverlayResourceName = "AnxietyDirtMask";
+    [Tooltip("焦虑归一化值超过这个阈值后污渍才开始出现")]
+    [Range(0f, 1f)] public float dirtStartThreshold = 0.5f;
+    [Tooltip("焦虑 100% 时的叠加强度")]
+    [Range(0f, 2f)] public float dirtOverlayMaxStrength = 0.85f;
+    [Tooltip("强度追赶速度，越大越跟手")]
+    public float dirtSmoothSpeed = 4f;
+    [Tooltip("心跳式脉动幅度：0 = 不脉动")]
+    [Range(0f, 1f)] public float dirtPulseAmount = 0.22f;
+    public float dirtPulseSpeed = 1.6f;
+    [Tooltip("按住这个键强制把污渍拉满，用来验证效果")]
+    public KeyCode forceMaxDirtKey = KeyCode.F3;
+
     [Header("UI References")]
     public Slider anxietyBarSlider;
     public Image darknessOverlay;
@@ -50,6 +68,17 @@ public class GameManager : MonoBehaviour
     [Header("Checkpoints")]
     public Vector3 levelStartHuman = new Vector3(0f, 1f, -3f);
     public Vector3 levelStartDog = new Vector3(1.5f, 1f, -3f);
+    [Tooltip("用场景里角色实际摆放的位置当出生点，忽略上面手填的坐标。" +
+             "推荐开启，省得场景里摆一个位置、Inspector 里又填另一个")]
+    public bool useSceneSpawnAsLevelStart = true;
+
+    [Header("Fall Safety 掉出世界保护")]
+    [Tooltip("角色掉到世界外面时自动拉回存档点/出生点")]
+    public bool enableFallSafety = true;
+    [Tooltip("角色 y 低于这个值就算掉出去了")]
+    public float fallYThreshold = -20f;
+    [Tooltip("两次救援之间的最短间隔（秒），防止出生点本身就在虚空时无限刷屏")]
+    public float fallRescueCooldown = 1f;
 
     [Header("Scene Transition")]
     public string nextSceneName = "";
@@ -67,7 +96,13 @@ public class GameManager : MonoBehaviour
     private float currentSpotlightIntensity = 0f;
     private float currentVignetteAlpha = 0f;
     private float currentRedVignetteAlpha = 0f;
+    private RawImage dirtOverlay;
+    private float currentDirtOverlayStrength = 0f;
     private bool hasCheckpoint = false;
+    private Vector3 sceneSpawnHuman;
+    private Vector3 sceneSpawnDog;
+    private bool hasSceneSpawn = false;
+    private float lastFallRescueTime = -999f;
     private Vector3 checkpointHuman;
     private Vector3 checkpointDog;
     private Light humanSpotlight;
@@ -86,6 +121,15 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         mainCam = Camera.main;
+
+        // 先把角色在场景里被摆放的位置记下来，当作出生点用。
+        // 必须在任何东西移动它们之前做。
+        if (humanPlayer != null && dogPlayer != null)
+        {
+            sceneSpawnHuman = humanPlayer.position;
+            sceneSpawnDog = dogPlayer.position;
+            hasSceneSpawn = true;
+        }
 
         // Permanently set camera to solid black background so the void outside rooms is always black
         if (mainCam != null)
@@ -125,6 +169,90 @@ public class GameManager : MonoBehaviour
 
         SetupVignette();
         SetupRedVignette();
+        SetupDirtOverlay();
+    }
+
+    /// <summary>
+    /// 在 Canvas 上建一层加色混合的污渍叠加，随焦虑值变强。
+    /// 不依赖 URP 后处理，所以场景里没有 Global Volume 也能显示。
+    /// </summary>
+    void SetupDirtOverlay()
+    {
+        if (!useDirtOverlay) return;
+
+        if (dirtOverlayTexture == null && !string.IsNullOrEmpty(dirtOverlayResourceName))
+            dirtOverlayTexture = Resources.Load<Texture2D>(dirtOverlayResourceName);
+
+        if (dirtOverlayTexture == null)
+        {
+            Debug.LogWarning("[GameManager] 污渍贴图没找到：Dirt Overlay Texture 为空，" +
+                             "Resources/" + dirtOverlayResourceName + " 也不存在。", this);
+            return;
+        }
+
+        Canvas canvas = GetComponentInParent<Canvas>();
+        if (canvas == null) canvas = FindObjectOfType<Canvas>();
+        if (canvas == null)
+        {
+            GameObject canvasObj = new GameObject("AnxietyOverlayCanvas");
+            canvas = canvasObj.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = -100;   // 压在游戏 UI 底下
+            canvasObj.AddComponent<CanvasScaler>();
+        }
+
+        GameObject dirtObj = new GameObject("AnxietyDirtOverlay");
+        dirtObj.transform.SetParent(canvas.transform, false);
+        dirtOverlay = dirtObj.AddComponent<RawImage>();
+        dirtOverlay.texture = dirtOverlayTexture;
+        dirtOverlay.raycastTarget = false;
+
+        Shader additive = Resources.Load<Shader>("MoMingUIAdditive");
+        if (additive == null) additive = Shader.Find("MoMing/UI Additive");
+        if (additive != null)
+            dirtOverlay.material = new Material(additive);
+        else
+            Debug.LogWarning("[GameManager] 找不到 MoMing/UI Additive shader，" +
+                             "污渍会用默认 alpha 混合，看起来会偏暗。", this);
+
+        RectTransform rt = dirtObj.GetComponent<RectTransform>();
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.one;
+        rt.offsetMin = Vector2.zero;
+        rt.offsetMax = Vector2.zero;
+        // 放在暗角之上
+        dirtObj.transform.SetSiblingIndex(2);
+
+        dirtOverlay.color = new Color(1f, 1f, 1f, 0f);
+    }
+
+    void UpdateDirtOverlay(float normalizedAnxiety)
+    {
+        if (dirtOverlay == null) return;
+
+        bool forced = Input.GetKey(forceMaxDirtKey);
+
+        // 阈值以下为 0，阈值→1 之间映射到 0→1
+        float t = dirtStartThreshold < 1f
+            ? Mathf.Clamp01((normalizedAnxiety - dirtStartThreshold) / (1f - dirtStartThreshold))
+            : (normalizedAnxiety >= 1f ? 1f : 0f);
+        if (forced) t = 1f;
+
+        // 心跳式脉动
+        float pulseMul = 1f;
+        if (dirtPulseAmount > 0f)
+        {
+            float phase = Time.time * dirtPulseSpeed * Mathf.PI * 2f;
+            float wave = 0.5f + 0.5f * Mathf.Sin(phase);
+            pulseMul = Mathf.Lerp(1f - dirtPulseAmount, 1f, wave);
+        }
+
+        float target = dirtOverlayMaxStrength * t * pulseMul;
+        float k = (forced || dirtSmoothSpeed <= 0f)
+            ? 1f
+            : 1f - Mathf.Exp(-dirtSmoothSpeed * Time.deltaTime);
+        currentDirtOverlayStrength = Mathf.Lerp(currentDirtOverlayStrength, target, k);
+        dirtOverlay.color = new Color(1f, 1f, 1f, currentDirtOverlayStrength);
     }
 
     Light CreateSpotlight(string name)
@@ -332,6 +460,8 @@ public class GameManager : MonoBehaviour
         currentAnxiety = Mathf.Clamp(currentAnxiety, 0f, maxAnxiety);
         UpdateAnxietyUI();
         UpdateDarkness();
+        UpdateDirtOverlay(currentAnxiety / maxAnxiety);
+        CheckFallOutOfWorld();
 
         if (currentAnxiety >= maxAnxiety)
             ResetLevel();
@@ -454,6 +584,9 @@ public class GameManager : MonoBehaviour
         currentOverlayAlpha = 0f;
         currentVignetteAlpha = 0f;
         currentRedVignetteAlpha = 0f;
+        currentDirtOverlayStrength = 0f;
+        if (dirtOverlay != null)
+            dirtOverlay.color = new Color(1f, 1f, 1f, 0f);
         if (darknessOverlay != null)
             darknessOverlay.color = new Color(0, 0, 0, 0);
         if (spotlightMask != null)
@@ -474,20 +607,62 @@ public class GameManager : MonoBehaviour
             humanSpotlight.intensity = 0f;
         if (dogSpotlight != null)
             dogSpotlight.intensity = 0f;
-        Vector3 respawnHuman = hasCheckpoint ? checkpointHuman : levelStartHuman;
-        Vector3 respawnDog = hasCheckpoint ? checkpointDog : levelStartDog;
-        ResetPlayerPositions(respawnHuman, respawnDog);
+        ResetPlayerPositions(RespawnHumanPos, RespawnDogPos);
         OnLevelReset?.Invoke();
         Debug.Log("[GameManager] Level reset.");
     }
 
     public void OnPlayerCaught()
     {
-        Vector3 respawnHuman = hasCheckpoint ? checkpointHuman : levelStartHuman;
-        Vector3 respawnDog = hasCheckpoint ? checkpointDog : levelStartDog;
-        ResetPlayerPositions(respawnHuman, respawnDog);
+        ResetPlayerPositions(RespawnHumanPos, RespawnDogPos);
         currentAnxiety = Mathf.Min(currentAnxiety, maxAnxiety * 0.5f);
         Debug.Log("[GameManager] Player caught! Reset to start.");
+    }
+
+    /// <summary>
+    /// 复活点：优先存档点 → 场景里角色被摆放的位置 → Inspector 里手填的坐标。
+    /// </summary>
+    Vector3 RespawnHumanPos
+    {
+        get
+        {
+            if (hasCheckpoint) return checkpointHuman;
+            if (useSceneSpawnAsLevelStart && hasSceneSpawn) return sceneSpawnHuman;
+            return levelStartHuman;
+        }
+    }
+
+    Vector3 RespawnDogPos
+    {
+        get
+        {
+            if (hasCheckpoint) return checkpointDog;
+            if (useSceneSpawnAsLevelStart && hasSceneSpawn) return sceneSpawnDog;
+            return levelStartDog;
+        }
+    }
+
+    /// <summary>
+    /// 角色掉出世界时把它们拉回来，避免无限下坠。
+    /// 带冷却，万一出生点本身就在虚空里也不会刷屏。
+    /// </summary>
+    void CheckFallOutOfWorld()
+    {
+        if (!enableFallSafety) return;
+        if (Time.time - lastFallRescueTime < fallRescueCooldown) return;
+
+        bool humanFell = humanPlayer != null && humanPlayer.position.y < fallYThreshold;
+        bool dogFell = dogPlayer != null && dogPlayer.position.y < fallYThreshold;
+        if (!humanFell && !dogFell) return;
+
+        lastFallRescueTime = Time.time;
+        ResetPlayerPositions(RespawnHumanPos, RespawnDogPos);
+
+        string source = hasCheckpoint ? "存档点"
+            : (useSceneSpawnAsLevelStart && hasSceneSpawn ? "场景出生点" : "Level Start 坐标");
+        Debug.LogWarning("[GameManager] 角色掉出世界（y < " + fallYThreshold + "），已拉回" + source +
+                         "：human=" + RespawnHumanPos + " dog=" + RespawnDogPos +
+                         "。如果一直重复，说明这个出生点下面也没有地面。", this);
     }
 
     public void OnLevelComplete()

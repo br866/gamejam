@@ -122,8 +122,10 @@ public class CameraFollow : MonoBehaviour
     {
         if (target == null) return;
 
-        // 暂停时（菜单打开，timeScale=0）冻结镜头：不响应鼠标、不跟随
-        if (Time.timeScale == 0f) return;
+        // 暂停时（菜单打开）完全冻结镜头：不响应鼠标、不跟随。
+        // 双保险——既看时间是否停摆(timeScale==0)，也看暂停菜单是否打开(IsPaused)，
+        // 任一条件成立就直接 return，保证暂停时视角被彻底锁死。
+        if (Time.timeScale == 0f || GameHUDManager.IsPaused) return;
 
         HandleMouseInput();
 

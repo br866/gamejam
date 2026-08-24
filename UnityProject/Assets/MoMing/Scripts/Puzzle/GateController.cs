@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// 门/栅栏控制器：Open()/Close() 方法，通过上下位移实现开关。
 /// </summary>
-public class GateController : MonoBehaviour
+public class GateController : MonoBehaviour, IFormalLevelActuator
 {
     [Header("Animation")]
     public float openYOffset = 5f;
@@ -29,6 +29,10 @@ public class GateController : MonoBehaviour
     {
         if (GameManager.Instance != null)
             GameManager.Instance.OnLevelReset += ResetGate;
+
+        FormalLevelController formalLevel = FormalLevelActors.FindLevelController(gameObject.scene);
+        if (formalLevel != null)
+            formalLevel.RegisterTemporaryState(new FormalGateResetState(this));
     }
 
     void OnDestroy()
@@ -76,4 +80,19 @@ public class GateController : MonoBehaviour
     }
 
     public bool IsOpen => isOpen;
+
+    class FormalGateResetState : IFormalLevelTemporaryState
+    {
+        readonly GateController gate;
+
+        public FormalGateResetState(GateController gate)
+        {
+            this.gate = gate;
+        }
+
+        public void ResetTemporaryState()
+        {
+            gate.Close();
+        }
+    }
 }
