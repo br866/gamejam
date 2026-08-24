@@ -30,6 +30,12 @@ public class FormalLevelEntrySeal : MonoBehaviour
              "防止玩家还站在两关交界处、新关卡一加载触发器就把上一关拆了。")]
     [SerializeField] private float armDelay = 1.5f;
 
+    [Header("教程")]
+    [Tooltip("人一踏进这个入口区，就弹一次本关介绍图。\n" +
+             "图配在 FormalPersistent 的 FormalUI / Formal Tutorial Popup 的 Level Intro Pages 上，" +
+             "看过一次就永久不再弹。只在 4.5 关入口勾。")]
+    [SerializeField] private bool showLevelIntroTutorial = false;
+
     [Header("调试")]
     [SerializeField] private bool logWhenSealed;
 
@@ -44,11 +50,20 @@ public class FormalLevelEntrySeal : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (sealDone)
+        FormalPlayerActor actor = FormalLevelActors.ResolvePlayer(other);
+        if (actor == null)
             return;
 
-        FormalPlayerActor actor = FormalLevelActors.ResolvePlayer(other);
-        if (actor == null || !inside.Add(actor))
+        // 本关介绍：踏进入口区就弹，不用等封关条件（4.5 关是人先进、狗后到）
+        if (showLevelIntroTutorial)
+        {
+            FormalTutorialPopup.Trace("入口封关区被踩到（" + gameObject.scene.name + "），popup=" +
+                                      (FormalTutorialPopup.Instance != null));
+            if (FormalTutorialPopup.Instance != null)
+                FormalTutorialPopup.Instance.ShowLevelIntroTutorial();
+        }
+
+        if (sealDone || !inside.Add(actor))
             return;
 
         TrySeal();

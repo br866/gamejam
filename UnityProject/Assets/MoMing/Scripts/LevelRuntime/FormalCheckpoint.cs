@@ -17,6 +17,9 @@ public class FormalCheckpoint : MonoBehaviour, IFormalLevelPermanentState
              "图配在 FormalPersistent 的 FormalUI / Formal Tutorial Popup 的 Checkpoint Pages 上，" +
              "看过一次就永久不再弹。只在第二关那块地毯上勾。")]
     [SerializeField] private bool showSaveAreaTutorial = false;
+    [Tooltip("踩到这个存档点时弹一次\u201c本关介绍\u201d图（FormalTutorialPopup 的 Level Intro Pages）。\n" +
+             "和 4.5 关入口封关区是同一份、只弹一次，谁先碰到算谁的。只在 4.5 关那个存档点勾。")]
+    [SerializeField] private bool showLevelIntroTutorial = false;
 
     private static readonly HashSet<FormalCheckpoint> RegisteredCheckpoints =
         new HashSet<FormalCheckpoint>();
@@ -96,6 +99,14 @@ public class FormalCheckpoint : MonoBehaviour, IFormalLevelPermanentState
         // 存档地毯介绍：只在勾了的那个存档点弹，而且全流程只弹一次
         if (IsComplete && showSaveAreaTutorial && FormalTutorialPopup.Instance != null)
             FormalTutorialPopup.Instance.ShowCheckpointTutorial();
+
+        // 本关介绍（4.5 关长廊）：踩到这个存档点也算触发，和入口区共用同一个"只弹一次"
+        if (showLevelIntroTutorial)
+        {
+            FormalTutorialPopup.Trace("存档点被踩到（" + gameObject.scene.name + "），IsComplete=" + IsComplete);
+            if (IsComplete && FormalTutorialPopup.Instance != null)
+                FormalTutorialPopup.Instance.ShowLevelIntroTutorial();
+        }
 
         FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
         if (flow == null)

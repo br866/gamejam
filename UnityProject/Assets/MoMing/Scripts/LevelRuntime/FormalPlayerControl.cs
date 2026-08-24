@@ -40,7 +40,9 @@ public class FormalPlayerControl : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F))
         {
-            ToggleMoverEngagement();
+            // 空手站在公告牌前，F 是阅读；已经挂着箱子时 F 仍然是松手。
+            if (IsMoverEngaged() || !FormalNoticeBoard.TryRead(activeActor))
+                ToggleMoverEngagement();
         }
 
         if (Input.GetKeyDown(KeyCode.Space) && !IsMoverEngaged())
@@ -89,19 +91,21 @@ public class FormalPlayerControl : MonoBehaviour
         IFormalPushMover engagedMover = railMover != null ? (IFormalPushMover)railMover : FindEngagedPushable();
         if (engagedMover != null)
         {
-            if (Input.GetKey(KeyCode.W))
-                engagedMover.SetAttachedPushAnimation();
-            else if (Input.GetKey(KeyCode.S))
-                engagedMover.SetAttachedPullAnimation();
-            else
-                engagedMover.SetAttachedIdleAnimation();
-
             if (railMover != null)
             {
+                // 轨道机关只沿轨道走，动画仍按前后输入判断。
+                if (vertical > 0.01f)
+                    railMover.SetAttachedPushAnimation();
+                else if (vertical < -0.01f)
+                    railMover.SetAttachedPullAnimation();
+                else
+                    railMover.SetAttachedIdleAnimation();
+
                 Vector3 moverDirection = activeActor.transform.forward * vertical;
                 railMover.Move(moverDirection, vertical > 0.01f);
             }
-            // 物理推箱的移动由其自身 FixedUpdate 读取输入驱动。
+            // 物理推箱的移动和推箱动画都由 FormalPushableCrate 自己的 FixedUpdate 驱动：
+            // 它才知道当前这次 WASD 输入到底有没有真的推动箱子（Free 模式下 A/D 也算数）。
             return;
         }
 

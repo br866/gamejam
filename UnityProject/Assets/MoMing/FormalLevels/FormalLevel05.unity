@@ -1162,6 +1162,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2074326769}
+  - {fileID: 771000091}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1940401003
@@ -1249,6 +1250,7 @@ MonoBehaviour:
   closeTransitionDoor: 1
   unloadPredecessor: 1
   armDelay: 1.5
+  showLevelIntroTutorial: 0
   logWhenSealed: 1
 --- !u!1 &804601714
 GameObject:
@@ -2922,6 +2924,7 @@ MonoBehaviour:
   level: {fileID: 0}
   owningLevelScene: FormalLevel05
   prerequisites: []
+  showLevelIntroTutorial: 0
 --- !u!65 &2074326771
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3163,6 +3166,54 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2097145018}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &771000090
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 771000091}
+  - component: {fileID: 771000092}
+  m_Layer: 0
+  m_Name: L05_IntroTrigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &771000091
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 771000090}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -209.04, y: 10.9, z: -1.714}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 722988609}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &771000092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 771000090}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f7a1d92c48b4e6cb1d05a7f2e9c8341, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 8
+  requireBothActors: 0
+  armDelay: 0.3
+  logWhenTriggered: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

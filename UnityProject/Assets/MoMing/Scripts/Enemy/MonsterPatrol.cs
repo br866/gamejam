@@ -758,6 +758,11 @@ public class MonsterPatrol : MonoBehaviour
         currentWaypoint = 0;
         transform.position = startPos;
         lastFootstepPosition = startPos;
+        attackTimer = 0f;
+        nextAttackTime = 0f;
+        ReleaseExecutionTarget();
+        if (animatorDriver != null)
+            animatorDriver.ClearAnimationLock();
     }
 
     bool IsInSafeZone(Vector3 position)

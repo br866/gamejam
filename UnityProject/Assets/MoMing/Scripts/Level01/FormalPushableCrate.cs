@@ -103,10 +103,12 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
         Vector3 moveAxis;
         if (axisMode == PushAxisMode.Free)
         {
+            // Free 模式 WASD 四个方向都能推，动画跟着实际输入走，不再只认 W。
             moveAxis = ResolveWorldInput();
             if (moveAxis.sqrMagnitude < 0.01f)
             {
                 IsBlocked = false;
+                ApplyAttachedAnimation(Vector3.zero);
                 return;
             }
         }
@@ -114,12 +116,16 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
         {
             Vector3 axis = ResolvePushAxis();
             if (axis.sqrMagnitude < 0.01f)
+            {
+                ApplyAttachedAnimation(Vector3.zero);
                 return;
+            }
 
             float inputSign = ResolveInputDirection(axis);
             if (inputSign == 0f)
             {
                 IsBlocked = false;
+                ApplyAttachedAnimation(Vector3.zero);
                 return;
             }
             moveAxis = axis * inputSign;
@@ -128,8 +134,12 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
         if (CountAttached() < Mathf.Max(1, requiredPushers))
         {
             IsBlocked = false;
+            ApplyAttachedAnimation(Vector3.zero);
             return;
         }
+
+        // 被墙挡住时也保持推的姿势：人在使劲，只是箱子推不动。
+        ApplyAttachedAnimation(moveAxis);
 
         IsBlocked = ProbeBlocked(moveAxis);
         if (IsBlocked)
@@ -140,6 +150,34 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
 
         Vector3 velocity = moveAxis * movementSpeed;
         body.velocity = new Vector3(velocity.x, body.velocity.y, velocity.z);
+    }
+
+    /// <summary>
+    /// 按本帧真正生效的移动方向决定挂点角色的动画：
+    /// 没有有效输入 = 待机；箱子被推离人 = Push；箱子被拉向人 = Pull。
+    /// 方向判定走「人 -> 箱」这条向量，所以 Free 模式下横着推（A/D）也会出推的动作。
+    /// </summary>
+    void ApplyAttachedAnimation(Vector3 moveDirection)
+    {
+        if (human == null)
+            return;
+
+        if (moveDirection.sqrMagnitude < 0.01f)
+        {
+            SetAttachedIdleAnimation();
+            return;
+        }
+
+        Vector3 awayFromHuman = transform.position - GetPointPosition(humanPoint);
+        awayFromHuman.y = 0f;
+        if (awayFromHuman.sqrMagnitude > 0.01f &&
+            Vector3.Dot(moveDirection.normalized, awayFromHuman.normalized) < -0.35f)
+        {
+            SetAttachedPullAnimation();
+            return;
+        }
+
+        SetAttachedPushAnimation();
     }
 
     public bool TryEngage(FormalPlayerActor actor)

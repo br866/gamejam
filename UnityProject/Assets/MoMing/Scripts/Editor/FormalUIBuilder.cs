@@ -22,6 +22,7 @@ public static class FormalUIBuilder
     const string TutorialDir = UiDir + "4玩法介绍界面/";
     const string SaveAreaTutorialDir = UiDir + "5存档地毯介绍/";
     const string MonsterTutorialDir = UiDir + "6怪物介绍/";
+    const string Level045TutorialDir = UiDir + "8第五关长廊怪物释放/"; // 文件夹名是老的，内容其实是 4.5 关的
     const string DeathDir = UiDir + "9玩家死亡ui/";
     const string SettingsPrefabPath = "Assets/MoMing/Prefabs/SettingsPanel.prefab";
 
@@ -372,6 +373,10 @@ public static class FormalUIBuilder
         tutorial.checkpointPages = LoadCheckpointSprites();
         tutorial.checkpointPrefKey = FormalTutorialPopup.CheckpointPrefKeyDefault;
         tutorial.checkpointDelaySeconds = 1f;
+        tutorial.levelIntroPages = LoadLevel045Sprites();
+        tutorial.levelIntroScene = "FormalLevel045";
+        tutorial.levelIntroPrefKey = FormalTutorialPopup.Level045PrefKeyDefault;
+        tutorial.levelIntroDelaySeconds = 1f;
         tutorial.triggerLevelScene = "FormalLevel01";
         tutorial.rememberAcrossRuns = true;
 
@@ -405,6 +410,15 @@ public static class FormalUIBuilder
         return btn;
     }
 
+    /// <summary>进 4.5 关时弹的那张：长廊怪物释放。</summary>
+    static Sprite[] LoadLevel045Sprites()
+    {
+        return new Sprite[]
+        {
+            LoadSprite(Level045TutorialDir + "anomaly-chase-tutorial-ui-transparent.png"),
+        };
+    }
+
     /// <summary>踩到第二关地毯时弹的那两张：存档地毯 + 怪物介绍。</summary>
     static Sprite[] LoadCheckpointSprites()
     {
@@ -416,10 +430,10 @@ public static class FormalUIBuilder
     }
 
     /// <summary>
-    /// 只补挂存档地毯那两张图，不动已经搭好的 UI。
+    /// 只补挂额外教程图（第二关地毯两张 + 4.5 关一张），不动已经搭好的 UI。
     /// 场景在编辑器里开着的时候，直接改 .unity 文件是不生效的，用这个补一下最快。
     /// </summary>
-    [MenuItem("Tools/默名/挂上存档地毯介绍图")]
+    [MenuItem("Tools/默名/挂上额外教程图（地毯 + 4.5 关）")]
     public static void AttachSaveAreaTutorialSprite()
     {
         var popup = Object.FindObjectOfType<FormalTutorialPopup>();
@@ -439,9 +453,16 @@ public static class FormalUIBuilder
         if (popup.checkpointDelaySeconds <= 0f)
             popup.checkpointDelaySeconds = 1f;
 
+        popup.levelIntroPages = LoadLevel045Sprites();
+        if (string.IsNullOrEmpty(popup.levelIntroScene))
+            popup.levelIntroScene = "FormalLevel045";
+        popup.levelIntroPrefKey = FormalTutorialPopup.Level045PrefKeyDefault;
+        if (popup.levelIntroDelaySeconds <= 0f)
+            popup.levelIntroDelaySeconds = 1f;
+
         EditorUtility.SetDirty(popup);
         EditorSceneManager.MarkSceneDirty(popup.gameObject.scene);
-        Debug.Log("[FormalUIBuilder] 存档地毯介绍图已挂上，记得 Ctrl+S 保存场景。", popup);
+        Debug.Log("[FormalUIBuilder] 额外教程图已挂上（地毯 2 张 + 4.5 关 1 张），记得 Ctrl+S 保存场景。", popup);
     }
 
     [MenuItem("Tools/默名/重置玩法介绍（下次再弹一遍）")]
@@ -449,8 +470,9 @@ public static class FormalUIBuilder
     {
         PlayerPrefs.DeleteKey(FormalTutorialPopup.PrefKey);
         PlayerPrefs.DeleteKey(FormalTutorialPopup.CheckpointPrefKeyDefault);
+        PlayerPrefs.DeleteKey(FormalTutorialPopup.Level045PrefKeyDefault);
         PlayerPrefs.Save();
-        Debug.Log("[FormalUIBuilder] 玩法介绍 + 存档地毯介绍已重置，下次会再弹一遍。");
+        Debug.Log("[FormalUIBuilder] 玩法介绍 + 存档地毯介绍 + 4.5 关介绍已重置，下次会再弹一遍。");
     }
 
     // ---------------- 设置面板 ----------------
