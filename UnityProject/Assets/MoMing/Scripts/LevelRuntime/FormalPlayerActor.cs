@@ -29,9 +29,11 @@ public class FormalPlayerActor : MonoBehaviour
     private float nextIdleVariationTime;
     private bool idleVariation;
     private bool moverAttachPointResolved;
+    private int executionLockCount;
 
     public ActorRole Role => role;
     public ActorState State => state;
+    public bool IsExecutionLocked => executionLockCount > 0;
 
     /// <summary>相机注视点；未配置时回退到根节点。</summary>
     public Transform FocusAnchor => focusAnchor != null ? focusAnchor : transform;
@@ -121,7 +123,7 @@ public class FormalPlayerActor : MonoBehaviour
 
     public void Move(Vector3 direction, bool sprint)
     {
-        if (moverRotationLocked)
+        if (moverRotationLocked || IsExecutionLocked)
             return;
 
         bool sprinting = sprint && role == ActorRole.Human;
@@ -145,7 +147,7 @@ public class FormalPlayerActor : MonoBehaviour
 
     public void Jump()
     {
-        if (!canJump || !IsGrounded())
+        if (IsExecutionLocked || !canJump || !IsGrounded())
             return;
 
         float jumpVelocity = Mathf.Sqrt(2f * Mathf.Abs(Physics.gravity.y) * jumpHeight);
@@ -204,6 +206,34 @@ public class FormalPlayerActor : MonoBehaviour
         if (moverRotationLocked)
             body.constraints = constraintsBeforeMoverLock;
         moverRotationLocked = false;
+    }
+
+    /// <summary>
+    /// 暂时锁住处决目标的移动和互动。锁可重入，调用方必须成对释放。
+    /// </summary>
+    public void AcquireExecutionLock()
+    {
+        executionLockCount++;
+        Stop();
+    }
+
+    public void ReleaseExecutionLock()
+    {
+        if (executionLockCount <= 0)
+            return;
+
+        executionLockCount--;
+        if (!IsExecutionLocked)
+            Stop();
+    }
+
+    void FixedUpdate()
+    {
+        if (!IsExecutionLocked)
+            return;
+
+        body.velocity = new Vector3(0f, body.velocity.y, 0f);
+        body.angularVelocity = Vector3.zero;
     }
 
     void SetState(ActorState nextState)

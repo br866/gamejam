@@ -13,6 +13,9 @@ public class MonsterAnimatorDriver : MonoBehaviour
     private MonsterPatrol patrol;
     private Vector3 lastPosition;
     private string currentStateName;
+    private float lockEndTime;
+
+    public bool IsAnimationLocked { get { return Time.time < lockEndTime; } }
 
     void Awake()
     {
@@ -26,12 +29,38 @@ public class MonsterAnimatorDriver : MonoBehaviour
         if (animator == null || !animator.enabled)
             return;
 
+        if (IsAnimationLocked)
+        {
+            lastPosition = transform.position;
+            return;
+        }
+
         string desired = ResolveDesiredState();
         if (desired == null || desired == currentStateName)
             return;
 
         animator.CrossFadeInFixedTime(desired, crossFadeDuration, 0, 0f);
         currentStateName = desired;
+    }
+
+    public void PlayLockedState(string stateName, float duration)
+    {
+        if (animator == null || !animator.enabled)
+            return;
+
+        string resolved = ResolveAnimationState(stateName);
+        if (!string.IsNullOrEmpty(resolved))
+        {
+            animator.CrossFadeInFixedTime(resolved, crossFadeDuration, 0, 0f);
+            currentStateName = resolved;
+        }
+
+        lockEndTime = Time.time + Mathf.Max(0f, duration);
+    }
+
+    public void ClearAnimationLock()
+    {
+        lockEndTime = 0f;
     }
 
     string ResolveDesiredState()

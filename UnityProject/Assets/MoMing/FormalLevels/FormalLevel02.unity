@@ -1643,8 +1643,12 @@ MonoBehaviour:
   fieldOfView: 60
   catchRadius: 1.2
   loseTargetTime: 3
-  chaseSpeed: 4.5
+  chaseSpeed: 7
   chaseStopDistance: 1
+  attackRange: 1
+  attackWindup: 2
+  attackCooldown: 1
+  attackStateName: monster3 drag
   safeZones: []
   footstepClip: {fileID: 0}
   catchClip: {fileID: 0}
