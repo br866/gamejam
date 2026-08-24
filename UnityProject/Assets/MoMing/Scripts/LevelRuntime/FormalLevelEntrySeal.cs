@@ -80,6 +80,18 @@ public class FormalLevelEntrySeal : MonoBehaviour
         if (flow == null)
             return;
 
+        // L2 的实体过门会先预加载 L3；两人真正进入本入口区时才提交关卡切换。
+        if (flow.ConfirmPreloadedPhysicalArrival(gameObject.scene.name, this))
+        {
+            if (!flow.SealPredecessorLevel(closeTransitionDoor, unloadPredecessor))
+                return;
+
+            sealDone = true;
+            if (logWhenSealed)
+                Debug.Log($"[FormalLevelEntrySeal] {gameObject.scene.name} 实体进关已确认，上一关卸载。", this);
+            return;
+        }
+
         // 触发场景必须是当前关，否则说明这个触发器所在的关卡已经不是"最新的一关"了
         if (flow.CurrentLevelScene != gameObject.scene.name)
             return;

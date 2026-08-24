@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class FormalCheckpoint : MonoBehaviour, IFormalLevelPermanentState
 {
     [SerializeField] private FormalLevelController level;
+    [SerializeField] private string owningLevelScene;
     [SerializeField] private Transform humanRespawnAnchor;
     [SerializeField] private Transform dogRespawnAnchor;
     [SerializeField] private FormalMechanismState[] prerequisites;
@@ -11,12 +13,63 @@ public class FormalCheckpoint : MonoBehaviour, IFormalLevelPermanentState
              "默认关闭——现在靠新关卡入口的 FormalLevelEntrySeal 来要求玩家自己把同伴带进来，" +
              "自动传送会让那个设计失去意义。只在某一关想放宽时才勾。")]
     [SerializeField] private bool bringPartnerAlong = false;
-    [Tooltip("踩到这个存档点时弹一次\u201c存档地毯\u201d介绍图。\n" +
+    [Tooltip("踩到这个存档点时弹一次“存档地毯”介绍图。\n" +
              "图配在 FormalPersistent 的 FormalUI / Formal Tutorial Popup 的 Checkpoint Pages 上，" +
              "看过一次就永久不再弹。只在第二关那块地毯上勾。")]
     [SerializeField] private bool showSaveAreaTutorial = false;
 
+    private static readonly HashSet<FormalCheckpoint> RegisteredCheckpoints =
+        new HashSet<FormalCheckpoint>();
+    private bool registeredWithOwningLevel;
+
     public bool IsComplete { get; private set; }
+    public string OwningLevelScene => owningLevelScene;
+    public bool IsRegisteredWithOwningLevel => registeredWithOwningLevel;
+
+    void Awake()
+    {
+        if (!string.IsNullOrEmpty(owningLevelScene))
+            RegisterWithOwningLevel();
+    }
+
+    void Start()
+    {
+        if (!registeredWithOwningLevel)
+            RegisterWithOwningLevel();
+    }
+
+    void OnDestroy()
+    {
+        RegisteredCheckpoints.Remove(this);
+        registeredWithOwningLevel = false;
+    }
+
+    /// <summary>Returns true only for this checkpoint's first registration in its loaded level.</summary>
+    public bool RegisterWithOwningLevel()
+    {
+        if (registeredWithOwningLevel)
+            return false;
+
+        if (string.IsNullOrEmpty(owningLevelScene))
+        {
+            Debug.LogError($"[FormalCheckpoint] {name} has no owning level scene configured.", this);
+            return false;
+        }
+
+        if (owningLevelScene != gameObject.scene.name)
+        {
+            Debug.LogError(
+                $"[FormalCheckpoint] {name} belongs to '{owningLevelScene}' but is placed in '{gameObject.scene.name}'.",
+                this);
+            return false;
+        }
+
+        if (!RegisteredCheckpoints.Add(this))
+            return false;
+
+        registeredWithOwningLevel = true;
+        return true;
+    }
 
     public void ActivateCheckpoint()
     {
@@ -27,6 +80,7 @@ public class FormalCheckpoint : MonoBehaviour, IFormalLevelPermanentState
             return;
 
         IsComplete = true;
+        // 传 null 时 FormalLevelController 会退回关卡自带的复活锚点
         level.SetCheckpoint(humanRespawnAnchor, dogRespawnAnchor);
     }
 

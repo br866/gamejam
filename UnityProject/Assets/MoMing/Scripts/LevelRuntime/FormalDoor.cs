@@ -82,6 +82,10 @@ public class FormalDoor : MonoBehaviour, IFormalLevelPermanentState, IFormalLeve
         if (IsOpen)
             return;
 
+        FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
+        if (flow != null)
+            flow.ReportTransitionDoorOpened(this);
+
         IsComplete = true;
         if (blockingCollider != null)
             blockingCollider.enabled = false;

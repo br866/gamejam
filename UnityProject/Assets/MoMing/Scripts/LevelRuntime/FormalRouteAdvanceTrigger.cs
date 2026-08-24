@@ -99,7 +99,7 @@ public class FormalRouteAdvanceTrigger : MonoBehaviour
             return;
 
         fired = true;
-        flow.RequestRouteAdvance();
+        flow.RequestRouteAdvance(this);
 
         if (logWhenFired)
             Debug.Log($"[FormalRouteAdvanceTrigger] {gameObject.scene.name} 出口触发，加载下一关。", this);

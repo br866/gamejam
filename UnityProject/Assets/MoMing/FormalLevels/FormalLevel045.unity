@@ -1126,10 +1126,12 @@ Transform:
   m_GameObject: {fileID: 217440763}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -129.5, y: 10.9, z: 0}
+  m_LocalPosition: {x: -127.92, y: 10.9, z: -0.05}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2048825330}
+  - {fileID: 502521436}
   m_Father: {fileID: 387153970}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &217440765
@@ -1144,11 +1146,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 213b3c8344498f94981e762a2d0aae04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  level: {fileID: 547273771}
-  humanRespawnAnchor: {fileID: 1699027166}
-  dogRespawnAnchor: {fileID: 1176290269}
+  level: {fileID: 0}
+  owningLevelScene: FormalLevel045
   prerequisites: []
   successorRegistrationPoint: 0
+  bringPartnerAlong: 0
 --- !u!65 &217440766
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1315,6 +1317,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 387153970}
+  - component: {fileID: 1940401002}
   m_Layer: 0
   m_Name: L045GameplayRoot
   m_TagString: Untagged
@@ -1337,12 +1340,25 @@ Transform:
   m_Children:
   - {fileID: 1537911579}
   - {fileID: 209620037}
-  - {fileID: 1699027166}
-  - {fileID: 1176290269}
   - {fileID: 217440764}
   - {fileID: 420487447}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1940401002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 387153969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd0b39bf420f1994cabbd48279227540, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  levelId: Level04.5
+  humanRespawnAnchor: {fileID: 2048825330}
+  dogRespawnAnchor: {fileID: 502521436}
 --- !u!1001 &411280679
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1598,6 +1614,37 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 432060032}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &502521435
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 502521436}
+  m_Layer: 0
+  m_Name: DogRespawnAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &502521436
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 502521435}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.814}
+  m_LocalScale: {x: 2, y: 1, z: 2}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 217440764}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &517619010
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1895,57 +1942,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 534275604}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &547273770
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 547273772}
-  - component: {fileID: 547273771}
-  m_Layer: 0
-  m_Name: FormalLevel045
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &547273771
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 547273770}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd0b39bf420f1994cabbd48279227540, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  levelId: Level04.5
-  humanSpawn: {fileID: 1300615254}
-  dogSpawn: {fileID: 903964162}
---- !u!4 &547273772
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 547273770}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1975362134}
-  - {fileID: 698725301}
-  - {fileID: 1300615254}
-  - {fileID: 903964162}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &556546655
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2248,37 +2244,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 642249323}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &698725300
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 698725301}
-  m_Layer: 0
-  m_Name: DogRespawnAnchor
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &698725301
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 698725300}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -130, y: 10.86, z: -2}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 547273772}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &715241432
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2576,37 +2541,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 809812749}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &903964161
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 903964162}
-  m_Layer: 0
-  m_Name: DogSpawn
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &903964162
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 903964161}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -126.5, y: 10.9, z: -0.75}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 547273772}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &936845616
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3500,37 +3434,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1170887210}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1176290268
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1176290269}
-  m_Layer: 0
-  m_Name: L045_DogRespawnAnchor
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1176290269
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1176290268}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -128.2, y: 10.9, z: -0.75}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 387153970}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1229556546
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3729,37 +3632,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1251320179}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1300615253
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1300615254}
-  m_Layer: 0
-  m_Name: HumanSpawn
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1300615254
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1300615253}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -126.5, y: 10.9, z: 0.75}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 547273772}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1365153536
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4399,37 +4271,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1621607111}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1699027165
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1699027166}
-  m_Layer: 0
-  m_Name: L045_HumanRespawnAnchor
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1699027166
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1699027165}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -128.2, y: 10.9, z: 0.75}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 387153970}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1723450183
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5031,37 +4872,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1933988752}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1975362133
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1975362134}
-  m_Layer: 0
-  m_Name: HumanRespawnAnchor
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1975362134
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1975362133}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -128.5, y: 10.86, z: -2}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 547273772}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2003376983
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5265,6 +5075,37 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2037030930}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2048825329
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2048825330}
+  m_Layer: 0
+  m_Name: HumanRespawnAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2048825330
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2048825329}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -1.34}
+  m_LocalScale: {x: 2, y: 1, z: 2}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 217440764}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2084729981
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5478,6 +5319,5 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 255408045}
-  - {fileID: 547273772}
   - {fileID: 387153970}
   - {fileID: 1524894046}

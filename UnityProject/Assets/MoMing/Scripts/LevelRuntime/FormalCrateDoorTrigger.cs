@@ -40,7 +40,7 @@ public class FormalCrateDoorTrigger : MonoBehaviour
 
         FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
         if (flow != null)
-            flow.RequestRouteAdvance();
+            flow.RequestRouteAdvance(this);
         else
             Debug.LogError("[FormalCrateDoorTrigger] FormalGameFlowController not found.");
     }
