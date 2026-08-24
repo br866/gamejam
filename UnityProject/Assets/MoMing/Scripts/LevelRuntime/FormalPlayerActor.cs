@@ -43,6 +43,8 @@ public class FormalPlayerActor : MonoBehaviour
     private bool moverAttachPointResolved;
     private Vector3 lastFootstepPosition;
     private bool hasWarnedMissingFootstepEvent;
+    private int executionLockCount;
+    private float runtimeMovementSpeedMultiplier = 1f;
 
     public ActorRole Role => role;
     public ActorState State => state;

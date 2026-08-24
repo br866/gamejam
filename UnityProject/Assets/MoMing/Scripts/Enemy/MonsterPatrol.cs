@@ -145,6 +145,7 @@ public class MonsterPatrol : MonoBehaviour
     private float forcedRepathCooldown;
     private Vector3 lastFootstepPosition;
     private bool hasWarnedMissingFootstepEvent;
+    private FormalPlayerActor executionTarget;
 
     void Awake()
     {
