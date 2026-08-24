@@ -10,31 +10,57 @@ public class SettingsManager : MonoBehaviour
     [Header("Sliders")]
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider sfxSlider;
+    [SerializeField] private Slider brightnessSlider;
 
     [Header("Close Button")]
     [SerializeField] private Button closeButton;
 
     private const string MusicPref = "MusicVolume";
     private const string SfxPref = "SFXVolume";
+    private const string BrightnessPref = "Brightness";
 
     private static float musicVolume = 1f;
     private static float sfxVolume = 1f;
+    // 0.5 = 原样，往左变暗，往右变亮
+    private static float brightness = 0.5f;
     private static bool initialized = false;
+
+    // 常驻的全屏遮罩，用来做亮度。DontDestroyOnLoad，所有场景都吃这个设置。
+    private static Image brightnessOverlay;
 
     // 记录打开菜单前的时间流速，关闭时恢复（避免和暂停菜单叠加时冲突）
     private float prevTimeScale = 1f;
 
     public static float MusicVolume => musicVolume;
     public static float SfxVolume => sfxVolume;
+    public static float Brightness => brightness;
+
+    /// <summary>
+    /// 面板默认是关闭的，Awake 不会跑，所以亮度得有个独立的启动入口，
+    /// 否则玩家不进设置界面就永远是默认亮度。
+    /// </summary>
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    private static void Bootstrap()
+    {
+        LoadPrefs();
+        ApplyBrightness();
+    }
+
+    private static void LoadPrefs()
+    {
+        if (initialized)
+            return;
+
+        musicVolume = PlayerPrefs.GetFloat(MusicPref, 1f);
+        sfxVolume = PlayerPrefs.GetFloat(SfxPref, 1f);
+        brightness = PlayerPrefs.GetFloat(BrightnessPref, 0.5f);
+        initialized = true;
+    }
 
     private void Awake()
     {
-        if (!initialized)
-        {
-            musicVolume = PlayerPrefs.GetFloat(MusicPref, 1f);
-            sfxVolume = PlayerPrefs.GetFloat(SfxPref, 1f);
-            initialized = true;
-        }
+        LoadPrefs();
+        ApplyBrightness();
     }
 
     private void OnEnable()
@@ -55,6 +81,12 @@ public class SettingsManager : MonoBehaviour
             sfxSlider.onValueChanged.AddListener(OnSfxChanged);
         }
 
+        if (brightnessSlider != null)
+        {
+            brightnessSlider.value = brightness;
+            brightnessSlider.onValueChanged.AddListener(OnBrightnessChanged);
+        }
+
         if (closeButton != null)
             closeButton.onClick.AddListener(Close);
     }
@@ -68,6 +100,8 @@ public class SettingsManager : MonoBehaviour
             musicSlider.onValueChanged.RemoveListener(OnMusicChanged);
         if (sfxSlider != null)
             sfxSlider.onValueChanged.RemoveListener(OnSfxChanged);
+        if (brightnessSlider != null)
+            brightnessSlider.onValueChanged.RemoveListener(OnBrightnessChanged);
         if (closeButton != null)
             closeButton.onClick.RemoveListener(Close);
     }
@@ -86,6 +120,56 @@ public class SettingsManager : MonoBehaviour
         PlayerPrefs.SetFloat(SfxPref, value);
         PlayerPrefs.Save();
         ApplyVolumes();
+    }
+
+    public void OnBrightnessChanged(float value)
+    {
+        brightness = value;
+        PlayerPrefs.SetFloat(BrightnessPref, value);
+        PlayerPrefs.Save();
+        ApplyBrightness();
+    }
+
+    /// <summary>把亮度值写到全屏遮罩上。0.5 = 不动，往左压黑，往右提白。</summary>
+    private static void ApplyBrightness()
+    {
+        if (brightnessOverlay == null)
+            BuildBrightnessOverlay();
+        if (brightnessOverlay == null)
+            return;
+
+        if (brightness < 0.5f)
+            brightnessOverlay.color = new Color(0f, 0f, 0f, (0.5f - brightness) * 1.4f);
+        else
+            brightnessOverlay.color = new Color(1f, 1f, 1f, (brightness - 0.5f) * 0.5f);
+    }
+
+    private static void BuildBrightnessOverlay()
+    {
+        if (!Application.isPlaying)
+            return;
+
+        var root = new GameObject("~BrightnessOverlay");
+        Object.DontDestroyOnLoad(root);
+
+        var canvas = root.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        // 压在所有 UI 上面，包括暂停菜单
+        canvas.sortingOrder = 32760;
+
+        var go = new GameObject("Overlay", typeof(RectTransform));
+        go.transform.SetParent(root.transform, false);
+
+        var rect = go.GetComponent<RectTransform>();
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+
+        brightnessOverlay = go.AddComponent<Image>();
+        // 千万不能吃点击，否则整个游戏都点不动了
+        brightnessOverlay.raycastTarget = false;
+        brightnessOverlay.color = new Color(0f, 0f, 0f, 0f);
     }
 
     private static void ApplyVolumes()

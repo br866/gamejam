@@ -102,6 +102,8 @@ public class AnxietyPostFX : MonoBehaviour
     public float GetAnxiety01()
     {
         if (useDebugValue) return debugValue;
+        // 正式关卡优先：FormalAnxietyState 是正式关的焦虑数据源
+        if (FormalAnxietyState.Instance != null) return Mathf.Clamp01(FormalAnxietyState.Instance.Normalized);
         if (GameManager.Instance != null) return Mathf.Clamp01(GameManager.Instance.GetAnxietyNormalized());
         if (anxietyBarSlider != null) return Mathf.Clamp01(anxietyBarSlider.normalizedValue);
         return 0f;
