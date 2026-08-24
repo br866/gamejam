@@ -20,6 +20,8 @@ public static class FormalUIBuilder
     const string PauseDir = UiDir + "3暂停界面/";
     const string AnxDir = UiDir + "实机界面ui拆分/1焦虑值/";
     const string TutorialDir = UiDir + "4玩法介绍界面/";
+    const string SaveAreaTutorialDir = UiDir + "5存档地毯介绍/";
+    const string MonsterTutorialDir = UiDir + "6怪物介绍/";
     const string DeathDir = UiDir + "9玩家死亡ui/";
     const string SettingsPrefabPath = "Assets/MoMing/Prefabs/SettingsPanel.prefab";
 
@@ -367,6 +369,9 @@ public static class FormalUIBuilder
         tutorial.prevButton = prev;
         tutorial.nextButton = next;
         tutorial.pages = sprites;
+        tutorial.checkpointPages = LoadCheckpointSprites();
+        tutorial.checkpointPrefKey = FormalTutorialPopup.CheckpointPrefKeyDefault;
+        tutorial.checkpointDelaySeconds = 1f;
         tutorial.triggerLevelScene = "FormalLevel01";
         tutorial.rememberAcrossRuns = true;
 
@@ -398,6 +403,45 @@ public static class FormalUIBuilder
         btn.navigation = nav;
 
         return btn;
+    }
+
+    /// <summary>踩到第二关地毯时弹的那两张：存档地毯 + 怪物介绍。</summary>
+    static Sprite[] LoadCheckpointSprites()
+    {
+        return new Sprite[]
+        {
+            LoadSprite(SaveAreaTutorialDir + "save-area-tutorial-ui-final-transparent.png"),
+            LoadSprite(MonsterTutorialDir + "anomaly-observation-tutorial-ui-transparent.png"),
+        };
+    }
+
+    /// <summary>
+    /// 只补挂存档地毯那两张图，不动已经搭好的 UI。
+    /// 场景在编辑器里开着的时候，直接改 .unity 文件是不生效的，用这个补一下最快。
+    /// </summary>
+    [MenuItem("Tools/默名/挂上存档地毯介绍图")]
+    public static void AttachSaveAreaTutorialSprite()
+    {
+        var popup = Object.FindObjectOfType<FormalTutorialPopup>();
+        if (popup == null)
+        {
+            EditorUtility.DisplayDialog("找不到 Formal Tutorial Popup",
+                "请先打开 Assets/MoMing/FormalLevels/FormalPersistent.unity 再执行。", "知道了");
+            return;
+        }
+
+        var sprites = LoadCheckpointSprites();
+        if (sprites[0] == null)
+            return;
+
+        popup.checkpointPages = sprites;
+        popup.checkpointPrefKey = FormalTutorialPopup.CheckpointPrefKeyDefault;
+        if (popup.checkpointDelaySeconds <= 0f)
+            popup.checkpointDelaySeconds = 1f;
+
+        EditorUtility.SetDirty(popup);
+        EditorSceneManager.MarkSceneDirty(popup.gameObject.scene);
+        Debug.Log("[FormalUIBuilder] 存档地毯介绍图已挂上，记得 Ctrl+S 保存场景。", popup);
     }
 
     [MenuItem("Tools/默名/重置玩法介绍（下次再弹一遍）")]

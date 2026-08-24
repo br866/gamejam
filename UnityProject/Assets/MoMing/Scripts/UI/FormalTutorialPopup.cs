@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,6 +31,8 @@ public class FormalTutorialPopup : MonoBehaviour
     public Sprite[] checkpointPages;
     [Tooltip("记\u201c看过了\u201d用的 PlayerPrefs 键，和开局介绍分开记")]
     public string checkpointPrefKey = CheckpointPrefKeyDefault;
+    [Tooltip("踩上去之后等几秒再弹，给玩家一点“我踩到了什么”的反应时间")]
+    public float checkpointDelaySeconds = 1f;
 
     [Header("触发")]
     [Tooltip("哪一关加载完之后弹。留空 = 任意关卡加载完就弹")]
@@ -44,6 +47,7 @@ public class FormalTutorialPopup : MonoBehaviour
     public static FormalTutorialPopup Instance { get; private set; }
 
     private int index;
+    private bool checkpointQueued;
     private bool finished;
     private Sprite[] activePages;
     private string activePrefKey;
@@ -139,10 +143,51 @@ public class FormalTutorialPopup : MonoBehaviour
         return IsShowing;
     }
 
-    /// <summary>存档地毯介绍。第二关踩到存档点时由 FormalCheckpoint 调，全流程只弹一次。</summary>
+    /// <summary>
+    /// 存档地毯介绍。第二关踩到存档点时由 FormalCheckpoint 调，全流程只弹一次。
+    /// 会等 checkpointDelaySeconds 秒再弹，让玩家先看清自己踩到了地毯。
+    /// </summary>
     public bool ShowCheckpointTutorial()
     {
-        return ShowOnce(checkpointPages, checkpointPrefKey);
+        if (checkpointPages == null || checkpointPages.Length == 0)
+        {
+            Debug.LogWarning("[FormalTutorialPopup] 存档地毯介绍没配图（Checkpoint Pages 是空的），这次不弹。" +
+                             "去 FormalPersistent 场景跑一下 Tools/默名/挂上存档地毯介绍图。", this);
+            return false;
+        }
+
+        if (checkpointQueued || IsShowing)
+            return false;
+
+        if (rememberAcrossRuns && !string.IsNullOrEmpty(checkpointPrefKey) &&
+            PlayerPrefs.GetInt(checkpointPrefKey, 0) == 1)
+            return false;
+
+        if (checkpointDelaySeconds <= 0f)
+            return ShowOnce(checkpointPages, checkpointPrefKey);
+
+        StartCoroutine(ShowCheckpointDelayed());
+        return true;
+    }
+
+    IEnumerator ShowCheckpointDelayed()
+    {
+        checkpointQueued = true;
+
+        // 用 unscaled，别的东西把 timeScale 调慢了也照样按真实时间等
+        float waited = 0f;
+        while (waited < checkpointDelaySeconds)
+        {
+            waited += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        // 这会儿要是正好在弹别的（比如开局介绍没关），排队等它关掉再弹
+        while (IsShowing)
+            yield return null;
+
+        checkpointQueued = false;
+        ShowOnce(checkpointPages, checkpointPrefKey);
     }
 
     void ShowPages(Sprite[] content, string prefKey, bool isIntro)
