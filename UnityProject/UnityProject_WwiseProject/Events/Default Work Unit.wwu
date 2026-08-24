@@ -5,12 +5,12 @@
 			<ChildrenList>
 				<Folder Name="Music" ID="{413A6D19-C75E-4F76-8C45-ECAA04A522CD}" ShortID="515422206">
 					<ChildrenList>
-						<Event Name="Play_MUS_Gameplay" ID="{323AC596-A231-49A8-9212-A522D2BD5678}">
+						<Event Name="Play_MusicMode" ID="{DDA519D5-801F-4A50-95C6-43FA7821210E}">
 							<ChildrenList>
-								<Action Name="" ID="{DFB119FF-B737-4D43-AE7C-7B958BD7B547}" ShortID="374498673">
+								<Action Name="" ID="{8A0586E7-010D-4A66-ACF6-EC2E2FDA846E}" ShortID="491967617">
 									<ReferenceList>
 										<Reference Name="Target">
-											<ObjectRef Name="MUS_Gameplay" ID="{7E0A46BB-7675-4829-BC12-E2639B3F0E6F}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+											<ObjectRef Name="Gameplay_Music" ID="{7C891316-35FA-4ECE-AD88-57999D5A394A}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>
@@ -77,17 +77,6 @@
 						</Folder>
 						<Folder Name="Puzzle" ID="{5353E4E7-021C-40EF-9971-744BD4FE9230}" ShortID="875968217">
 							<ChildrenList>
-								<Event Name="Play_Key_Throw" ID="{0CFA0AAE-F045-4259-BD06-68F93154C70A}">
-									<ChildrenList>
-										<Action Name="" ID="{135809EA-4BDF-4A6E-B06E-672C9C6C52E9}" ShortID="688905420">
-											<ReferenceList>
-												<Reference Name="Target">
-													<ObjectRef Name="SFX_Key_Throw" ID="{9B83A241-0730-4ED6-960E-25EB4DC8CD92}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
-												</Reference>
-											</ReferenceList>
-										</Action>
-									</ChildrenList>
-								</Event>
 								<Event Name="Play_Key_Pickup" ID="{5F4D8709-5E11-4AF4-B150-673B2B1C76C0}">
 									<ChildrenList>
 										<Action Name="" ID="{9DA5C9E1-4551-4687-B401-17D1FAF11CC3}" ShortID="1053650768">

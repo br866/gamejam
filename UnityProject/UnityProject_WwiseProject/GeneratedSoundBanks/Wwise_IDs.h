@@ -18,9 +18,38 @@ namespace AK
         static const AkUniqueID PLAY_FOOTSTEP_DOG = 1441942263U;
         static const AkUniqueID PLAY_FOOTSTEP_HUMAN = 1846914642U;
         static const AkUniqueID PLAY_KEY_PICKUP = 2881789206U;
-        static const AkUniqueID PLAY_MUS_GAMEPLAY = 2201569778U;
+        static const AkUniqueID PLAY_MUSICMODE = 3324110046U;
         static const AkUniqueID STOP_CRATE_PUSH = 708504560U;
     } // namespace EVENTS
+
+    namespace STATES
+    {
+        namespace ANXIETYLEVEL
+        {
+            static const AkUniqueID GROUP = 1446207487U;
+
+            namespace STATE
+            {
+                static const AkUniqueID HIGH = 3550808449U;
+                static const AkUniqueID LOW = 545371365U;
+                static const AkUniqueID MID = 1182670505U;
+                static const AkUniqueID NONE = 748895195U;
+            } // namespace STATE
+        } // namespace ANXIETYLEVEL
+
+        namespace MUSICMODE
+        {
+            static const AkUniqueID GROUP = 222311475U;
+
+            namespace STATE
+            {
+                static const AkUniqueID COMBAT = 2764240573U;
+                static const AkUniqueID EXPLORE = 579523862U;
+                static const AkUniqueID NONE = 748895195U;
+            } // namespace STATE
+        } // namespace MUSICMODE
+
+    } // namespace STATES
 
     namespace GAME_PARAMETERS
     {

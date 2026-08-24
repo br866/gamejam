@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{701ECBBD-9C7B-4030-8CDB-749EE5D1C7B9}",
     "Language": "SFX",
-    "Hash": "{B8103543-8604-8DAD-1CE7-9FCBC1B091F0}",
+    "Hash": "{40B13C62-9C14-55C7-F99B-D1B857BBFBDE}",
     "ObjectPath": "Init",
     "ShortName": "Init",
     "Path": "Init.bnk",
@@ -73,9 +73,69 @@
       "ObjectPath": "\\Game Parameters\\Default Work Unit\\Anxiety",
       "GUID": "{19F97BBC-96A2-467C-98C6-C4CC546EB40A}"
      }
+    ],
+    "StateGroups": [
+     {
+      "Id": "222311475",
+      "Name": "MusicMode",
+      "ObjectPath": "\\States\\Default Work Unit\\MusicMode",
+      "GUID": "{D0EB2793-9D2F-4288-8FC8-924A43907881}",
+      "States": [
+       {
+        "Id": "579523862",
+        "Name": "Explore",
+        "ObjectPath": "\\States\\Default Work Unit\\MusicMode\\Explore",
+        "GUID": "{102BF61E-DDCF-4A14-996B-F0AE331A3EBB}"
+       },
+       {
+        "Id": "748895195",
+        "Name": "None",
+        "ObjectPath": "\\States\\Default Work Unit\\MusicMode\\None",
+        "GUID": "{744E45B2-A33D-4EF2-BD52-65BA7963AC0E}"
+       },
+       {
+        "Id": "2764240573",
+        "Name": "Combat",
+        "ObjectPath": "\\States\\Default Work Unit\\MusicMode\\Combat",
+        "GUID": "{4EB9ED89-3CD2-4466-98E7-8EC0DCF75724}"
+       }
+      ]
+     },
+     {
+      "Id": "1446207487",
+      "Name": "AnxietyLevel",
+      "ObjectPath": "\\States\\Default Work Unit\\AnxietyLevel",
+      "GUID": "{AFED344A-B89D-44CB-8E8A-88CE78718BDF}",
+      "States": [
+       {
+        "Id": "545371365",
+        "Name": "Low",
+        "ObjectPath": "\\States\\Default Work Unit\\AnxietyLevel\\Low",
+        "GUID": "{CDD111FD-17EF-400B-B2DE-388A80D3CD61}"
+       },
+       {
+        "Id": "748895195",
+        "Name": "None",
+        "ObjectPath": "\\States\\Default Work Unit\\AnxietyLevel\\None",
+        "GUID": "{5F890215-638F-4D76-A3CB-626139D1C1F3}"
+       },
+       {
+        "Id": "1182670505",
+        "Name": "Mid",
+        "ObjectPath": "\\States\\Default Work Unit\\AnxietyLevel\\Mid",
+        "GUID": "{10963EA3-E2F7-4AD8-9002-37F5C33EA09D}"
+       },
+       {
+        "Id": "3550808449",
+        "Name": "High",
+        "ObjectPath": "\\States\\Default Work Unit\\AnxietyLevel\\High",
+        "GUID": "{EDA1B958-C9B5-402E-A140-843C4CC74712}"
+       }
+      ]
+     }
     ]
    }
   ],
-  "FileHash": "{D9ACAD3B-43F2-58DC-5AFF-6A4911E5D07A}"
+  "FileHash": "{08CF5A34-44C0-BDE7-636A-D3E98329DC41}"
  }
 }
