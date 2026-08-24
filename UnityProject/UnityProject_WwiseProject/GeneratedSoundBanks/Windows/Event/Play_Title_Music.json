@@ -1,0 +1,58 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "2604896900",
+    "Type": "Event",
+    "GUID": "{C8B6CB64-9710-4F95-95B2-6016AD7FD971}",
+    "Language": "SFX",
+    "Hash": "{1ADB2300-32A3-373C-56F4-0CB70114B929}",
+    "ObjectPath": "Play_Title_Music",
+    "ShortName": "Play_Title_Music",
+    "Path": "Event/Play_Title_Music.bnk",
+    "Media": [
+     {
+      "Id": "354357284",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "OST1-Fullscore_115bpm4-4_L41M-P0.wav",
+      "Path": "Media/354357284.wem",
+      "CachePath": "49/{495BB6F3-9137-C3FF-447A-2EB3A9E63329}.wem"
+     },
+     {
+      "Id": "865854240",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "OST1-intro_115bpm4-4_L2M-P0.wav",
+      "Path": "Media/865854240.wem",
+      "CachePath": "EC/{EC439C5A-A862-7A6F-000A-EF125FB9A01D}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "2604896900",
+      "Name": "Play_Title_Music",
+      "ObjectPath": "\\Events\\Default Work Unit\\Music\\Play_Title_Music",
+      "GUID": "{C8B6CB64-9710-4F95-95B2-6016AD7FD971}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "354357284"
+       },
+       {
+        "Id": "865854240"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{070F84F8-DBD7-C09C-921F-B04AF433FF75}"
+ }
+}

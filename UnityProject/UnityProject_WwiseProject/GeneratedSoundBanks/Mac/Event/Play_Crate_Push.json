@@ -1,0 +1,58 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Mac",
+  "BasePlatform": "Mac",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "470824146",
+    "Type": "Event",
+    "GUID": "{E12A2510-CD34-4961-B6EF-895642E16784}",
+    "Language": "SFX",
+    "Hash": "{0ECF6D23-B91E-BD2A-2C94-6EFAE82AC38B}",
+    "ObjectPath": "Play_Crate_Push",
+    "ShortName": "Play_Crate_Push",
+    "Path": "Event/Play_Crate_Push.bnk",
+    "Media": [
+     {
+      "Id": "667023097",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "WoodenCrate_Push_Start.wav",
+      "Path": "Media/667023097.wem",
+      "CachePath": "A6/{A66C9E56-E571-F2E1-9A4D-3BED47379AC2}.wem"
+     },
+     {
+      "Id": "1053627093",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "WoodenCrate_Push_Loop.wav",
+      "Path": "Media/1053627093.wem",
+      "CachePath": "13/{1331305B-E79B-6DB9-0EE1-D78120AE9A56}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "470824146",
+      "Name": "Play_Crate_Push",
+      "ObjectPath": "\\Events\\Default Work Unit\\SFX\\Puzzle\\Play_Crate_Push",
+      "GUID": "{E12A2510-CD34-4961-B6EF-895642E16784}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "667023097"
+       },
+       {
+        "Id": "1053627093"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{AD0A6FAA-0AEB-2F27-88A5-789BA2AD6E03}"
+ }
+}

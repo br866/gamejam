@@ -135,7 +135,13 @@ MonoBehaviour:
   loseTargetTime: 3
   chaseSpeed: 4.5
   chaseStopDistance: 1
-  footstepClip: {fileID: 0}
+  footstepEvent:
+    idInternal: 0
+    valueGuidInternal:
+    WwiseObjectReference: {fileID: 11400000, guid: a4d21728d4b84b64942d863fa7bdbbee,
+      type: 2}
+  patrolFootstepDistance: 1.8
+  chaseFootstepDistance: 2.2
   catchClip: {fileID: 0}
   detectClip: {fileID: 0}
 --- !u!82 &5302405474904915232

@@ -1,0 +1,48 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "708504560",
+    "Type": "Event",
+    "GUID": "{A50AB2FD-E099-40A0-88B7-80A49E16E028}",
+    "Language": "SFX",
+    "Hash": "{8D8EDA4D-AAC2-2C0A-F2D5-F81E69B91AAF}",
+    "ObjectPath": "Stop_Crate_Push",
+    "ShortName": "Stop_Crate_Push",
+    "Path": "Event/Stop_Crate_Push.bnk",
+    "Media": [
+     {
+      "Id": "827041043",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "WoodenCrate_Push_Stop.wav",
+      "Path": "Media/827041043.wem",
+      "CachePath": "65/{65EFA078-30C2-C86C-BAE1-FF8CFBEB599D}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "708504560",
+      "Name": "Stop_Crate_Push",
+      "ObjectPath": "\\Events\\Default Work Unit\\SFX\\Puzzle\\Stop_Crate_Push",
+      "GUID": "{A50AB2FD-E099-40A0-88B7-80A49E16E028}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.108479165",
+      "DurationMax": "0.108479165",
+      "MediaRefs": [
+       {
+        "Id": "827041043"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{BFE7FED3-9948-6F74-6A7B-303ADACAD1A0}"
+ }
+}
