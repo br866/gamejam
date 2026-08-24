@@ -16,6 +16,18 @@ public class FormalPlayerActor : MonoBehaviour
     [SerializeField] private Transform focusAnchor;
     [SerializeField] private Transform moverAttachPoint;
 
+    [Header("Audio")]
+    [Tooltip("Human 脚步触发的 Wwise Event；FormalHumanActor 使用 Play_Footstep_Human")]
+    [SerializeField] private AK.Wwise.Event humanFootstepEvent = new AK.Wwise.Event();
+    [Tooltip("Dog 脚步触发的 Wwise Event；FormalDogActor 使用 Play_Footstep_Dog")]
+    [SerializeField] private AK.Wwise.Event dogFootstepEvent = new AK.Wwise.Event();
+    [Tooltip("Walk 循环约 1.033 秒，4 m/s 下每半循环约移动 2.07 米")]
+    [SerializeField] private float walkFootstepDistance = 2.07f;
+    [Tooltip("Run 循环约 0.633 秒，7 m/s 下每半循环约移动 2.22 米")]
+    [SerializeField] private float sprintFootstepDistance = 2.22f;
+    [Tooltip("Dog Walk 循环约 1 秒，3 m/s 下每半循环约移动 1.5 米")]
+    [SerializeField] private float dogWalkFootstepDistance = 1.5f;
+
     private Rigidbody body;
     private CapsuleCollider capsule;
     private Animator animator;
@@ -29,6 +41,8 @@ public class FormalPlayerActor : MonoBehaviour
     private float nextIdleVariationTime;
     private bool idleVariation;
     private bool moverAttachPointResolved;
+    private Vector3 lastFootstepPosition;
+    private bool hasWarnedMissingFootstepEvent;
 
     public ActorRole Role => role;
     public ActorState State => state;
@@ -94,6 +108,7 @@ public class FormalPlayerActor : MonoBehaviour
         body.constraints = RigidbodyConstraints.FreezeRotation;
         body.interpolation = RigidbodyInterpolation.Interpolate;
         body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        lastFootstepPosition = transform.position;
     }
 
     void Update()
@@ -110,12 +125,42 @@ public class FormalPlayerActor : MonoBehaviour
         }
 
         ApplyAnimationState();
+        HandleFootsteps();
 
         if (state == ActorState.Idle && role == ActorRole.Human && Time.time >= nextIdleVariationTime)
         {
             idleVariation = !idleVariation;
             nextIdleVariationTime = Time.time + 4f;
             PlayAnimationForState();
+        }
+    }
+
+    void HandleFootsteps()
+    {
+        if (!IsGrounded())
+            return;
+
+        Vector3 current = transform.position;
+        Vector3 previous = lastFootstepPosition;
+        current.y = 0f;
+        previous.y = 0f;
+        bool isHuman = role == ActorRole.Human;
+        float requiredDistance = isHuman
+            ? state == ActorState.Sprinting ? sprintFootstepDistance : walkFootstepDistance
+            : dogWalkFootstepDistance;
+        if ((current - previous).sqrMagnitude < requiredDistance * requiredDistance)
+            return;
+
+        lastFootstepPosition = transform.position;
+        AK.Wwise.Event footstepEvent = isHuman ? humanFootstepEvent : dogFootstepEvent;
+        if (footstepEvent != null && footstepEvent.IsValid())
+        {
+            footstepEvent.Post(gameObject);
+        }
+        else if (!hasWarnedMissingFootstepEvent)
+        {
+            Debug.LogWarning($"FormalPlayerActor: {role} Footstep Event is not assigned.", this);
+            hasWarnedMissingFootstepEvent = true;
         }
     }
 
@@ -314,6 +359,7 @@ public class FormalPlayerActor : MonoBehaviour
         }
         body.velocity = Vector3.zero;
         body.angularVelocity = Vector3.zero;
+        lastFootstepPosition = position;
         Physics.SyncTransforms();
     }
 }

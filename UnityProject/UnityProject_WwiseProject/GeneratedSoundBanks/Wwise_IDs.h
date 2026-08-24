@@ -20,6 +20,8 @@ namespace AK
         static const AkUniqueID PLAY_KEY_PICKUP = 2881789206U;
         static const AkUniqueID PLAY_MUSICMODE = 3324110046U;
         static const AkUniqueID PLAY_TITLE_MUSIC = 2604896900U;
+        static const AkUniqueID PLAY_UI_CLICK = 1749424733U;
+        static const AkUniqueID PLAY_UI_HOVER = 1339559671U;
         static const AkUniqueID STOP_CRATE_PUSH = 708504560U;
     } // namespace EVENTS
 

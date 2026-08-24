@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3309636549411649107}
   - component: {fileID: 760469862906547505}
   - component: {fileID: 6413983776683320286}
+  - component: {fileID: 9000000000000000001}
   m_Layer: 0
   m_Name: FormalHumanActor
   m_TagString: Untagged
@@ -85,6 +86,18 @@ MonoBehaviour:
   canJump: 1
   focusAnchor: {fileID: 7111000000000000002}
   moverAttachPoint: {fileID: 7111000000000000004}
+  humanFootstepEvent:
+    idInternal: 0
+    valueGuidInternal:
+    WwiseObjectReference: {fileID: 11400000, guid: d6cebad5426828e4da1c089e511882dd,
+      type: 2}
+  dogFootstepEvent:
+    idInternal: 0
+    valueGuidInternal:
+    WwiseObjectReference: {fileID: 0}
+  walkFootstepDistance: 2.07
+  sprintFootstepDistance: 2.22
+  dogWalkFootstepDistance: 1.5
 --- !u!114 &6413983776683320286
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95,8 +108,32 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4773447bb83645a4f87ce7a9db2b214f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
+--- !u!114 &9000000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4088975574132328517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d5da81bb9a06140885abd0cee24918, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  m_listeners:
+    initialListenerList: []
+    useDefaultListeners: 1
+  isEnvironmentAware: 1
+  isStaticObject: 0
+  usePositionOffsetData: 0
+  m_positionOffsetData:
+    KeepMe: 0
+    positionOffset: {x: 0, y: 0, z: 0}
+  scalingFactor: 1
+  m_posOffsetData: {fileID: 0}
+  listenerMask: 1
 --- !u!1 &7111000000000000001
 GameObject:
   m_ObjectHideFlags: 0
@@ -428,6 +465,7 @@ GameObject:
   - component: {fileID: 4154016557887016140}
   - component: {fileID: 3326717077217567403}
   - component: {fileID: 84737074289029913}
+  - component: {fileID: 9000000000000000002}
   m_Layer: 0
   m_Name: FormalDogActor
   m_TagString: Untagged
@@ -501,6 +539,41 @@ MonoBehaviour:
   canJump: 0
   focusAnchor: {fileID: 7111000000000000006}
   moverAttachPoint: {fileID: 7111000000000000008}
+  humanFootstepEvent:
+    idInternal: 0
+    valueGuidInternal:
+    WwiseObjectReference: {fileID: 0}
+  dogFootstepEvent:
+    idInternal: 0
+    valueGuidInternal:
+    WwiseObjectReference: {fileID: 11400000, guid: 58fc2b94a5d24bf0ac971c6ff17ec3d7,
+      type: 2}
+  walkFootstepDistance: 2.07
+  sprintFootstepDistance: 2.22
+  dogWalkFootstepDistance: 1.5
+--- !u!114 &9000000000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8420114696259409746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d5da81bb9a06140885abd0cee24918, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  m_listeners:
+    initialListenerList: []
+    useDefaultListeners: 1
+  isEnvironmentAware: 1
+  isStaticObject: 0
+  usePositionOffsetData: 0
+  m_positionOffsetData:
+    KeepMe: 0
+  scalingFactor: 1
+  m_posOffsetData: {fileID: 0}
+  listenerMask: 1
 --- !u!1001 &3816990868192353523
 PrefabInstance:
   m_ObjectHideFlags: 0

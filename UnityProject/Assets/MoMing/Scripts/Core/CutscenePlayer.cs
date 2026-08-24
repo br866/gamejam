@@ -52,6 +52,11 @@ public class CutscenePlayer : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
 
         if (videoPlayer == null) videoPlayer = GetComponent<VideoPlayer>();
+        // Cutscene audio is the only Unity-side playback exception. Direct mode
+        // bypasses the disabled Unity AudioSource pipeline and outputs the
+        // video's embedded audio to the platform device.
+        if (videoPlayer != null)
+            videoPlayer.audioOutputMode = VideoAudioOutputMode.Direct;
         if (skipHint != null) skipHint.SetActive(false);
     }
 

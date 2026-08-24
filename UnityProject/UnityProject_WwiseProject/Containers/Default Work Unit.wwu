@@ -2177,6 +2177,16 @@
 										<RandomSequenceContainer Name="SFX_Footstep_Human" ID="{0E710F61-4D36-4695-AB28-CC639F0A85C3}" ShortID="419920769">
 											<PropertyList>
 												<Property Name="GlobalOrPerObject" Type="int16" Value="0"/>
+												<Property Name="Lowpass" Type="int16">
+													<ValueList>
+														<Value>45</Value>
+													</ValueList>
+												</Property>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>-8</Value>
+													</ValueList>
+												</Property>
 											</PropertyList>
 											<ReferenceList>
 												<Reference Name="Conversion">
@@ -2368,6 +2378,11 @@
 										<RandomSequenceContainer Name="SFX_Footstep_Dog" ID="{A398260B-19BA-49E7-A3E1-9CE80C9A6C2C}" ShortID="642661070">
 											<PropertyList>
 												<Property Name="GlobalOrPerObject" Type="int16" Value="0"/>
+												<Property Name="Lowpass" Type="int16">
+													<ValueList>
+														<Value>38</Value>
+													</ValueList>
+												</Property>
 												<Property Name="Pitch" Type="int32">
 													<ModifierList>
 														<ModifierInfo>
@@ -2384,7 +2399,7 @@
 												<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="2"/>
 												<Property Name="Volume" Type="Real64">
 													<ValueList>
-														<Value>-6</Value>
+														<Value>-10</Value>
 													</ValueList>
 													<ModifierList>
 														<ModifierInfo>
@@ -2611,6 +2626,11 @@
 										<RandomSequenceContainer Name="SFX_Footstep_Brutedoc" ID="{2B1DC8BD-F121-46D7-9831-DF5DECC1FE32}" ShortID="114960479">
 											<PropertyList>
 												<Property Name="GlobalOrPerObject" Type="int16" Value="0"/>
+												<Property Name="Lowpass" Type="int16">
+													<ValueList>
+														<Value>44</Value>
+													</ValueList>
+												</Property>
 												<Property Name="Pitch" Type="int32">
 													<ModifierList>
 														<ModifierInfo>
@@ -2939,7 +2959,54 @@
 					</ChildrenList>
 				</Folder>
 				<Folder Name="Ambience" ID="{FAFF5754-3AC4-4672-90AF-084F04AF4655}" ShortID="203132561"/>
-				<Folder Name="UI" ID="{DB7465F8-2977-4E40-B4FF-51C55F224A13}" ShortID="1036084852"/>
+				<Folder Name="UI" ID="{DB7465F8-2977-4E40-B4FF-51C55F224A13}" ShortID="1036084852">
+					<ChildrenList>
+						<Sound Name="UI_Click" ID="{1C98FDFE-C7E7-4CE2-91D2-CE8EFC78012B}" ShortID="1033730108">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="UI_Click" ID="{6A4C5602-EC81-487F-BA27-C4EF0CBC39E3}">
+									<Language>SFX</Language>
+									<AudioFile>UI_Click.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="297923162"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="UI_Click" ID="{6A4C5602-EC81-487F-BA27-C4EF0CBC39E3}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="UI_Hover" ID="{EB5B79A9-835B-410C-978A-52C536F822BE}" ShortID="379382047">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="UI_Hover" ID="{704BD37F-B38F-4B3D-8A7F-0A27F1E397C1}">
+									<Language>SFX</Language>
+									<AudioFile>UI_Hover.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="888007884"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="UI_Hover" ID="{704BD37F-B38F-4B3D-8A7F-0A27F1E397C1}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+					</ChildrenList>
+				</Folder>
 			</ChildrenList>
 		</WorkUnit>
 	</Containers>

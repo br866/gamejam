@@ -138,7 +138,32 @@
 					</ChildrenList>
 				</Folder>
 				<Folder Name="Ambience" ID="{09F179E9-50B6-4E9F-B465-231176AC85F1}" ShortID="175513565"/>
-				<Folder Name="UI" ID="{7A376F1B-AD55-466B-906B-36E8E4178F3E}" ShortID="464987807"/>
+				<Folder Name="UI" ID="{7A376F1B-AD55-466B-906B-36E8E4178F3E}" ShortID="464987807">
+					<ChildrenList>
+						<Event Name="Play_UI_Hover" ID="{39A8FF1E-71FF-4F9A-8DF2-CEDFEF889CFB}">
+							<ChildrenList>
+								<Action Name="" ID="{2B1A5C57-88EA-434C-BB2D-46BF3FF81515}" ShortID="199257649">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="UI_Hover" ID="{EB5B79A9-835B-410C-978A-52C536F822BE}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Play_UI_Click" ID="{37854238-6358-4DCC-9A9F-C4FB8C36EC72}">
+							<ChildrenList>
+								<Action Name="" ID="{309C2DD9-0044-4585-8837-6686BEEF9B4A}" ShortID="906262535">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="UI_Click" ID="{1C98FDFE-C7E7-4CE2-91D2-CE8EFC78012B}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+					</ChildrenList>
+				</Folder>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

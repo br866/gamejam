@@ -18,12 +18,17 @@ public class SettingsManager : MonoBehaviour
     private const string MusicPref = "MusicVolume";
     private const string SfxPref = "SFXVolume";
     private const string BrightnessPref = "Brightness";
+    private const float WwiseVolumeMax = 100f;
 
     private static float musicVolume = 1f;
     private static float sfxVolume = 1f;
     // 0.5 = 原样，往左变暗，往右变亮
     private static float brightness = 0.5f;
     private static bool initialized = false;
+    private static WwiseUIFeedbackSettings wwiseAudioSettings;
+    private static bool warnedMissingWwiseAudioSettings;
+    private static bool warnedMissingMusicVolumeRtpc;
+    private static bool warnedMissingSfxVolumeRtpc;
 
     // 常驻的全屏遮罩，用来做亮度。DontDestroyOnLoad，所有场景都吃这个设置。
     private static Image brightnessOverlay;
@@ -44,6 +49,8 @@ public class SettingsManager : MonoBehaviour
     {
         LoadPrefs();
         ApplyBrightness();
+        SubscribeToWwiseInitialization();
+        ApplyWwiseVolumes();
     }
 
     private static void LoadPrefs()
@@ -51,8 +58,8 @@ public class SettingsManager : MonoBehaviour
         if (initialized)
             return;
 
-        musicVolume = PlayerPrefs.GetFloat(MusicPref, 1f);
-        sfxVolume = PlayerPrefs.GetFloat(SfxPref, 1f);
+        musicVolume = Mathf.Clamp01(PlayerPrefs.GetFloat(MusicPref, 1f));
+        sfxVolume = Mathf.Clamp01(PlayerPrefs.GetFloat(SfxPref, 1f));
         brightness = PlayerPrefs.GetFloat(BrightnessPref, 0.5f);
         initialized = true;
     }
@@ -61,6 +68,7 @@ public class SettingsManager : MonoBehaviour
     {
         LoadPrefs();
         ApplyBrightness();
+        ApplyWwiseVolumes();
     }
 
     private void OnEnable()
@@ -108,18 +116,18 @@ public class SettingsManager : MonoBehaviour
 
     public void OnMusicChanged(float value)
     {
-        musicVolume = value;
-        PlayerPrefs.SetFloat(MusicPref, value);
+        musicVolume = Mathf.Clamp01(value);
+        PlayerPrefs.SetFloat(MusicPref, musicVolume);
         PlayerPrefs.Save();
-        ApplyVolumes();
+        ApplyWwiseVolumes();
     }
 
     public void OnSfxChanged(float value)
     {
-        sfxVolume = value;
-        PlayerPrefs.SetFloat(SfxPref, value);
+        sfxVolume = Mathf.Clamp01(value);
+        PlayerPrefs.SetFloat(SfxPref, sfxVolume);
         PlayerPrefs.Save();
-        ApplyVolumes();
+        ApplyWwiseVolumes();
     }
 
     public void OnBrightnessChanged(float value)
@@ -172,20 +180,64 @@ public class SettingsManager : MonoBehaviour
         brightnessOverlay.color = new Color(0f, 0f, 0f, 0f);
     }
 
-    private static void ApplyVolumes()
+    private static void SubscribeToWwiseInitialization()
     {
-        // BGM 与音效分开：AudioListener 作为总开关保持满音量，
-        // “音乐”滑块只驱动 MusicManager 的 BGM，“音效”滑块在播放音效时按 SfxVolume 缩放。
-        AudioListener.volume = 1f;
-        if (MusicManager.Instance != null)
-            MusicManager.Instance.SetMusicVolume(musicVolume);
+        AkUnitySoundEngineInitialization initialization =
+            AkUnitySoundEngineInitialization.Instance;
+
+        initialization.initializationDelegate -= ApplyWwiseVolumes;
+        initialization.initializationDelegate += ApplyWwiseVolumes;
+        initialization.reInitializationDelegate -= ApplyWwiseVolumes;
+        initialization.reInitializationDelegate += ApplyWwiseVolumes;
     }
 
-    /// <summary>统一播放音效入口：自动按“音效”滑块(SfxVolume)缩放。所有 SFX 都应走这里。</summary>
+    private static void ApplyWwiseVolumes()
+    {
+        if (!AkUnitySoundEngine.IsInitialized())
+            return;
+
+        if (wwiseAudioSettings == null)
+        {
+            wwiseAudioSettings = Resources.Load<WwiseUIFeedbackSettings>(
+                WwiseUIFeedbackSettings.ResourcesPath);
+        }
+
+        if (wwiseAudioSettings == null)
+        {
+            if (!warnedMissingWwiseAudioSettings)
+            {
+                Debug.LogError(
+                    "[SettingsManager] Missing Wwise UI audio settings; volume RTPCs were not applied.");
+                warnedMissingWwiseAudioSettings = true;
+            }
+            return;
+        }
+
+        if (wwiseAudioSettings.HasValidMusicVolumeRtpc)
+        {
+            wwiseAudioSettings.MusicVolumeRtpc.SetGlobalValue(musicVolume * WwiseVolumeMax);
+        }
+        else if (!warnedMissingMusicVolumeRtpc)
+        {
+            Debug.LogWarning("[SettingsManager] MusicVolume RTPC is not configured.");
+            warnedMissingMusicVolumeRtpc = true;
+        }
+
+        if (wwiseAudioSettings.HasValidSfxVolumeRtpc)
+        {
+            wwiseAudioSettings.SfxVolumeRtpc.SetGlobalValue(sfxVolume * WwiseVolumeMax);
+        }
+        else if (!warnedMissingSfxVolumeRtpc)
+        {
+            Debug.LogWarning("[SettingsManager] SFXVolume RTPC is not configured.");
+            warnedMissingSfxVolumeRtpc = true;
+        }
+    }
+
+    /// <summary>Legacy compatibility only. Unity AudioSources are intentionally disabled.</summary>
     public static void PlaySfx(AudioSource source, AudioClip clip)
     {
-        if (source != null && clip != null)
-            source.PlayOneShot(clip, sfxVolume);
+        // Intentionally silent. Migrate the caller to a Wwise Event instead.
     }
 
     public void Close()
