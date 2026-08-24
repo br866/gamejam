@@ -26,6 +26,9 @@ public class FormalHUDController : MonoBehaviour
     public Slider anxietyBar;
     [Tooltip("进度条的 Fill 图片。留空就不做变色")]
     public Image anxietyFill;
+    [Tooltip("勾上=用下面的渐变给 Fill 染色。\n" +
+             "Fill 换成手绘线条图之后取消勾选，保留原图颜色。")]
+    public bool tintAnxietyFill = true;
     [Tooltip("焦虑 0 -> 1 时 Fill 的颜色渐变")]
     public Gradient anxietyGradient = DefaultAnxietyGradient();
     [Tooltip("整条焦虑条的根节点。焦虑为 0 时可以整条淡出")]
@@ -34,6 +37,12 @@ public class FormalHUDController : MonoBehaviour
     public bool hideAnxietyBarWhenCalm = true;
     [Tooltip("焦虑条淡入淡出速度")]
     public float anxietyBarFadeSpeed = 4f;
+    [Tooltip("骑在红线尽头、跟着焦虑值往右滑的发光游标。留空就不用")]
+    public RectTransform anxietyFillHead;
+    [Tooltip("游标在焦虑条本地坐标里的左端点 X（焦虑 0）")]
+    public float anxietyFillHeadMinX = -345f;
+    [Tooltip("游标在焦虑条本地坐标里的右端点 X（焦虑 1）")]
+    public float anxietyFillHeadMaxX = 345f;
 
     [Header("焦虑状态文字（参考图里进度条下面那行）")]
     [Tooltip("显示\u201c轻度焦虑 / 中度焦虑 / 重度焦虑\u201d的文本。留空就不显示")]
@@ -143,8 +152,23 @@ public class FormalHUDController : MonoBehaviour
             anxietyBar.value = normalized;
         }
 
-        if (anxietyFill != null && anxietyGradient != null)
-            anxietyFill.color = anxietyGradient.Evaluate(normalized);
+        if (anxietyFill != null)
+        {
+            if (tintAnxietyFill && anxietyGradient != null)
+                anxietyFill.color = anxietyGradient.Evaluate(normalized);
+
+            // Fill 用手绘线条图时把 Image 设成 Filled/Horizontal，由这里驱动 fillAmount：
+            // 线是从左往右一段段显出来，而不是被 Slider 横向压扁。
+            if (anxietyFill.type == Image.Type.Filled)
+                anxietyFill.fillAmount = normalized;
+        }
+
+        if (anxietyFillHead != null)
+        {
+            Vector2 head = anxietyFillHead.anchoredPosition;
+            head.x = Mathf.Lerp(anxietyFillHeadMinX, anxietyFillHeadMaxX, Mathf.Clamp01(normalized));
+            anxietyFillHead.anchoredPosition = head;
+        }
 
         UpdateAnxietyStateText(normalized);
 

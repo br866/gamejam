@@ -11,6 +11,10 @@ public class FormalCheckpoint : MonoBehaviour, IFormalLevelPermanentState
              "默认关闭——现在靠新关卡入口的 FormalLevelEntrySeal 来要求玩家自己把同伴带进来，" +
              "自动传送会让那个设计失去意义。只在某一关想放宽时才勾。")]
     [SerializeField] private bool bringPartnerAlong = false;
+    [Tooltip("踩到这个存档点时弹一次\u201c存档地毯\u201d介绍图。\n" +
+             "图配在 FormalPersistent 的 FormalUI / Formal Tutorial Popup 的 Checkpoint Pages 上，" +
+             "看过一次就永久不再弹。只在第二关那块地毯上勾。")]
+    [SerializeField] private bool showSaveAreaTutorial = false;
 
     public bool IsComplete { get; private set; }
 
@@ -34,6 +38,10 @@ public class FormalCheckpoint : MonoBehaviour, IFormalLevelPermanentState
         FormalPlayerActor trigger = FormalLevelActors.ResolvePlayer(other);
 
         ActivateCheckpoint();
+
+        // 存档地毯介绍：只在勾了的那个存档点弹，而且全流程只弹一次
+        if (IsComplete && showSaveAreaTutorial && FormalTutorialPopup.Instance != null)
+            FormalTutorialPopup.Instance.ShowCheckpointTutorial();
 
         FormalGameFlowController flow = FindObjectOfType<FormalGameFlowController>();
         if (flow == null)

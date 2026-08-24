@@ -13,6 +13,7 @@ using UnityEngine.UI;
 public class FormalTutorialPopup : MonoBehaviour
 {
     public const string PrefKey = "MoMing.TutorialShown";
+    public const string CheckpointPrefKeyDefault = "MoMing.SaveAreaTutorialShown";
 
     [Header("面板")]
     public GameObject root;
@@ -24,6 +25,12 @@ public class FormalTutorialPopup : MonoBehaviour
     [Header("内容")]
     public Sprite[] pages;
 
+    [Header("存档地毯介绍（第二关踩到存档点时弹）")]
+    [Tooltip("踩到存档点时弹的图。留空就不弹")]
+    public Sprite[] checkpointPages;
+    [Tooltip("记\u201c看过了\u201d用的 PlayerPrefs 键，和开局介绍分开记")]
+    public string checkpointPrefKey = CheckpointPrefKeyDefault;
+
     [Header("触发")]
     [Tooltip("哪一关加载完之后弹。留空 = 任意关卡加载完就弹")]
     public string triggerLevelScene = "FormalLevel01";
@@ -33,14 +40,21 @@ public class FormalTutorialPopup : MonoBehaviour
     /// <summary>教程正在显示时为 true。暂停菜单要读它，避免 ESC 两边同时响应。</summary>
     public static bool IsShowing { get; private set; }
 
+    /// <summary>常驻场景里唯一那一个。存档点要靠它弹图。</summary>
+    public static FormalTutorialPopup Instance { get; private set; }
+
     private int index;
     private bool finished;
+    private Sprite[] activePages;
+    private string activePrefKey;
+    private bool activeIsIntro;
     private float prevTimeScale = 1f;
     private bool prevCursorVisible;
     private CursorLockMode prevCursorLock;
 
     void Awake()
     {
+        Instance = this;
         IsShowing = false;
         if (root != null)
             root.SetActive(false);
@@ -66,6 +80,8 @@ public class FormalTutorialPopup : MonoBehaviour
         if (IsShowing)
             Time.timeScale = 1f;
         IsShowing = false;
+        if (Instance == this)
+            Instance = null;
     }
 
     void Update()
@@ -104,8 +120,39 @@ public class FormalTutorialPopup : MonoBehaviour
 
     public void Show()
     {
-        if (root == null || pages == null || pages.Length == 0)
+        ShowPages(pages, PrefKey, true);
+    }
+
+    /// <summary>
+    /// 弹一组额外的教程图，用自己的 prefKey 单独记\u201c看过了\u201d。
+    /// 已经看过、正在弹别的、或者没配图，都直接不弹并返回 false。
+    /// </summary>
+    public bool ShowOnce(Sprite[] content, string prefKey)
+    {
+        if (IsShowing || content == null || content.Length == 0)
+            return false;
+
+        if (rememberAcrossRuns && !string.IsNullOrEmpty(prefKey) && PlayerPrefs.GetInt(prefKey, 0) == 1)
+            return false;
+
+        ShowPages(content, prefKey, false);
+        return IsShowing;
+    }
+
+    /// <summary>存档地毯介绍。第二关踩到存档点时由 FormalCheckpoint 调，全流程只弹一次。</summary>
+    public bool ShowCheckpointTutorial()
+    {
+        return ShowOnce(checkpointPages, checkpointPrefKey);
+    }
+
+    void ShowPages(Sprite[] content, string prefKey, bool isIntro)
+    {
+        if (root == null || content == null || content.Length == 0)
             return;
+
+        activePages = content;
+        activePrefKey = prefKey;
+        activeIsIntro = isIntro;
 
         IsShowing = true;
         index = 0;
@@ -126,7 +173,7 @@ public class FormalTutorialPopup : MonoBehaviour
     {
         if (!IsShowing) return;
 
-        if (index >= pages.Length - 1)
+        if (index >= activePages.Length - 1)
         {
             Close();
             return;
@@ -150,11 +197,14 @@ public class FormalTutorialPopup : MonoBehaviour
         if (!IsShowing) return;
 
         IsShowing = false;
-        finished = true;
 
-        if (rememberAcrossRuns)
+        // 只有开局那组看完才算 finished，不然存档点这组会把开局介绍顶掉
+        if (activeIsIntro)
+            finished = true;
+
+        if (rememberAcrossRuns && !string.IsNullOrEmpty(activePrefKey))
         {
-            PlayerPrefs.SetInt(PrefKey, 1);
+            PlayerPrefs.SetInt(activePrefKey, 1);
             PlayerPrefs.Save();
         }
 
@@ -168,13 +218,17 @@ public class FormalTutorialPopup : MonoBehaviour
 
     void Refresh()
     {
-        index = Mathf.Clamp(index, 0, pages.Length - 1);
+        if (activePages == null || activePages.Length == 0)
+            return;
+
+        index = Mathf.Clamp(index, 0, activePages.Length - 1);
 
         if (pageImage != null)
-            pageImage.sprite = pages[index];
+            pageImage.sprite = activePages[index];
 
+        // 只有一张的时候不显示 "1 / 1"
         if (pageLabel != null)
-            pageLabel.text = (index + 1) + " / " + pages.Length;
+            pageLabel.text = activePages.Length > 1 ? (index + 1) + " / " + activePages.Length : string.Empty;
 
         // 第一张没有“上一张”；最后一张的“下一张”变成关闭，所以一直可点
         if (prevButton != null)

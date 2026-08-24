@@ -404,8 +404,9 @@ public static class FormalUIBuilder
     public static void ResetTutorialFlag()
     {
         PlayerPrefs.DeleteKey(FormalTutorialPopup.PrefKey);
+        PlayerPrefs.DeleteKey(FormalTutorialPopup.CheckpointPrefKeyDefault);
         PlayerPrefs.Save();
-        Debug.Log("[FormalUIBuilder] 玩法介绍已重置，下次进第一关会再弹一遍。");
+        Debug.Log("[FormalUIBuilder] 玩法介绍 + 存档地毯介绍已重置，下次会再弹一遍。");
     }
 
     // ---------------- 设置面板 ----------------

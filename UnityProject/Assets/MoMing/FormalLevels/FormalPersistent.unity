@@ -259,6 +259,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   anxietyBar: {fileID: 1243186720}
   anxietyFill: {fileID: 1124233887}
+  tintAnxietyFill: 0
   anxietyGradient:
     serializedVersion: 2
     key0: {r: 0.55, g: 0.75, b: 0.62, a: 1}
@@ -3813,10 +3814,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 831452896}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 690, y: 140}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1124233887
 MonoBehaviour:
@@ -3838,12 +3839,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: 4fa38773b86f49e4ea2cc9ca510e0b77, type: 3}
+  m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
+  m_FillMethod: 0
+  m_FillAmount: 0
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
@@ -4343,7 +4344,7 @@ MonoBehaviour:
     m_DisabledTrigger: Disabled
   m_Interactable: 0
   m_TargetGraphic: {fileID: 1124233887}
-  m_FillRect: {fileID: 1124233886}
+  m_FillRect: {fileID: 0}
   m_HandleRect: {fileID: 0}
   m_Direction: 0
   m_MinValue: 0
@@ -5109,10 +5110,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1243186719}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 690, y: 140}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1670567809
 MonoBehaviour:
@@ -5127,14 +5128,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.85, g: 0.8, b: 0.65, a: 0.22}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 52712c400d565a5478cdfd5e2dd348c2, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
