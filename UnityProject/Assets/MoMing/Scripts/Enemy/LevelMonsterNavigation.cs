@@ -185,7 +185,7 @@ public class LevelMonsterNavigation : MonoBehaviour
         graph.collision.type = Pathfinding.Graphs.Grid.ColliderType.Capsule;
         graph.collision.diameter = actorDiameter / nodeSize;
         graph.collision.height = actorHeight;
-        graph.collision.mask = LayerMask.GetMask("NavStatic", "NavDynamic");
+        graph.collision.mask = LayerMask.GetMask("NavStatic", "NavDynamic", "MonsterSafeBlock");
         graph.collision.heightCheck = false;
         AstarPath.active.Scan(graph);
         return true;
