@@ -19,6 +19,7 @@ public static class FormalUIBuilder
     const string UiDir = "Assets/SuperBreadMan/ui/";
     const string PauseDir = UiDir + "3暂停界面/";
     const string AnxDir = UiDir + "实机界面ui拆分/1焦虑值/";
+    const string TutorialDir = UiDir + "4玩法介绍界面/";
     const string SettingsPrefabPath = "Assets/MoMing/Prefabs/SettingsPanel.prefab";
 
     [MenuItem("Tools/默名/构建正式关 UI (FormalPersistent)")]
@@ -77,6 +78,13 @@ public static class FormalUIBuilder
         pauseMenu.restartButton = pauseBtns.restartBtn;
         pauseMenu.mainMenuButton = pauseBtns.mainMenuBtn;
         pauseMenu.mainMenuSceneName = "Start";
+
+        BuildTutorialPopup(root.transform, root);
+
+        // 焦虑的屏幕表现：污渍 + 红晕（挂在 Canvas 上，遮罩由脚本自己建）
+        root.AddComponent<FormalAnxietyOverlay>();
+
+        EnsureAnxietyPostFX();
 
         pause.SetActive(false);
         if (settings != null)
@@ -254,6 +262,87 @@ public static class FormalUIBuilder
         return btn;
     }
 
+    // ---------------- 开局玩法介绍 ----------------
+
+    static void BuildTutorialPopup(Transform parent, GameObject controllerHost)
+    {
+        var popup = NewUI("TutorialPopup", parent);
+        Stretch(Rt(popup));
+
+        var backdrop = NewImage("Backdrop", popup.transform, null, new Color(0f, 0f, 0f, 0.88f), true);
+        Stretch(Rt(backdrop.gameObject));
+
+        var page = NewImage("Page", popup.transform, null, Color.white, false);
+        page.preserveAspect = true;
+        Place(Rt(page.gameObject), Center, Center, Vector2.zero, new Vector2(1500f, 844f));
+
+        var prev = MakeArrowButton("PrevButton", popup.transform, "\u25C0", new Vector2(-830f, 0f));
+        var next = MakeArrowButton("NextButton", popup.transform, "\u25B6", new Vector2(830f, 0f));
+
+        var label = NewText("PageLabel", popup.transform, "1 / 3", 24, TextAnchor.MiddleCenter,
+            new Color(0.85f, 0.82f, 0.76f, 0.9f));
+        Place(Rt(label.gameObject), Center, Center, new Vector2(0f, -452f), new Vector2(300f, 34f));
+
+        var hint = NewText("Hint", popup.transform, "\u2190 \u2192 \u7FFB\u9875\u3000\u3000ESC \u8DF3\u8FC7", 20,
+            TextAnchor.MiddleCenter, new Color(0.75f, 0.72f, 0.67f, 0.75f));
+        Place(Rt(hint.gameObject), Center, Center, new Vector2(0f, -492f), new Vector2(600f, 30f));
+
+        var sprites = new Sprite[]
+        {
+            LoadSprite(TutorialDir + "01basic-controls-ui-original-colors-transparent.png"),
+            LoadSprite(TutorialDir + "02role-cooperation-ui-original-colors-transparent.png"),
+            LoadSprite(TutorialDir + "03anxiety-ui-original-colors-transparent.png"),
+        };
+        page.sprite = sprites[0];
+
+        var tutorial = controllerHost.AddComponent<FormalTutorialPopup>();
+        tutorial.root = popup;
+        tutorial.pageImage = page;
+        tutorial.pageLabel = label;
+        tutorial.prevButton = prev;
+        tutorial.nextButton = next;
+        tutorial.pages = sprites;
+        tutorial.triggerLevelScene = "FormalLevel01";
+        tutorial.rememberAcrossRuns = true;
+
+        popup.SetActive(false);
+    }
+
+    static Button MakeArrowButton(string name, Transform parent, string glyph, Vector2 pos)
+    {
+        var img = NewImage(name, parent, null, new Color(1f, 1f, 1f, 0.06f), true);
+        Place(Rt(img.gameObject), Center, Center, pos, new Vector2(100f, 140f));
+
+        var label = NewText("Label", img.transform, glyph, 44, TextAnchor.MiddleCenter, Color.white);
+        Stretch(Rt(label.gameObject));
+
+        var btn = img.gameObject.AddComponent<Button>();
+        btn.targetGraphic = img;
+        btn.transition = Selectable.Transition.ColorTint;
+
+        var colors = btn.colors;
+        colors.normalColor = new Color(1f, 1f, 1f, 0.7f);
+        colors.highlightedColor = Color.white;
+        colors.pressedColor = new Color(0.6f, 0.6f, 0.6f, 1f);
+        colors.selectedColor = new Color(1f, 1f, 1f, 0.7f);
+        colors.fadeDuration = 0.1f;
+        btn.colors = colors;
+
+        var nav = btn.navigation;
+        nav.mode = Navigation.Mode.None;
+        btn.navigation = nav;
+
+        return btn;
+    }
+
+    [MenuItem("Tools/默名/重置玩法介绍（下次再弹一遍）")]
+    public static void ResetTutorialFlag()
+    {
+        PlayerPrefs.DeleteKey(FormalTutorialPopup.PrefKey);
+        PlayerPrefs.Save();
+        Debug.Log("[FormalUIBuilder] 玩法介绍已重置，下次进第一关会再弹一遍。");
+    }
+
     // ---------------- 设置面板 ----------------
 
     static GameObject BuildSettingsPanel(Transform parent)
@@ -285,6 +374,26 @@ public static class FormalUIBuilder
         go.AddComponent<EventSystem>();
         go.AddComponent<StandaloneInputModule>();
         Debug.Log("[FormalUIBuilder] 场景里没有 EventSystem，已补上（没有它 UI 点不动）。");
+    }
+
+    /// <summary>
+    /// 色差（焦虑高时的“眩晕”）。脚本一直躺在项目里没人挂，
+    /// 挂到 Global Volume 上即可，它会自己找 Profile 里的 Chromatic Aberration。
+    /// </summary>
+    static void EnsureAnxietyPostFX()
+    {
+        if (Object.FindObjectOfType<AnxietyPostFX>() != null)
+            return;
+
+        var volume = Object.FindObjectOfType<UnityEngine.Rendering.Volume>();
+        if (volume == null)
+        {
+            Debug.LogWarning("[FormalUIBuilder] 场景里没有 Volume，色差效果跳过。");
+            return;
+        }
+
+        volume.gameObject.AddComponent<AnxietyPostFX>();
+        Debug.Log("[FormalUIBuilder] 已把 AnxietyPostFX 挂到 " + volume.gameObject.name + " 上。");
     }
 
     static void EnsureAnxietyState()

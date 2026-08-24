@@ -35,10 +35,7 @@ public class FormalPlayerControl : MonoBehaviour
 
         if (!humanOnly && dog != null && Input.GetKeyDown(KeyCode.Tab) && !IsMoverEngaged())
         {
-            activeActor = activeActor == human ? dog : human;
-            SetCameraTarget();
-            if (ActiveRoleChanged != null)
-                ActiveRoleChanged(IsDogActive);
+            SwitchActor(activeActor == human ? dog : human);
         }
 
         if (Input.GetKeyDown(KeyCode.F))
@@ -48,6 +45,26 @@ public class FormalPlayerControl : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && !IsMoverEngaged())
             activeActor.Jump();
+    }
+
+    /// <summary>
+    /// 切换操控对象。必须把上一个角色的速度清掉——刚体用的是无摩擦材质
+    /// (FormalPlayerNoFriction)，不主动停它就会一直按切换前的速度滑走，
+    /// 而且动画还停在 Walk 上。
+    /// </summary>
+    void SwitchActor(FormalPlayerActor next)
+    {
+        if (next == null || next == activeActor)
+            return;
+
+        if (activeActor != null)
+            activeActor.Stop();
+
+        activeActor = next;
+        SetCameraTarget();
+
+        if (ActiveRoleChanged != null)
+            ActiveRoleChanged(IsDogActive);
     }
 
     void FixedUpdate()
@@ -155,10 +172,16 @@ public class FormalPlayerControl : MonoBehaviour
         if (human == null)
             return;
 
+        if (activeActor != null && activeActor != human)
+            activeActor.Stop();
+
         activeActor = human;
         human.gameObject.SetActive(true);
         if (dog != null)
+        {
             dog.gameObject.SetActive(true);
+            dog.Stop();
+        }
         SetCameraTarget();
         if (ActiveRoleChanged != null)
             ActiveRoleChanged(false);

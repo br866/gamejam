@@ -51,9 +51,9 @@ public class FormalHUDController : MonoBehaviour
     [Header("操作提示（右下）")]
     public Text controlsText;
     [TextArea(2, 5)]
-    public string humanControls = "WASD 移动   Space 跳跃\nE 互动   F 推箱子   Tab 切换到小狗";
+    public string humanControls = "WASD 移动   Space 跳跃   LeftShift 疾跑\nE 互动   F 推箱子   Tab 切换到小狗";
     [TextArea(2, 5)]
-    public string dogControls = "WASD 移动   Space 跳跃\nLeftShift 疾跑   Tab 切换到人";
+    public string dogControls = "WASD 移动   Space 跳跃   Tab 切换到人";
 
     [Header("场景内文字提示（居中偏下）")]
     [Tooltip("提示条的 CanvasGroup，用来淡入淡出")]

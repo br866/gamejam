@@ -188,6 +188,11 @@ public class FormalGameFlowController : MonoBehaviour
         if (string.IsNullOrEmpty(currentLevelScene))
             return;
 
+        // 下面有一条异步重载关卡的分支走不到 FormalLevelController.ResetLevel()，
+        // 所以这里先无条件清一次焦虑。
+        if (FormalAnxietyState.Instance != null)
+            FormalAnxietyState.Instance.ResetAnxiety();
+
         if (!string.IsNullOrEmpty(pendingUnloadScene) && ShouldRetainPredecessor(FindRouteIndex(currentLevelScene)))
         {
             FormalLevelController retainedLevel = FormalLevelActors.FindLevelController(SceneManager.GetSceneByName(currentLevelScene));

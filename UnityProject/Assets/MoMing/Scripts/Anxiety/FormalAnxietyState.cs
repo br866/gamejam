@@ -28,10 +28,10 @@ public class FormalAnxietyState : MonoBehaviour
     [Header("数值")]
     [Tooltip("焦虑值上限。分离后从 0 涨满需要 max / increaseRate 秒")]
     public float maxAnxiety = 100f;
-    [Tooltip("分离时每秒上涨多少。10 = 10 秒涨满")]
-    public float increaseRate = 10f;
+    [Tooltip("分离时每秒上涨多少。maxAnxiety / increaseRate = 涨满所需秒数。4 = 25 秒")]
+    public float increaseRate = 4f;
     [Tooltip("重新靠拢时每秒下降多少")]
-    public float decreaseRate = 15f;
+    public float decreaseRate = 6f;
 
     [Header("分离判定（带回滞，避免边界抖动）")]
     [Tooltip("距离超过这个值算分离，焦虑开始上涨")]

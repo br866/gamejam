@@ -54,6 +54,12 @@ public class FormalLevelController : MonoBehaviour
         foreach (IFormalLevelTemporaryState state in temporaryStates)
             state.ResetTemporaryState();
 
+        // 关卡重置 = 这一次的尝试作废，焦虑必须跟着归零。
+        // 不清的话：从暂停菜单「重新开始」之后焦虑还挂在满值，
+        // 人狗刚被传回出生点、距离还没更新的那一帧就会又判定涨满，直接死循环。
+        if (FormalAnxietyState.Instance != null)
+            FormalAnxietyState.Instance.ResetAnxiety();
+
         if (!hasCheckpoint)
         {
             PlacePlayersAtSpawn();

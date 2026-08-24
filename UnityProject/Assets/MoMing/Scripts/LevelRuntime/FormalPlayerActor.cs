@@ -21,6 +21,8 @@ public class FormalPlayerActor : MonoBehaviour
     private Animator animator;
     private ActorState state;
     private bool animationInitialized;
+    // 控制器里没有 Run 状态时，退回旧行为：播 Walk 并把播放速度调快
+    private bool sprintFallsBackToWalk = true;
     private bool moverRotationLocked;
     private Quaternion moverRotation;
     private RigidbodyConstraints constraintsBeforeMoverLock;
@@ -224,10 +226,21 @@ public class FormalPlayerActor : MonoBehaviour
             state == ActorState.Pushing ? "Push" :
             state == ActorState.Pulling ? "Pull" :
             state == ActorState.Linked ? "Walk" :
-            state == ActorState.Walking || state == ActorState.Sprinting ? "Walk" :
+            state == ActorState.Sprinting ? "Run" :
+            state == ActorState.Walking ? "Walk" :
             idleVariation ? "Idle2" : "Idle1";
         float blendTime = state == ActorState.Jumping ? 0.12f : 0.25f;
         string resolvedState = ResolveAnimationState(stateName);
+
+        // 冲刺：优先用独立的 Run 动画；控制器里没有的话再退回“Walk 加速”的老做法
+        sprintFallsBackToWalk = false;
+        if (resolvedState == null && stateName == "Run")
+        {
+            sprintFallsBackToWalk = true;
+            stateName = "Walk";
+            resolvedState = ResolveAnimationState(stateName);
+        }
+
         if (resolvedState == null)
         {
             Debug.LogWarning("[FormalPlayerActor] " + name + " missing animation state " + stateName);
@@ -254,8 +267,12 @@ public class FormalPlayerActor : MonoBehaviour
 
     void ApplyAnimationState()
     {
-        if (animator != null)
-            animator.speed = state == ActorState.Sprinting ? 1.5f : 1f;
+        if (animator == null)
+            return;
+
+        // 有真正的 Run 动画时不要再加速，不然跑起来像快进
+        bool speedUpWalk = state == ActorState.Sprinting && sprintFallsBackToWalk;
+        animator.speed = speedUpWalk ? 1.5f : 1f;
     }
 
     bool IsGrounded()
