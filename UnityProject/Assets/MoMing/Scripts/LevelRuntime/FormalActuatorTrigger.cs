@@ -14,8 +14,18 @@ public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState, 
     [Tooltip("完成后只预加载正式路线的下一关，保持角色位置并等待实体进入目标关入口确认。")]
     [SerializeField] private bool preloadRouteSuccessor;
 
+    [Header("调试")]
+    [Tooltip("勾上之后：谁踩上来、谁离开、当前占用者是谁、条件为什么没满足，都会打到 Console。\n" +
+             "查「踩了没反应」的时候勾上跑一次，查完记得取消。")]
+    [SerializeField] private bool logDiagnostics;
+
+    [Tooltip("在 Scene 视图里画出触发区的实际范围（不选中也画）。\n" +
+             "用来确认盒子是不是太小、悬空、或者根本没盖住玩家站的位置。")]
+    [SerializeField] private bool alwaysDrawTriggerBounds;
+
     private readonly HashSet<Object> occupants = new HashSet<Object>();
     private bool complete;
+    private float nextDiagnosticTime;
 
     public bool IsComplete => complete;
     public string SuccessorScene => successorScene;
@@ -36,8 +46,17 @@ public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState, 
     void OnTriggerEnter(Collider other)
     {
         Object occupant = FormalTriggerEligibility.ResolveOccupant(other, requirement);
+
+        if (logDiagnostics)
+            Debug.Log($"[踏板 {name}] 进入: collider='{other.name}' 解析出的角色=" +
+                      $"{(occupant != null ? occupant.name : "不合格(不是本踏板认的角色)")}", this);
+
         if (occupant == null || !occupants.Add(occupant) || complete || !RequirementSatisfied())
+        {
+            if (logDiagnostics && occupant != null)
+                Debug.Log($"[踏板 {name}] 还不能触发：{DescribeState()}", this);
             return;
+        }
 
         CompleteTrigger();
     }
@@ -47,12 +66,62 @@ public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState, 
         Object occupant = FormalTriggerEligibility.ResolveOccupant(other, requirement);
         if (occupant != null)
             occupants.Remove(occupant);
+
+        if (logDiagnostics && occupant != null)
+            Debug.Log($"[踏板 {name}] 离开: {occupant.name}，{DescribeState()}", this);
     }
 
     void LateUpdate()
     {
         occupants.RemoveWhere(occupant => occupant == null);
         TryComplete();
+
+        // 有人站在上面但一直没触发的时候，每秒说一次卡在哪儿
+        if (logDiagnostics && !complete && occupants.Count > 0 && Time.time >= nextDiagnosticTime)
+        {
+            nextDiagnosticTime = Time.time + 1f;
+            Debug.Log($"[踏板 {name}] 有人在上面但没触发：{DescribeState()}", this);
+        }
+    }
+
+    /// <summary>当前占用者和条件判定的一句话描述，只在调试开关打开时用。</summary>
+    string DescribeState()
+    {
+        List<string> names = new List<string>();
+        foreach (Object occupant in occupants)
+            names.Add(occupant != null ? occupant.name : "<已销毁>");
+
+        return $"requirement={requirement} 当前占用者=[{string.Join(", ", names)}] " +
+               $"满足条件={RequirementSatisfied()} complete={complete}";
+    }
+
+    void OnDrawGizmos()
+    {
+        if (!alwaysDrawTriggerBounds)
+            return;
+
+        DrawTriggerBounds();
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (alwaysDrawTriggerBounds)
+            return;
+
+        DrawTriggerBounds();
+    }
+
+    void DrawTriggerBounds()
+    {
+        Collider col = GetComponent<Collider>();
+        if (col == null)
+            return;
+
+        Bounds bounds = col.bounds;
+        Gizmos.color = new Color(0.3f, 0.9f, 0.4f, 0.2f);
+        Gizmos.DrawCube(bounds.center, bounds.size);
+        Gizmos.color = new Color(0.3f, 0.9f, 0.4f, 0.95f);
+        Gizmos.DrawWireCube(bounds.center, bounds.size);
     }
 
     public void ResetTemporaryState()
