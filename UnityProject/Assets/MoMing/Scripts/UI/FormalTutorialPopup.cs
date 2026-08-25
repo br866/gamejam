@@ -402,6 +402,7 @@ public class FormalTutorialPopup : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
 
         root.SetActive(true);
+        FormalParchmentAudio.PlayOpen();
         Refresh();
     }
 
@@ -450,6 +451,7 @@ public class FormalTutorialPopup : MonoBehaviour
 
         if (root != null)
             root.SetActive(false);
+        FormalParchmentAudio.PlayClose();
     }
 
     void Refresh()

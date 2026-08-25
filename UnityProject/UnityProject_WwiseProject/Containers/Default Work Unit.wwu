@@ -2962,6 +2962,18 @@
 				<Folder Name="UI" ID="{DB7465F8-2977-4E40-B4FF-51C55F224A13}" ShortID="1036084852">
 					<ChildrenList>
 						<Sound Name="UI_Click" ID="{1C98FDFE-C7E7-4CE2-91D2-CE8EFC78012B}" ShortID="1033730108">
+							<PropertyList>
+								<Property Name="Highpass" Type="int16">
+									<ValueList>
+										<Value>20</Value>
+									</ValueList>
+								</Property>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>2</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
 							<ReferenceList>
 								<Reference Name="Conversion">
 									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}"/>
@@ -3003,6 +3015,57 @@
 							</ChildrenList>
 							<ActiveSourceList>
 								<ActiveSource Name="UI_Hover" ID="{704BD37F-B38F-4B3D-8A7F-0A27F1E397C1}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="UI_Parchment_Close" ID="{3E32A3DF-6C06-479D-ACD2-B8F51D97AA7C}" ShortID="418220214">
+							<PropertyList>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-2</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Parchment_Close" ID="{FC4B39C2-94D4-4900-922B-931C5C366D15}">
+									<Language>SFX</Language>
+									<AudioFile>Parchment_Close.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="67665674"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Parchment_Close" ID="{FC4B39C2-94D4-4900-922B-931C5C366D15}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="UI_Parchment_Open" ID="{BF2307B0-E739-4336-B905-C512CCA9CCA2}" ShortID="646027601">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Parchment_Open" ID="{F539F767-9511-4D3F-916E-2182831115EF}">
+									<Language>SFX</Language>
+									<AudioFile>Parchment_Open.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="858996584"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Parchment_Open" ID="{F539F767-9511-4D3F-916E-2182831115EF}" Platform="Linked"/>
 							</ActiveSourceList>
 						</Sound>
 					</ChildrenList>

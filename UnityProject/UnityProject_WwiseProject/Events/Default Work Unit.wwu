@@ -5,7 +5,7 @@
 			<ChildrenList>
 				<Folder Name="Music" ID="{413A6D19-C75E-4F76-8C45-ECAA04A522CD}" ShortID="515422206">
 					<ChildrenList>
-						<Event Name="Play_MusicMode" ID="{DDA519D5-801F-4A50-95C6-43FA7821210E}">
+						<Event Name="Play_Gameplay_Music" ID="{DDA519D5-801F-4A50-95C6-43FA7821210E}">
 							<ChildrenList>
 								<Action Name="" ID="{8A0586E7-010D-4A66-ACF6-EC2E2FDA846E}" ShortID="491967617">
 									<ReferenceList>
@@ -22,6 +22,21 @@
 									<ReferenceList>
 										<Reference Name="Target">
 											<ObjectRef Name="Title_Music" ID="{037F9DCB-4691-4A79-8715-85B8F9227281}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Stop_Gameplay_Music" ID="{A33F843A-6C87-4AE3-AAE5-25D1971AEAC7}">
+							<ChildrenList>
+								<Action Name="" ID="{ECF39D42-8B9E-41FC-9C79-4D63E3593D61}" ShortID="128700474">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="2"/>
+										<Property Name="FadeTime" Type="Real64" Value="0.5"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="Gameplay_Music" ID="{7C891316-35FA-4ECE-AD88-57999D5A394A}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>
@@ -157,6 +172,28 @@
 									<ReferenceList>
 										<Reference Name="Target">
 											<ObjectRef Name="UI_Click" ID="{1C98FDFE-C7E7-4CE2-91D2-CE8EFC78012B}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Play_UI_Parchment_Close" ID="{4C6C6EE8-15BD-4E24-AEEE-50FA76AA5204}">
+							<ChildrenList>
+								<Action Name="" ID="{09681D04-66B6-425B-B4DC-E3DC58CA6E64}" ShortID="552370309">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="UI_Parchment_Close" ID="{3E32A3DF-6C06-479D-ACD2-B8F51D97AA7C}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Play_UI_Parchment_Open" ID="{3111FC6E-A1F6-4707-A2C0-8481F9D85D33}">
+							<ChildrenList>
+								<Action Name="" ID="{E88A67EF-58C1-45BC-B96D-F3E6CF9DB9E3}" ShortID="40566736">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="UI_Parchment_Open" ID="{BF2307B0-E739-4336-B905-C512CCA9CCA2}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>
