@@ -713,8 +713,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   readRadius: 3
   heightTolerance: 3
-  humanPage: {fileID: 21300000, guid: f3634b04ee3f74d4eaa0260709e743de, type: 3}
-  dogPage: {fileID: 21300000, guid: a3de9e8e5f16b10408dd3e2eb54cf325, type: 3}
+  humanPages:
+  - {fileID: 21300000, guid: f3634b04ee3f74d4eaa0260709e743de, type: 3}
+  dogPages:
+  - {fileID: 21300000, guid: a3de9e8e5f16b10408dd3e2eb54cf325, type: 3}
   prompt: "\u8FD9\u91CC\u6709\u4E00\u5F20\u9648\u65E7\u7684\u7EB8\u6761\uFF0C\u6309
     F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3
@@ -1238,8 +1240,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   readRadius: 4
   heightTolerance: 3
-  humanPage: {fileID: 21300000, guid: fc8e33c093a51c348877151cc17b1d91, type: 3}
-  dogPage: {fileID: 21300000, guid: 7dac52b296e95444d83477dd25021942, type: 3}
+  humanPages:
+  - {fileID: 21300000, guid: fc8e33c093a51c348877151cc17b1d91, type: 3}
+  - {fileID: 21300000, guid: 14d4a27c1548cd74c931e0fdc21fe139, type: 3}
+  dogPages:
+  - {fileID: 21300000, guid: 7dac52b296e95444d83477dd25021942, type: 3}
+  - {fileID: 21300000, guid: 0f213723fe062e445aa651653fcee2fd, type: 3}
   prompt: "\u8FD9\u91CC\u6709\u4E00\u4EFD\u9648\u65E7\u7684\u62A5\u544A\uFF0C\u6309
     F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3
@@ -2105,8 +2111,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   readRadius: 3
   heightTolerance: 3
-  humanPage: {fileID: 21300000, guid: d469db7180404ac4a920a1da3cd9438b, type: 3}
-  dogPage: {fileID: 21300000, guid: 79c554642ac70a546baed8c51c6e71fd, type: 3}
+  humanPages:
+  - {fileID: 21300000, guid: d469db7180404ac4a920a1da3cd9438b, type: 3}
+  dogPages:
+  - {fileID: 21300000, guid: 79c554642ac70a546baed8c51c6e71fd, type: 3}
   prompt: "\u8FD9\u91CC\u6709\u4E00\u4EFD\u7B14\u8BB0\u6B8B\u9875\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3
   promptRepeatInterval: 10
@@ -2209,8 +2217,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   readRadius: 3
   heightTolerance: 3
-  humanPage: {fileID: 21300000, guid: b0dc1c4d2cecbc54286338fe2c14d53e, type: 3}
-  dogPage: {fileID: 21300000, guid: 26bfd31b96347e146b3541a819861a54, type: 3}
+  humanPages:
+  - {fileID: 21300000, guid: b0dc1c4d2cecbc54286338fe2c14d53e, type: 3}
+  dogPages:
+  - {fileID: 21300000, guid: 26bfd31b96347e146b3541a819861a54, type: 3}
   prompt: "\u8FD9\u91CC\u6709\u4E00\u4EFD\u7B14\u8BB0\u6B8B\u9875\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3
   promptRepeatInterval: 10

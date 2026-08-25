@@ -550,8 +550,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   readRadius: 3
   heightTolerance: 3
-  humanPage: {fileID: 21300000, guid: 1e2f518605353f741ac2f2f996059cb1, type: 3}
-  dogPage: {fileID: 21300000, guid: 9a3c5a2d29593de4ea2aba55fec61494, type: 3}
+  humanPages:
+  - {fileID: 21300000, guid: 1e2f518605353f741ac2f2f996059cb1, type: 3}
+  dogPages:
+  - {fileID: 21300000, guid: 9a3c5a2d29593de4ea2aba55fec61494, type: 3}
   prompt: "\u8FD9\u91CC\u6709\u4E00\u4EFD\u7B14\u8BB0\u6B8B\u9875\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3
   promptRepeatInterval: 10
@@ -695,6 +697,7 @@ GameObject:
   m_Component:
   - component: {fileID: 379520505}
   - component: {fileID: 379520504}
+  - component: {fileID: 379520506}
   m_Layer: 0
   m_Name: "Sticker_\u7B2C\u4E00\u51732"
   m_TagString: Untagged
@@ -737,6 +740,28 @@ Transform:
   - {fileID: 750587169}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: -79.742, y: 14.222, z: 0}
+--- !u!114 &379520506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 379520503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e6ae5eb2f6da6747bd540ce514add2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  readRadius: 2.5
+  heightTolerance: 3
+  humanPages:
+  - {fileID: 21300000, guid: 15dd07c31a3d36f4f830822ef9f0c3a3, type: 3}
+  dogPages:
+  - {fileID: 21300000, guid: b75d38084209917428be8e1172907b41, type: 3}
+  prompt: "\u8FD9\u91CC\u6709\u4E00\u4EFD\u62A5\u544A\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
+  promptDuration: 3
+  promptRepeatInterval: 10
+  stopPromptingAfterRead: 1
 --- !u!1 &432801832
 GameObject:
   m_ObjectHideFlags: 0
@@ -1562,7 +1587,6 @@ GameObject:
   m_Component:
   - component: {fileID: 750587169}
   - component: {fileID: 750587171}
-  - component: {fileID: 750587170}
   m_Layer: 0
   m_Name: Face
   m_TagString: Untagged
@@ -1585,26 +1609,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 379520505}
   m_LocalEulerAnglesHint: {x: 8.771, y: -180.472, z: -60.951}
---- !u!114 &750587170
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 750587168}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e6ae5eb2f6da6747bd540ce514add2f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  readRadius: 2.5
-  heightTolerance: 3
-  humanPage: {fileID: 21300000, guid: 1988fc24cfc6f0347abebe1fc8eee859, type: 3}
-  dogPage: {fileID: 21300000, guid: b75d38084209917428be8e1172907b41, type: 3}
-  prompt: "\u8FD9\u91CC\u6709\u4E00\u4EFD\u75C5\u4F8B\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
-  promptDuration: 3
-  promptRepeatInterval: 10
-  stopPromptingAfterRead: 1
 --- !u!212 &750587171
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1848,8 +1852,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   readRadius: 3.5
   heightTolerance: 3
-  humanPage: {fileID: 21300000, guid: 15dd07c31a3d36f4f830822ef9f0c3a3, type: 3}
-  dogPage: {fileID: 21300000, guid: 5b24f54b1ce0a01428cf59773c342074, type: 3}
+  humanPages:
+  - {fileID: 21300000, guid: 15dd07c31a3d36f4f830822ef9f0c3a3, type: 3}
+  dogPages:
+  - {fileID: 21300000, guid: 5b24f54b1ce0a01428cf59773c342074, type: 3}
   prompt: "\u8FD9\u91CC\u6709\u4E00\u4EFD\u5F02\u5E38\u89C2\u5BDF\u8BB0\u5F55\uFF0C\u6309
     F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3
@@ -2192,7 +2198,6 @@ GameObject:
   m_Component:
   - component: {fileID: 877243151}
   - component: {fileID: 877243153}
-  - component: {fileID: 877243152}
   m_Layer: 0
   m_Name: Face
   m_TagString: Untagged
@@ -2215,27 +2220,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 763377278}
   m_LocalEulerAnglesHint: {x: 86.578, y: 212.059, z: -20.425}
---- !u!114 &877243152
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 877243150}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e6ae5eb2f6da6747bd540ce514add2f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  readRadius: 2.5
-  heightTolerance: 3
-  humanPage: {fileID: 21300000, guid: 15dd07c31a3d36f4f830822ef9f0c3a3, type: 3}
-  dogPage: {fileID: 0}
-  prompt: "\u8FD9\u91CC\u6709\u4E00\u4EFD\u5F02\u5E38\u89C2\u5BDF\u8BB0\u5F55\uFF0C\u6309
-    F \u53EF\u4EE5\u9605\u8BFB"
-  promptDuration: 3
-  promptRepeatInterval: 10
-  stopPromptingAfterRead: 1
 --- !u!212 &877243153
 SpriteRenderer:
   m_ObjectHideFlags: 0

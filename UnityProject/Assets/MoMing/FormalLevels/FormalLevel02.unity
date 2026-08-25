@@ -887,8 +887,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   readRadius: 3
   heightTolerance: 3
-  humanPage: {fileID: 21300000, guid: 5fc79ee6d4728fb4bacd414f3ebd503a, type: 3}
-  dogPage: {fileID: 21300000, guid: cf2821d3a20132e4583776394e3e4c83, type: 3}
+  humanPages:
+  - {fileID: 21300000, guid: 274dbfda7dd159e4d8007ce4fbfac7ad, type: 3}
+  dogPages:
+  - {fileID: 21300000, guid: 309e6a0c94ad93840bf494125085f513, type: 3}
   prompt: "\u8FD9\u91CC\u597D\u50CF\u6709\u4E00\u4EFD\u62A5\u544A\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3
   promptRepeatInterval: 10
@@ -2173,7 +2175,6 @@ GameObject:
   m_Component:
   - component: {fileID: 994671936}
   - component: {fileID: 994671937}
-  - component: {fileID: 994671938}
   m_Layer: 0
   m_Name: Face
   m_TagString: Untagged
@@ -2248,26 +2249,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &994671938
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 994671935}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e6ae5eb2f6da6747bd540ce514add2f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  readRadius: 3
-  heightTolerance: 3
-  humanPage: {fileID: 21300000, guid: 274dbfda7dd159e4d8007ce4fbfac7ad, type: 3}
-  dogPage: {fileID: 21300000, guid: 309e6a0c94ad93840bf494125085f513, type: 3}
-  prompt: "\u8FD9\u6709\u4E00\u4EFD\u7B14\u8BB0\u6B8B\u9875\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
-  promptDuration: 3
-  promptRepeatInterval: 10
-  stopPromptingAfterRead: 1
 --- !u!1001 &1029999765
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3407,6 +3388,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1703455527}
   - component: {fileID: 1703455526}
+  - component: {fileID: 1703455528}
   m_Layer: 0
   m_Name: "Sticker_ChatGPT Image 2026\u5E748\u670824\u65E5 10_38_27 (1)"
   m_TagString: Untagged
@@ -3449,6 +3431,26 @@ Transform:
   - {fileID: 994671936}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1703455528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1703455525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e6ae5eb2f6da6747bd540ce514add2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  readRadius: 3
+  heightTolerance: 3
+  humanPages: []
+  dogPages: []
+  prompt: "\u8FD9\u6709\u4E00\u4EFD\u7B14\u8BB0\u6B8B\u9875\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
+  promptDuration: 3
+  promptRepeatInterval: 10
+  stopPromptingAfterRead: 1
 --- !u!1001 &1769776579
 PrefabInstance:
   m_ObjectHideFlags: 0

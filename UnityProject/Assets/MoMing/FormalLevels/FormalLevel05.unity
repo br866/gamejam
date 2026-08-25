@@ -2033,6 +2033,7 @@ GameObject:
   m_Component:
   - component: {fileID: 995498193}
   - component: {fileID: 995498192}
+  - component: {fileID: 995498194}
   m_Layer: 0
   m_Name: "Sticker_\u7B2C\u4E94\u5173 \u62A5\u544A1 (1)"
   m_TagString: Untagged
@@ -2075,6 +2076,32 @@ Transform:
   - {fileID: 725990775}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &995498194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 995498191}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e6ae5eb2f6da6747bd540ce514add2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  readRadius: 3
+  heightTolerance: 3
+  humanPages:
+  - {fileID: 21300000, guid: bf64386cb9eac9947a5102da2f3e6d52, type: 3}
+  - {fileID: 21300000, guid: 094988afe23b6d444875efdca4ffc5d3, type: 3}
+  - {fileID: 21300000, guid: 028c3e3f997d776479145f787ed02acc, type: 3}
+  dogPages:
+  - {fileID: 21300000, guid: 9cd9e0ee5bf42e547b5faaca901ea10c, type: 3}
+  - {fileID: 21300000, guid: 2385dc471ca14c347b52486538c3db03, type: 3}
+  - {fileID: 21300000, guid: a1c9ea1976070604a958a4ab1cdcf821, type: 3}
+  prompt: "\u8FD9\u91CC\u6709\u4E00\u4E9B\u62A5\u544A\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
+  promptDuration: 3
+  promptRepeatInterval: 10
+  stopPromptingAfterRead: 1
 --- !u!1001 &1063207337
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2273,6 +2300,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1313122022}
   - component: {fileID: 1313122021}
+  - component: {fileID: 1313122023}
   m_Layer: 0
   m_Name: "Sticker_\u7B2C\u4E94\u5173 \u62A5\u544A1 (4)"
   m_TagString: Untagged
@@ -2315,6 +2343,32 @@ Transform:
   - {fileID: 56628413}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1313122023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1313122020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e6ae5eb2f6da6747bd540ce514add2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  readRadius: 3
+  heightTolerance: 3
+  humanPages:
+  - {fileID: 21300000, guid: be4429e5af91dba4287ae579f6db676d, type: 3}
+  - {fileID: 21300000, guid: 975c990277efa1f40bf9129dc4ebe5e3, type: 3}
+  - {fileID: 21300000, guid: 44eed8aa97ca4d14ea5cdfbef7a1a62c, type: 3}
+  dogPages:
+  - {fileID: 21300000, guid: cfa6094434a25b54abb2bcdb70d36b05, type: 3}
+  - {fileID: 21300000, guid: 6fe38906bfb08f54da07ba0585e8b6e4, type: 3}
+  - {fileID: 21300000, guid: 4cd007568420ca24ab9f1f31a0038d83, type: 3}
+  prompt: "\u8FD9\u91CC\u6709\u4E00\u4E9B\u62A5\u544A\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
+  promptDuration: 3
+  promptRepeatInterval: 10
+  stopPromptingAfterRead: 1
 --- !u!1 &1374342678
 GameObject:
   m_ObjectHideFlags: 0
@@ -3098,6 +3152,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1831226736}
   - component: {fileID: 1831226735}
+  - component: {fileID: 1831226737}
   m_Layer: 0
   m_Name: "Sticker_\u7B2C\u4E94\u5173 \u62A5\u544A2"
   m_TagString: Untagged
@@ -3140,6 +3195,28 @@ Transform:
   - {fileID: 903401811}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: -89.086, y: 11.794, z: 0}
+--- !u!114 &1831226737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1831226734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e6ae5eb2f6da6747bd540ce514add2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  readRadius: 3
+  heightTolerance: 3
+  humanPages:
+  - {fileID: 21300000, guid: da510166c0da73c40bfd79a63d88116e, type: 3}
+  dogPages:
+  - {fileID: 21300000, guid: f17825c41e0b63e488774c6f632c7b98, type: 3}
+  prompt: "\u8FD9\u91CC\u6709\u4E00\u4E9B\u62A5\u544A\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
+  promptDuration: 3
+  promptRepeatInterval: 10
+  stopPromptingAfterRead: 1
 --- !u!1001 &1877868241
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3343,6 +3420,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1972702440}
   - component: {fileID: 1972702439}
+  - component: {fileID: 1972702441}
   m_Layer: 0
   m_Name: "Sticker_\u7B2C\u4E94\u5173 \u62A5\u544A3"
   m_TagString: Untagged
@@ -3385,6 +3463,28 @@ Transform:
   - {fileID: 725791378}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1972702441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1972702438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e6ae5eb2f6da6747bd540ce514add2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  readRadius: 3
+  heightTolerance: 3
+  humanPages:
+  - {fileID: 21300000, guid: d1a30350be6a7af46aef05b3e8a5160d, type: 3}
+  dogPages:
+  - {fileID: 21300000, guid: d5f66e3d75e8abd46934f342f4097393, type: 3}
+  prompt: "\u8FD9\u91CC\u6709\u4E00\u4EFD\u6B7B\u4EA1\u8BC1\u660E\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
+  promptDuration: 3
+  promptRepeatInterval: 10
+  stopPromptingAfterRead: 1
 --- !u!1001 &1987908596
 PrefabInstance:
   m_ObjectHideFlags: 0
