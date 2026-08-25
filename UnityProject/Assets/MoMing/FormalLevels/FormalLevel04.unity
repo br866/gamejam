@@ -1851,6 +1851,7 @@ MonoBehaviour:
   closeTransitionDoor: 1
   unloadPredecessor: 1
   armDelay: 1.5
+  showLevelIntroTutorial: 0
   logWhenSealed: 1
 --- !u!114 &793125139 stripped
 MonoBehaviour:
@@ -2267,7 +2268,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   level: {fileID: 0}
   owningLevelScene: FormalLevel04
+  humanRespawnAnchor: {fileID: 0}
+  dogRespawnAnchor: {fileID: 0}
   prerequisites: []
+  successorRegistrationPoint: 0
+  bringPartnerAlong: 0
+  showSaveAreaTutorial: 0
+  showLevelIntroTutorial: 0
 --- !u!65 &941340032
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3649,6 +3656,64 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1282955535}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1287341802
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1287341804}
+  - component: {fileID: 1287341803}
+  m_Layer: 0
+  m_Name: WwiseGlobal
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1287341803
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1287341802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d3f6826e1ffdfa4193e6609830b6fe4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InitializationSettings: {fileID: 11400000, guid: 13f2e4ff27671054a8a8df5a5c85ee78,
+    type: 2}
+  basePath: 
+  language: 
+  defaultPoolSize: 0
+  lowerPoolSize: 0
+  streamingPoolSize: 0
+  memoryCutoffThreshold: 0
+  monitorPoolSize: 0
+  monitorQueuePoolSize: 0
+  callbackManagerBufferSize: 0
+  spatialAudioPoolSize: 0
+  maxSoundPropagationDepth: 0
+  engineLogging: 0
+--- !u!4 &1287341804
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1287341802}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1368283568
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4750,6 +4815,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 59733160}
     m_Modifications:
+    - target: {fileID: 969844416221642908, guid: 137c64b22523e494ba1101cef460a13c,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -82.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 969844416221642908, guid: 137c64b22523e494ba1101cef460a13c,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 9.94
+      objectReference: {fileID: 0}
+    - target: {fileID: 969844416221642908, guid: 137c64b22523e494ba1101cef460a13c,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -6.23
+      objectReference: {fileID: 0}
     - target: {fileID: 1898573667231195766, guid: 137c64b22523e494ba1101cef460a13c,
         type: 3}
       propertyPath: m_Layer
@@ -4763,7 +4843,7 @@ PrefabInstance:
     - target: {fileID: 2058955992884680305, guid: 137c64b22523e494ba1101cef460a13c,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.3
       objectReference: {fileID: 0}
     - target: {fileID: 2058955992884680305, guid: 137c64b22523e494ba1101cef460a13c,
         type: 3}
@@ -6306,7 +6386,7 @@ MonoBehaviour:
   safeZones: []
   footstepEvent:
     idInternal: 0
-    valueGuidInternal:
+    valueGuidInternal: 
     WwiseObjectReference: {fileID: 11400000, guid: a4d21728d4b84b64942d863fa7bdbbee,
       type: 2}
   patrolFootstepDistance: 1.8
@@ -6594,3 +6674,4 @@ SceneRoots:
   - {fileID: 1262382420}
   - {fileID: 771000021}
   - {fileID: 2100000002}
+  - {fileID: 1287341804}
