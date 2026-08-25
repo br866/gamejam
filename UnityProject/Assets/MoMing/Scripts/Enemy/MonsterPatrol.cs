@@ -55,21 +55,59 @@ public class MonsterPatrol : MonoBehaviour
     public bool showRoomBounds = true;
     public Color roomBoundsGizmoColor = new Color(0f, 1f, 0.55f, 0.9f);
 
+    // 视线检测每帧对每个玩家都要做，用固定缓冲避免每次 RaycastAll 都分配一次数组
+    private static readonly RaycastHit[] SightHits = new RaycastHit[24];
+
+    /// <summary>
+    /// 怪物眼睛到目标之间有没有被挡住。
+    ///
+    /// 以前的写法把「目标所在图层」从射线遮罩里剔掉了：
+    ///     mask &amp;= ~(1 &lt;&lt; target.gameObject.layer);
+    /// 玩家在 Default(0)，而关卡里的墙、地板、门也全在 Default(0) ——
+    /// 于是整个 Default 层被排除，射线什么都打不到，永远返回「看得见」。
+    /// 结果就是怪物隔着墙也能锁定你，追过来还能隔着墙把你抓了。
+    ///
+    /// 现在改成：射线照打所有东西，只在结果里跳过怪物自己和玩家的碰撞体，
+    /// 剩下还有任何东西挡在中间就算看不见。
+    /// </summary>
     bool HasLineOfSight(Transform target)
     {
+        if (target == null)
+            return false;
+
         Vector3 from = transform.position;
         if (visualRenderer != null)
             from.y = visualRenderer.bounds.min.y + eyeHeight;
 
         Vector3 to = target.position + Vector3.up * (eyeHeight * 0.5f);
-        int mask = sightBlockMask.value != 0 ? sightBlockMask.value : ~0;
-        mask &= ~(1 << gameObject.layer);
-        mask &= ~(1 << target.gameObject.layer);
+        Vector3 delta = to - from;
+        float distance = delta.magnitude;
+        if (distance < 0.01f)
+            return true;
 
-        if (Physics.Linecast(from, to, out RaycastHit hitInfo, mask, QueryTriggerInteraction.Ignore))
+        int mask = sightBlockMask.value != 0 ? sightBlockMask.value : ~0;
+
+        int count = Physics.RaycastNonAlloc(from, delta / distance, SightHits, distance,
+            mask, QueryTriggerInteraction.Ignore);
+
+        for (int i = 0; i < count; i++)
         {
-            if (hitInfo.collider.transform == target || hitInfo.collider.transform.IsChildOf(transform))
-                return true;
+            Transform hit = SightHits[i].collider != null ? SightHits[i].collider.transform : null;
+            if (hit == null)
+                continue;
+
+            // 自己身上的碰撞体不算遮挡
+            if (hit == transform || hit.IsChildOf(transform))
+                continue;
+
+            // 目标本身不算遮挡（玩家的碰撞体挂在 Body 子物体上，所以要用 IsChildOf）
+            if (hit == target || hit.IsChildOf(target))
+                continue;
+
+            // 人和狗互相之间不算遮挡，不然一个挡在另一个前面怪物就瞎了
+            if (hit.GetComponentInParent<FormalPlayerActor>() != null)
+                continue;
+
             return false;
         }
 
