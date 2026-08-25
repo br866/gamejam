@@ -101,126 +101,6 @@ public class FormalGameFlowController : MonoBehaviour
             LoadLevelAsync(initialLevelScene, null);
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Keypad7))
-            ToggleDogSpeedMultiplier();
-        else if (Input.GetKeyDown(KeyCode.Keypad4))
-            ReportLevel02GateStatus();
-
-        if (routeComplete)
-            return;
-
-        if (Input.GetKeyDown(KeyCode.Keypad2))
-            GoToNextLevel();
-        else if (Input.GetKeyDown(KeyCode.Keypad8))
-            GoToPreviousLevel();
-        else if (Input.GetKeyDown(KeyCode.Keypad5))
-            ResetCurrentLevel();
-        else if (Input.GetKeyDown(KeyCode.Keypad6))
-            CompleteCurrentLevelConditionsAndAdvance();
-    }
-
-    void ToggleDogSpeedMultiplier()
-    {
-        FormalPlayerActor dog = FormalPlayerActors.Instance != null
-            ? FormalPlayerActors.Instance.Dog
-            : null;
-        if (dog == null)
-            dog = FindDogActor();
-        if (dog == null)
-        {
-            Debug.LogWarning("[L02GateGM] Dog speed toggle failed: dog actor is unavailable.", this);
-            return;
-        }
-
-        bool accelerate = dog.RuntimeMovementSpeedMultiplier < 5f;
-        dog.SetRuntimeMovementSpeedMultiplier(accelerate ? 5f : 1f);
-        Debug.Log($"[L02GateGM] Dog speed multiplier: {dog.RuntimeMovementSpeedMultiplier:0}x " +
-                  $"(base {dog.ConfiguredWalkSpeed:0.##}).", dog);
-    }
-
-    void ReportLevel02GateStatus()
-    {
-        const string level02 = "FormalLevel02";
-        const string prefix = "[L02GateGM]";
-        if (currentLevelScene != level02)
-        {
-            Debug.Log($"{prefix} L2 is inactive (active='{currentLevelScene ?? "<none>"}').", this);
-            return;
-        }
-
-        Scene levelScene = SceneManager.GetSceneByName(level02);
-        if (!levelScene.isLoaded)
-        {
-            Debug.LogWarning($"{prefix} L2 scene is not loaded.", this);
-            return;
-        }
-
-        FormalDoorInteraction gate = null;
-        foreach (FormalDoorInteraction interaction in FindInScene<FormalDoorInteraction>(levelScene))
-        {
-            if (!string.IsNullOrEmpty(interaction.DoorNameToken) &&
-                interaction.DoorNameToken.IndexOf("ToLevel03", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                gate = interaction;
-                break;
-            }
-        }
-
-        if (gate == null)
-        {
-            Debug.LogWarning($"{prefix} Missing L2 E-interaction targeting ToLevel03.", this);
-            return;
-        }
-
-        FormalActuatorTrigger safeZone = gate.GetComponent<FormalActuatorTrigger>();
-        FormalActuatorTrigger pedal = null;
-        List<string> prerequisiteStates = new List<string>();
-        int prerequisiteIndex = 0;
-        foreach (MonoBehaviour prerequisite in gate.Prerequisites)
-        {
-            if (prerequisite == null)
-            {
-                prerequisiteStates.Add($"#{prerequisiteIndex}=NULL");
-                prerequisiteIndex++;
-                continue;
-            }
-
-            IFormalLevelPermanentState state = prerequisite as IFormalLevelPermanentState;
-            prerequisiteStates.Add(
-                $"#{prerequisiteIndex}={prerequisite.GetType().Name} '{prerequisite.name}' " +
-                (state == null ? "(does not implement permanent state)" : $"complete={state.IsComplete}"));
-            FormalActuatorTrigger trigger = prerequisite as FormalActuatorTrigger;
-            if (trigger != null && trigger != safeZone)
-                pedal = trigger;
-            prerequisiteIndex++;
-        }
-
-        string pedalState = pedal == null ? "not identified as FormalActuatorTrigger" : pedal.IsComplete ? "complete" : "MISSING";
-        string safeZoneState = safeZone == null ? "MISSING REFERENCE" : safeZone.IsComplete ? "complete" : "MISSING";
-        string occupancyState = gate.HasEligibleOccupant ? "human inside" : "MISSING (human must press E inside)";
-        FormalDoor targetDoor = gate.TargetDoor;
-        string doorState = targetDoor == null ? "MISSING REFERENCE" : $"resolved '{targetDoor.name}'";
-        bool readyForE = gate.ArePrerequisitesComplete && targetDoor != null && !gate.IsOpened;
-
-        Debug.Log(
-            $"{prefix} L2->L3 gate: pedal={pedalState}; safe-zone(two players)={safeZoneState}; " +
-            $"E-occupancy={occupancyState}; target-door={doorState}; " +
-            $"prerequisites=[{string.Join("; ", prerequisiteStates.ToArray())}]; " +
-            (gate.IsOpened ? "door already opened." : readyForE ? "READY: human can press E to open." : "NOT READY."),
-            gate);
-    }
-
-    FormalPlayerActor FindDogActor()
-    {
-        foreach (FormalPlayerActor actor in FindObjectsOfType<FormalPlayerActor>())
-            if (actor.Role == FormalPlayerActor.ActorRole.Dog)
-                return actor;
-
-        return null;
-    }
-
     public void RequestRouteAdvance()
     {
         RequestRouteAdvance(null);
@@ -825,12 +705,12 @@ public class FormalGameFlowController : MonoBehaviour
 
         OpenAllDoorsInCurrentLevelScope();
 
-        // Keypad 6 is an editor/test shortcut: mark the current level's
-        // completion state directly instead of simulating player movement.
+        // 调试用的直接跳关接口：直接标记本关的完成状态，
+        // 不模拟玩家移动。
         foreach (FormalMechanismState state in FindInScene<FormalMechanismState>(current))
             state.Complete();
 
-        // 小键盘 6 是直接跳关：只完成机关状态，不能让实体过门逻辑先启动预加载。
+        // 直接跳关时只完成机关状态，不能让实体过门逻辑先启动预加载。
         foreach (FormalActuatorTrigger trigger in FindInScene<FormalActuatorTrigger>(current))
             trigger.CompleteImmediately(triggerRouteOutput: false);
 
