@@ -14,6 +14,14 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
     [SerializeField] private float interactionRange = 2.5f;
     [SerializeField] private float sideTolerance = 0.55f;
 
+    [Header("Wwise Audio")]
+    [Tooltip("Play_Crate_Push: start transient followed by the continuous pushing loop.")]
+    [SerializeField] private AK.Wwise.Event playPushEvent = new AK.Wwise.Event();
+    [Tooltip("Stop_Crate_Push: stops Play_Crate_Push and plays the release tail.")]
+    [SerializeField] private AK.Wwise.Event stopPushEvent = new AK.Wwise.Event();
+    [Tooltip("Keeps very short input gaps from repeatedly retriggering the start and stop tails.")]
+    [SerializeField, Min(0f)] private float pushAudioStopDelay = 0.1f;
+
     private Rigidbody body;
     private Vector3 initialPosition;
     private Vector3 movementOrigin;
@@ -22,6 +30,11 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
     private FormalPlayerActor human;
     private int humanGroup = -1;
     private int movementAxis = -1;
+    private bool pushAudioPlaying;
+    private float pushAudioStopRemaining;
+    private uint pushAudioPlayingId = AkUnitySoundEngine.AK_INVALID_PLAYING_ID;
+    private bool warnedMissingPlayPushEvent;
+    private bool warnedMissingStopPushEvent;
 
     public bool IsEngaged => human != null;
     public bool IsAttached(FormalPlayerActor actor) => actor != null && actor == human;
@@ -94,11 +107,17 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
     public void Move(Vector3 worldDirection, bool pushingAnimation)
     {
         if (!IsEngaged || worldDirection.sqrMagnitude < 0.01f)
+        {
+            UpdatePushAudio(false);
             return;
+        }
 
         Vector3 axis = GetMovementAxis();
         if (axis.sqrMagnitude < 0.01f)
+        {
+            UpdatePushAudio(false);
             return;
+        }
         float direction = Vector3.Dot(worldDirection, axis);
         if (Mathf.Abs(direction) < 0.01f)
         {
@@ -112,7 +131,10 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
         }
 
         if (Mathf.Abs(direction) < 0.01f)
+        {
+            UpdatePushAudio(false);
             return;
+        }
 
         direction = Mathf.Sign(direction);
 
@@ -124,6 +146,7 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
         if (step.sqrMagnitude > 0.000001f && ProbeBlocked(step.normalized, step.magnitude + 0.05f))
         {
             UpdateAttachedAnimations(pushingAnimation);
+            UpdatePushAudio(false);
             return;
         }
 
@@ -132,6 +155,14 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
         Physics.SyncTransforms();
         KeepAttachedActorsAtNodes();
         UpdateAttachedAnimations(pushingAnimation);
+        UpdatePushAudio(true);
+    }
+
+    void Update()
+    {
+        // Update still runs when the physics loop is suspended by blocking UI.
+        if (pushAudioPlaying && !FormalGameplayState.CanSimulate)
+            StopPushAudioImmediate();
     }
 
     bool ProbeBlocked(Vector3 direction, float distance)
@@ -179,6 +210,7 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
 
     public void Cancel()
     {
+        StopPushAudioImmediate();
         Detach(human);
         human = null;
         humanGroup = -1;
@@ -188,6 +220,74 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
             body.velocity = Vector3.zero;
             body.angularVelocity = Vector3.zero;
         }
+    }
+
+    void OnDisable()
+    {
+        StopPushAudioImmediate();
+    }
+
+    void UpdatePushAudio(bool moving)
+    {
+        moving = moving && FormalGameplayState.CanSimulate;
+
+        if (moving)
+        {
+            pushAudioStopRemaining = pushAudioStopDelay;
+            if (pushAudioPlaying)
+                return;
+
+            if (playPushEvent != null && playPushEvent.IsValid())
+            {
+                pushAudioPlayingId = playPushEvent.Post(gameObject);
+                pushAudioPlaying = pushAudioPlayingId != AkUnitySoundEngine.AK_INVALID_PLAYING_ID;
+            }
+            else if (!warnedMissingPlayPushEvent)
+            {
+                Debug.LogWarning("[FormalCooperativeRailMover] Play_Crate_Push is not assigned.", this);
+                warnedMissingPlayPushEvent = true;
+            }
+            return;
+        }
+
+        if (!pushAudioPlaying)
+            return;
+
+        pushAudioStopRemaining -= Time.fixedDeltaTime;
+        if (pushAudioStopRemaining <= 0f)
+            StopPushAudioImmediate();
+    }
+
+    void StopPushAudioImmediate()
+    {
+        pushAudioStopRemaining = 0f;
+        if (!pushAudioPlaying)
+            return;
+
+        if (stopPushEvent != null && stopPushEvent.IsValid())
+        {
+            stopPushEvent.Post(gameObject);
+        }
+        else
+        {
+            if (pushAudioPlayingId != AkUnitySoundEngine.AK_INVALID_PLAYING_ID)
+            {
+                AkUnitySoundEngine.ExecuteActionOnPlayingID(
+                    AkActionOnEventType.AkActionOnEventType_Stop,
+                    pushAudioPlayingId,
+                    0,
+                    AkCurveInterpolation.AkCurveInterpolation_Linear);
+            }
+
+            if (!warnedMissingStopPushEvent)
+            {
+                Debug.LogWarning("[FormalCooperativeRailMover] Stop_Crate_Push is not assigned; stopped the loop without its release tail.", this);
+                warnedMissingStopPushEvent = true;
+            }
+        }
+
+        pushAudioPlaying = false;
+        pushAudioPlayingId = AkUnitySoundEngine.AK_INVALID_PLAYING_ID;
     }
 
     public void ResetTemporaryState()

@@ -19,6 +19,14 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
     [SerializeField] private float blockProbeSkin = 0.12f;
     [SerializeField] private PushAxisMode axisMode = PushAxisMode.Auto;
 
+    [Header("Wwise Audio")]
+    [Tooltip("Play_Crate_Push: start transient followed by the continuous pushing loop.")]
+    [SerializeField] private AK.Wwise.Event playPushEvent = new AK.Wwise.Event();
+    [Tooltip("Stop_Crate_Push: stops Play_Crate_Push and plays the release tail.")]
+    [SerializeField] private AK.Wwise.Event stopPushEvent = new AK.Wwise.Event();
+    [Tooltip("Keeps very short input gaps from repeatedly retriggering the start and stop tails.")]
+    [SerializeField, Min(0f)] private float pushAudioStopDelay = 0.1f;
+
     private Rigidbody body;
     private BoxCollider box;
     private FormalPlayerActor human;
@@ -27,6 +35,11 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
     private int dogPoint = -1;
     private Vector3 initialPosition;
     private Quaternion initialRotation;
+    private bool pushAudioPlaying;
+    private float pushAudioStopRemaining;
+    private uint pushAudioPlayingId = AkUnitySoundEngine.AK_INVALID_PLAYING_ID;
+    private bool warnedMissingPlayPushEvent;
+    private bool warnedMissingStopPushEvent;
 
     public bool IsEngaged { get { return human != null; } }
     public bool IsBlocked { get; private set; }
@@ -96,7 +109,10 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
     void FixedUpdate()
     {
         if (!IsEngaged)
+        {
+            UpdatePushAudio(false);
             return;
+        }
 
         KeepActorsAtPoints();
 
@@ -109,6 +125,7 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
             {
                 IsBlocked = false;
                 ApplyAttachedAnimation(Vector3.zero);
+                UpdatePushAudio(false);
                 return;
             }
         }
@@ -118,6 +135,7 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
             if (axis.sqrMagnitude < 0.01f)
             {
                 ApplyAttachedAnimation(Vector3.zero);
+                UpdatePushAudio(false);
                 return;
             }
 
@@ -126,6 +144,7 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
             {
                 IsBlocked = false;
                 ApplyAttachedAnimation(Vector3.zero);
+                UpdatePushAudio(false);
                 return;
             }
             moveAxis = axis * inputSign;
@@ -135,6 +154,7 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
         {
             IsBlocked = false;
             ApplyAttachedAnimation(Vector3.zero);
+            UpdatePushAudio(false);
             return;
         }
 
@@ -145,11 +165,20 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
         if (IsBlocked)
         {
             body.velocity = new Vector3(0f, body.velocity.y, 0f);
+            UpdatePushAudio(false);
             return;
         }
 
         Vector3 velocity = moveAxis * movementSpeed;
         body.velocity = new Vector3(velocity.x, body.velocity.y, velocity.z);
+        UpdatePushAudio(true);
+    }
+
+    void Update()
+    {
+        // Update still runs when the physics loop is suspended by blocking UI.
+        if (pushAudioPlaying && !FormalGameplayState.CanSimulate)
+            StopPushAudioImmediate();
     }
 
     /// <summary>
@@ -219,6 +248,7 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
 
     public void Cancel()
     {
+        StopPushAudioImmediate();
         Detach(human);
         Detach(dog);
         human = null;
@@ -229,6 +259,74 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
         if (!body.isKinematic)
             body.velocity = Vector3.zero;
         body.isKinematic = true;
+    }
+
+    void OnDisable()
+    {
+        StopPushAudioImmediate();
+    }
+
+    void UpdatePushAudio(bool moving)
+    {
+        moving = moving && FormalGameplayState.CanSimulate;
+
+        if (moving)
+        {
+            pushAudioStopRemaining = pushAudioStopDelay;
+            if (pushAudioPlaying)
+                return;
+
+            if (playPushEvent != null && playPushEvent.IsValid())
+            {
+                pushAudioPlayingId = playPushEvent.Post(gameObject);
+                pushAudioPlaying = pushAudioPlayingId != AkUnitySoundEngine.AK_INVALID_PLAYING_ID;
+            }
+            else if (!warnedMissingPlayPushEvent)
+            {
+                Debug.LogWarning("[FormalPushableCrate] Play_Crate_Push is not assigned.", this);
+                warnedMissingPlayPushEvent = true;
+            }
+            return;
+        }
+
+        if (!pushAudioPlaying)
+            return;
+
+        pushAudioStopRemaining -= Time.fixedDeltaTime;
+        if (pushAudioStopRemaining <= 0f)
+            StopPushAudioImmediate();
+    }
+
+    void StopPushAudioImmediate()
+    {
+        pushAudioStopRemaining = 0f;
+        if (!pushAudioPlaying)
+            return;
+
+        if (stopPushEvent != null && stopPushEvent.IsValid())
+        {
+            stopPushEvent.Post(gameObject);
+        }
+        else
+        {
+            if (pushAudioPlayingId != AkUnitySoundEngine.AK_INVALID_PLAYING_ID)
+            {
+                AkUnitySoundEngine.ExecuteActionOnPlayingID(
+                    AkActionOnEventType.AkActionOnEventType_Stop,
+                    pushAudioPlayingId,
+                    0,
+                    AkCurveInterpolation.AkCurveInterpolation_Linear);
+            }
+
+            if (!warnedMissingStopPushEvent)
+            {
+                Debug.LogWarning("[FormalPushableCrate] Stop_Crate_Push is not assigned; stopped the loop without its release tail.", this);
+                warnedMissingStopPushEvent = true;
+            }
+        }
+
+        pushAudioPlaying = false;
+        pushAudioPlayingId = AkUnitySoundEngine.AK_INVALID_PLAYING_ID;
     }
 
     public void Move(Vector3 worldDirection, bool pushingAnimation)

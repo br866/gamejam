@@ -23,6 +23,7 @@ namespace AK
         static const AkUniqueID PLAY_GAMEPLAY_MUSIC = 1231987938U;
         static const AkUniqueID PLAY_KEY_PICKUP = 2881789206U;
         static const AkUniqueID PLAY_PLAYERDEATH_STINGER = 2509310786U;
+        static const AkUniqueID PLAY_PRESSUREPLATE = 2541206429U;
         static const AkUniqueID PLAY_TITLE_MUSIC = 2604896900U;
         static const AkUniqueID PLAY_UI_CLICK = 1749424733U;
         static const AkUniqueID PLAY_UI_HOVER = 1339559671U;

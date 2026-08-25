@@ -1,0 +1,48 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "2541206429",
+    "Type": "Event",
+    "GUID": "{BDF850F8-13D1-43A5-8FC1-6F26454783AD}",
+    "Language": "SFX",
+    "Hash": "{A3B88E5B-BD1D-6F4B-946D-18EABC10093C}",
+    "ObjectPath": "Play_PressurePlate",
+    "ShortName": "Play_PressurePlate",
+    "Path": "Event/Play_PressurePlate.bnk",
+    "Media": [
+     {
+      "Id": "724946886",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "PressurePlate.wav",
+      "Path": "Media/724946886.wem",
+      "CachePath": "03/{031D0C20-5EE1-195F-AADE-1CDF8AF04D2F}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "2541206429",
+      "Name": "Play_PressurePlate",
+      "ObjectPath": "\\Events\\Default Work Unit\\SFX\\Puzzle\\Play_PressurePlate",
+      "GUID": "{BDF850F8-13D1-43A5-8FC1-6F26454783AD}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.22308862",
+      "DurationMax": "0.25040853",
+      "MediaRefs": [
+       {
+        "Id": "724946886"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{70EA2488-B90A-98AA-4097-78F13C43B8D6}"
+ }
+}
