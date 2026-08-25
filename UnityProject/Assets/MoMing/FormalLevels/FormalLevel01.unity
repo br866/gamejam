@@ -551,7 +551,7 @@ MonoBehaviour:
   readRadius: 3
   heightTolerance: 3
   humanPage: {fileID: 21300000, guid: 1e2f518605353f741ac2f2f996059cb1, type: 3}
-  dogPage: {fileID: 0}
+  dogPage: {fileID: 21300000, guid: 9a3c5a2d29593de4ea2aba55fec61494, type: 3}
   prompt: "\u8FD9\u91CC\u6709\u4E00\u4EFD\u7B14\u8BB0\u6B8B\u9875\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3
   promptRepeatInterval: 10
@@ -747,7 +747,6 @@ GameObject:
   m_Component:
   - component: {fileID: 432801833}
   - component: {fileID: 432801834}
-  - component: {fileID: 432801835}
   m_Layer: 0
   m_Name: Face
   m_TagString: Untagged
@@ -822,26 +821,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &432801835
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 432801832}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e6ae5eb2f6da6747bd540ce514add2f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  readRadius: 2.5
-  heightTolerance: 3
-  humanPage: {fileID: 0}
-  dogPage: {fileID: 0}
-  prompt: "\u8FD9\u8FB9\u6709\u4E00\u4E2A\u516C\u544A\u677F\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
-  promptDuration: 3
-  promptRepeatInterval: 10
-  stopPromptingAfterRead: 1
 --- !u!1001 &486940034
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1621,7 +1600,7 @@ MonoBehaviour:
   readRadius: 2.5
   heightTolerance: 3
   humanPage: {fileID: 21300000, guid: 1988fc24cfc6f0347abebe1fc8eee859, type: 3}
-  dogPage: {fileID: 0}
+  dogPage: {fileID: 21300000, guid: b75d38084209917428be8e1172907b41, type: 3}
   prompt: "\u8FD9\u91CC\u6709\u4E00\u4EFD\u75C5\u4F8B\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3
   promptRepeatInterval: 10
@@ -1870,7 +1849,7 @@ MonoBehaviour:
   readRadius: 3.5
   heightTolerance: 3
   humanPage: {fileID: 21300000, guid: 15dd07c31a3d36f4f830822ef9f0c3a3, type: 3}
-  dogPage: {fileID: 0}
+  dogPage: {fileID: 21300000, guid: 5b24f54b1ce0a01428cf59773c342074, type: 3}
   prompt: "\u8FD9\u91CC\u6709\u4E00\u4EFD\u5F02\u5E38\u89C2\u5BDF\u8BB0\u5F55\uFF0C\u6309
     F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3
