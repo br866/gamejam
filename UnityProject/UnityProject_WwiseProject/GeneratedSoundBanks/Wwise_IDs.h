@@ -13,15 +13,18 @@ namespace AK
 {
     namespace EVENTS
     {
+        static const AkUniqueID PLAY_CHECKPOINTSFX = 1671843005U;
         static const AkUniqueID PLAY_CRATE_PUSH = 470824146U;
         static const AkUniqueID PLAY_DEATHCAUSE_MUSIC = 2229278265U;
         static const AkUniqueID PLAY_DOOR_LOCKED = 3779672947U;
         static const AkUniqueID PLAY_DOOR_UNLOCKING = 4191924555U;
+        static const AkUniqueID PLAY_FLUORESCENT_LIGHT = 3799125421U;
         static const AkUniqueID PLAY_FOOTSTEP_BRUTEDOC = 3546231729U;
         static const AkUniqueID PLAY_FOOTSTEP_DOG = 1441942263U;
         static const AkUniqueID PLAY_FOOTSTEP_HUMAN = 1846914642U;
         static const AkUniqueID PLAY_GAMEPLAY_MUSIC = 1231987938U;
         static const AkUniqueID PLAY_KEY_PICKUP = 2881789206U;
+        static const AkUniqueID PLAY_LEVEL5_MUSIC = 3337214613U;
         static const AkUniqueID PLAY_PLAYERDEATH_STINGER = 2509310786U;
         static const AkUniqueID PLAY_PRESSUREPLATE = 2541206429U;
         static const AkUniqueID PLAY_TITLE_MUSIC = 2604896900U;
@@ -32,6 +35,7 @@ namespace AK
         static const AkUniqueID STOP_CRATE_PUSH = 708504560U;
         static const AkUniqueID STOP_DEATHCAUSE_MUSIC = 1522432571U;
         static const AkUniqueID STOP_GAMEPLAY_MUSIC = 3536547992U;
+        static const AkUniqueID STOP_LEVEL5_MUSIC = 599953395U;
     } // namespace EVENTS
 
     namespace STATES

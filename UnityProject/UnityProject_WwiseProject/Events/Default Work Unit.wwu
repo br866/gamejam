@@ -67,6 +67,32 @@
 								</Action>
 							</ChildrenList>
 						</Event>
+						<Event Name="Play_Level5_Music" ID="{36F82009-5684-4208-8495-3026894A2236}">
+							<ChildrenList>
+								<Action Name="" ID="{88B21CEC-AC6C-430E-9F87-8A41FCCDE5EC}" ShortID="31193125">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="Level5_Music" ID="{6F2975B0-BFC5-4ECE-A6B6-4022A46B7F06}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Stop_Level5_Music" ID="{2F8BA6B9-B3E7-4E30-A7D0-2D973F7025C6}">
+							<ChildrenList>
+								<Action Name="" ID="{86AB473D-F289-4B92-B17B-6E3A07CE4E32}" ShortID="787089973">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="2"/>
+										<Property Name="FadeTime" Type="Real64" Value="2"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="Level5_Music" ID="{6F2975B0-BFC5-4ECE-A6B6-4022A46B7F06}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
 					</ChildrenList>
 				</Folder>
 				<Folder Name="SFX" ID="{408478FE-1361-4AEA-B641-1A089677C69D}" ShortID="433650339">
@@ -215,6 +241,17 @@
 										</Action>
 									</ChildrenList>
 								</Event>
+								<Event Name="Play_CheckpointSFX" ID="{F34471C2-1DCF-4E80-A0B5-7D527D8F3D04}">
+									<ChildrenList>
+										<Action Name="" ID="{EDEC5C0B-B148-4467-9CA3-01255A2EE325}" ShortID="168876923">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="CheckpointSFX" ID="{21C0980A-F3E4-449F-8F5B-4971F60C1732}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
 							</ChildrenList>
 						</Folder>
 						<Folder Name="Game" ID="{3A5097FA-C7BF-40CC-A827-A46BE32AC4C8}" ShortID="890467270">
@@ -234,7 +271,48 @@
 						</Folder>
 					</ChildrenList>
 				</Folder>
-				<Folder Name="Ambience" ID="{09F179E9-50B6-4E9F-B465-231176AC85F1}" ShortID="175513565"/>
+				<Folder Name="Ambience" ID="{09F179E9-50B6-4E9F-B465-231176AC85F1}" ShortID="175513565">
+					<ChildrenList>
+						<Event Name="Play_Fluorescent_Light" ID="{D1801EA0-EB5F-48BE-9757-2DCDE2A6B50F}">
+							<PropertyList>
+								<Property Name="LimitScope" Type="int16">
+									<ValueList>
+										<Value>1</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ChildrenList>
+								<Action Name="" ID="{E56FCD4E-C45F-4EB6-A019-B82FDD09C92D}" ShortID="401254444">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="SFX_FluorescentLight_Continuous_Buzz_Loop_SC" ID="{F52C5019-0E05-4ACC-8436-98EDBFD5E384}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+								<Action Name="" ID="{36F7A710-1C95-4959-917B-EBC90FCDACE4}" ShortID="896522990">
+									<PropertyList>
+										<Property Name="Delay" Type="Real64" Value="2">
+											<ModifierList>
+												<ModifierInfo>
+													<Modifier Name="" ID="{AC5FA2EA-24F7-4BE1-8B7A-2FE6B3AB5D01}">
+														<PropertyList>
+															<Property Name="Max" Type="Real64" Value="20"/>
+														</PropertyList>
+													</Modifier>
+												</ModifierInfo>
+											</ModifierList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="Fluorescent_Light_Buzz" ID="{3328E127-6F40-4523-A259-02DA365285B1}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+					</ChildrenList>
+				</Folder>
 				<Folder Name="UI" ID="{7A376F1B-AD55-466B-906B-36E8E4178F3E}" ShortID="464987807">
 					<ChildrenList>
 						<Event Name="Play_UI_Hover" ID="{39A8FF1E-71FF-4F9A-8DF2-CEDFEF889CFB}">
