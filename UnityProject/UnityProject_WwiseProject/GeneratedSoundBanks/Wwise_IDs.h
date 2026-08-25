@@ -15,6 +15,8 @@ namespace AK
     {
         static const AkUniqueID PLAY_CRATE_PUSH = 470824146U;
         static const AkUniqueID PLAY_DEATHCAUSE_MUSIC = 2229278265U;
+        static const AkUniqueID PLAY_DOOR_LOCKED = 3779672947U;
+        static const AkUniqueID PLAY_DOOR_UNLOCKING = 4191924555U;
         static const AkUniqueID PLAY_FOOTSTEP_BRUTEDOC = 3546231729U;
         static const AkUniqueID PLAY_FOOTSTEP_DOG = 1441942263U;
         static const AkUniqueID PLAY_FOOTSTEP_HUMAN = 1846914642U;

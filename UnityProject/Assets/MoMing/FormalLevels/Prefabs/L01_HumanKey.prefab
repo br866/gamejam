@@ -150,4 +150,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a25cbe2494ef194c84612d0578560b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  exitDoor: {fileID: 0}
+  doorsToUnlock: []
+  requireInteractToCollect: 1
+  interactKey: 101
+  promptPickup: "\u6309 E \u6361\u8D77\u94A5\u5319"
+  openDoorsImmediately: 0
+  advanceRouteOnPickup: 0
+  pickupEvent:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: 6ffddb531b40d084594ebc788e7b3bfa,
+      type: 2}

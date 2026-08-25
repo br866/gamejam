@@ -30,9 +30,14 @@ public class FormalHumanKey : MonoBehaviour, IFormalLevelTemporaryState
              "默认关闭：拿到钥匙不等于通关，过关要靠走过门。")]
     [SerializeField] private bool advanceRouteOnPickup;
 
+    [Header("Wwise Audio")]
+    [Tooltip("Play_Key_Pickup. Using an AK.Wwise.Event reference also loads its AutoBank.")]
+    [SerializeField] private AK.Wwise.Event pickupEvent = new AK.Wwise.Event();
+
     private Vector3 initialPosition;
     private Quaternion initialRotation;
     private bool collected;
+    private bool warnedMissingPickupEvent;
 
     /// <summary>钥匙是否已被捡起。门上的 FormalDoorInteraction 读这个来决定能不能开。</summary>
     public bool IsCollected => collected;
@@ -47,11 +52,15 @@ public class FormalHumanKey : MonoBehaviour, IFormalLevelTemporaryState
     }
 
     private bool humanInRange;
+    private GameObject pickupEmitter;
 
     void OnTriggerEnter(Collider other)
     {
         if (collected || !FormalLevelActors.IsHuman(other))
             return;
+
+        FormalPlayerActor human = FormalLevelActors.ResolvePlayer(other);
+        pickupEmitter = human != null ? human.gameObject : other.gameObject;
 
         if (requireInteractToCollect)
         {
@@ -67,7 +76,10 @@ public class FormalHumanKey : MonoBehaviour, IFormalLevelTemporaryState
     void OnTriggerExit(Collider other)
     {
         if (FormalLevelActors.IsHuman(other))
+        {
             humanInRange = false;
+            pickupEmitter = null;
+        }
     }
 
     void Update()
@@ -86,6 +98,20 @@ public class FormalHumanKey : MonoBehaviour, IFormalLevelTemporaryState
 
         collected = true;
         humanInRange = false;
+
+        // Post on the player rather than the key: the key is hidden immediately below,
+        // while the player's Wwise GameObject remains active for the whole one-shot.
+        GameObject emitter = pickupEmitter != null ? pickupEmitter : gameObject;
+        if (pickupEvent != null && pickupEvent.IsValid())
+        {
+            pickupEvent.Post(emitter);
+        }
+        else if (!warnedMissingPickupEvent)
+        {
+            Debug.LogWarning("[FormalHumanKey] Play_Key_Pickup is not assigned.", this);
+            warnedMissingPickupEvent = true;
+        }
+        pickupEmitter = null;
         gameObject.SetActive(false);
 
         bool hasDoors = false;
@@ -128,6 +154,7 @@ public class FormalHumanKey : MonoBehaviour, IFormalLevelTemporaryState
     {
         collected = false;
         humanInRange = false;
+        pickupEmitter = null;
         transform.SetPositionAndRotation(initialPosition, initialRotation);
         gameObject.SetActive(true);
     }

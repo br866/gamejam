@@ -183,6 +183,38 @@
 										</Action>
 									</ChildrenList>
 								</Event>
+								<Event Name="Play_Door_Unlocking" ID="{5C3B4078-75AC-4720-B0CF-83B0A0DCCC7A}">
+									<ChildrenList>
+										<Action Name="" ID="{B2F5D02E-63B7-4A0B-9706-3A9FC64547B0}" ShortID="401928009">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="Door_Unlocking" ID="{F92AFDA7-7E6B-4630-B76E-76854B61EA29}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+										<Action Name="" ID="{19C01849-2C92-4CF4-B9F4-54B357D35429}" ShortID="143474753">
+											<PropertyList>
+												<Property Name="Delay" Type="Real64" Value="0.4"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="RC_Door_Hinge" ID="{989AF11F-2BBF-4910-B675-90FE6B81F9C9}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="Play_Door_Locked" ID="{BDC1828B-0BB5-4A93-9A62-B01676B1781F}">
+									<ChildrenList>
+										<Action Name="" ID="{F96C64CE-341A-4869-8CE9-3DE26A3A2B80}" ShortID="705083457">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="Door_Locked" ID="{85E0C47E-57FA-4D26-82EB-8AB13C047B9F}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
 							</ChildrenList>
 						</Folder>
 						<Folder Name="Game" ID="{3A5097FA-C7BF-40CC-A827-A46BE32AC4C8}" ShortID="890467270"/>
