@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{701ECBBD-9C7B-4030-8CDB-749EE5D1C7B9}",
     "Language": "SFX",
-    "Hash": "{9DC68E4A-7C12-D26B-C235-D40C29C25DA9}",
+    "Hash": "{2F7A7026-C7CF-23EE-3637-8470E91BB0EF}",
     "ObjectPath": "Init",
     "ShortName": "Init",
     "Path": "Init.bnk",
@@ -108,6 +108,32 @@
       ]
      },
      {
+      "Id": "1083682085",
+      "Name": "COD",
+      "ObjectPath": "\\States\\Default Work Unit\\COD",
+      "GUID": "{B5D1F04D-C539-4D61-A6FA-E3AE6FD86226}",
+      "States": [
+       {
+        "Id": "748895195",
+        "Name": "None",
+        "ObjectPath": "\\States\\Default Work Unit\\COD\\None",
+        "GUID": "{95FAD3F6-7D49-4837-B0A0-880362D2DEA3}"
+       },
+       {
+        "Id": "1342227465",
+        "Name": "Eliminated",
+        "ObjectPath": "\\States\\Default Work Unit\\COD\\Eliminated",
+        "GUID": "{8BEBCA5E-38A4-47FF-916C-6C208FAE7631}"
+       },
+       {
+        "Id": "4143496951",
+        "Name": "Anxiety",
+        "ObjectPath": "\\States\\Default Work Unit\\COD\\Anxiety",
+        "GUID": "{D1EB2FDB-3656-4570-8514-FD9E87CEAFCA}"
+       }
+      ]
+     },
+     {
       "Id": "1446207487",
       "Name": "AnxietyLevel",
       "ObjectPath": "\\States\\Default Work Unit\\AnxietyLevel",
@@ -142,6 +168,6 @@
     ]
    }
   ],
-  "FileHash": "{FE714419-5C73-290B-B08F-F4498FEF2BCF}"
+  "FileHash": "{63C9E7B3-4741-5CC5-8A57-988E5E2B8A52}"
  }
 }
