@@ -60,3 +60,10 @@ An isolated editor test scene SHALL provide developer commands to toggle every s
 #### Scenario: GM orders group movement
 - **WHEN** the developer right-clicks a ground point in the test scene
 - **THEN** all flagged monsters attempt to pathfind to that point using their live nav graph
+
+### Requirement: Navigation defers path construction until A* is ready
+Monster navigation SHALL NOT invoke `Seeker.StartPath` until an `AstarPath` instance exists and its owned GridGraph has been created and scanned. A destination supplied earlier SHALL be retained and requested once readiness is reached.
+
+#### Scenario: Destination set during startup
+- **WHEN** a monster receives a destination before its navigation graph is ready
+- **THEN** no `No AstarPath object found` exception is emitted and the destination is path-requested once the graph becomes ready

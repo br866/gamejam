@@ -8,6 +8,7 @@ FormalLevel04 has two monsters whose A* grid graph is baked once at `Start`. The
 
 - Add an additive `StateChanged` event to `FormalDoor`, fired by `Open()`, `Close()`, and `SetStateImmediate()` (instant semantics on Close; no collider-timing changes).
 - Extend `LevelMonsterNavigation` behind a default-off `dynamicDoorNavigation` flag:
+  - Establish the A* startup contract: create the `AstarPath` singleton before any navigation request may be issued, defer `StartPath` until its GridGraph has been created and scanned, then issue the pending initial request.
   - Fix the stall bug so failed paths are re-requested after the repath interval.
   - Expose `LastPathFailed`.
   - Subscribe to in-area doors' `StateChanged` and flip walkability of the door's grid region on the same frame (`FlushGraphUpdates`) with immediate repath.

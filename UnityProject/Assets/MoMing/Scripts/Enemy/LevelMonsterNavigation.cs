@@ -43,6 +43,7 @@ public class LevelMonsterNavigation : MonoBehaviour
     private float nextRepathTime;
     private bool hasDestination;
     private bool pathPending;
+    private bool navigationReady;
     private bool pushingOut;
     private readonly List<FormalDoor> trackedDoors = new List<FormalDoor>();
     private readonly Dictionary<FormalDoor, Bounds> trackedDoorBounds = new Dictionary<FormalDoor, Bounds>();
@@ -65,6 +66,14 @@ public class LevelMonsterNavigation : MonoBehaviour
         seeker = GetComponent<Seeker>();
         if (seeker == null)
             seeker = gameObject.AddComponent<Seeker>();
+
+        // Path.Reset throws if a path is constructed before this singleton exists.
+        // The grid itself is still created and scanned by InitializeNavigation.
+        if (AstarPath.active == null)
+        {
+            var graphObject = new GameObject("Level2MonsterAstar");
+            AstarPath.active = graphObject.AddComponent<AstarPath>();
+        }
     }
 
     void Start()
@@ -78,6 +87,8 @@ public class LevelMonsterNavigation : MonoBehaviour
         // frame the component is created gets dropped, so retry until it sticks.
         while (!EnsureGraph())
             yield return null;
+
+        navigationReady = true;
 
         if (dynamicDoorNavigation)
             TrackDoors();
@@ -151,11 +162,11 @@ public class LevelMonsterNavigation : MonoBehaviour
     bool EnsureGraph()
     {
         if (AstarPath.active == null)
-        {
-            var graphObject = new GameObject("Level2MonsterAstar");
-            AstarPath.active = graphObject.AddComponent<AstarPath>();
             return false;
-        }
+
+        // A* 5.x can need a frame after AddComponent before its data object exists.
+        if (AstarPath.active.data == null)
+            return false;
 
         if (AstarPath.active.data.graphs != null)
         {
@@ -327,7 +338,7 @@ public class LevelMonsterNavigation : MonoBehaviour
 
     void RequestPath()
     {
-        if (seeker == null || !hasDestination || graph == null)
+        if (!navigationReady || seeker == null || !hasDestination || graph == null)
             return;
 
         pathPending = true;

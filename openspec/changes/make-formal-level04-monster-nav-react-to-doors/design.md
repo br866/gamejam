@@ -36,6 +36,11 @@ After a close event's graph flush, check the monster's nearest node; if unwalkab
 ### D7. Test isolation
 `Assets/MoMing/Scripts/Debug/DoorNavTestGm.cs`: entire class inside `#if UNITY_EDITOR`; only calls public APIs (`Open/Close/SetDestination/BeginForcedChase`). Scene `Assets/MoMing/Scenes/Test/Test_DoorNav.unity`: static copies of the L04/L045 content roots, camera auto-framed by GM script, excluded from Build Settings. No persistent/flow controllers are imported, so no production systems run there.
 
+### D8. A* startup readiness gates path creation
+`Path.Reset` throws when `AstarPath.active` is null; catching that exception cannot turn an invalid request into a valid path. `LevelMonsterNavigation.Awake` therefore ensures that the singleton component exists before any navigation-owned request is issued. Graph construction and scanning remain in the initialization coroutine, as the A* component may require a frame before `AddGraph` succeeds. A private readiness flag becomes true only after the named GridGraph has been found or created and scanned. `SetDestination` continues to retain the requested destination, while `RequestPath` returns without calling `Seeker.StartPath` until this flag is true. The initialization coroutine calls `ForceRepath` after setting it, guaranteeing the first queued target is requested exactly once after the graph is usable.
+
+This protects navigation-owned requests from Unity lifecycle ordering without relying on script execution order or retrying exceptions. It does not claim that every target is connected; ordinary unreachable-target results remain `path.error` and use the existing retry/fallback behavior.
+
 ## Risks / Trade-offs
 
 - Walkability GUO bypasses erosion: freed corridor width equals raw gap minus existing neighbor unwalkables; validated visually against grid gizmos (mitigation in D1).
