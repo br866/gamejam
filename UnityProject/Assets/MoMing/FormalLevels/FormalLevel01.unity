@@ -372,7 +372,7 @@ Transform:
   m_GameObject: {fileID: 174045454}
   serializedVersion: 2
   m_LocalRotation: {x: 0.15419173, y: -0.9569737, z: -0.04449029, w: 0.24175791}
-  m_LocalPosition: {x: 2.32, y: 2.43, z: -2.07}
+  m_LocalPosition: {x: -0.21, y: 0.83, z: -2.27}
   m_LocalScale: {x: 0.20825902, y: 0.20825902, z: 0.20825902}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -493,6 +493,7 @@ GameObject:
   m_Component:
   - component: {fileID: 287077518}
   - component: {fileID: 287077517}
+  - component: {fileID: 287077519}
   m_Layer: 0
   m_Name: "Sticker_ChatGPT Image 2026\u5E748\u670824\u65E5 10_29_27"
   m_TagString: Untagged
@@ -512,7 +513,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36f72a078ddb5b74f91682b435afac8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hintMessage: "\u5C0F\u5C0F\u7684\u4E1C\u897F\u53E0\u5728\u4E00\u8D77\u4E5F\u80FD\u78B0\u5230\u539F\u672C\u591F\u4E0D\u5230\u7684\u5730\u65B9"
+  hintMessage: 
   hintDuration: 3
   triggerRadius: 3.5
   releasePadding: 1.5
@@ -528,13 +529,33 @@ Transform:
   m_GameObject: {fileID: 287077516}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 27.3, y: 11.4, z: -19.395}
+  m_LocalPosition: {x: 35.82, y: 11.4, z: -14.85}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 432801833}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &287077519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 287077516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e6ae5eb2f6da6747bd540ce514add2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  readRadius: 3
+  heightTolerance: 3
+  humanPage: {fileID: 21300000, guid: 1e2f518605353f741ac2f2f996059cb1, type: 3}
+  dogPage: {fileID: 0}
+  prompt: "\u8FD9\u91CC\u6709\u4E00\u4EFD\u7B14\u8BB0\u6B8B\u9875\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
+  promptDuration: 3
+  promptRepeatInterval: 10
+  stopPromptingAfterRead: 1
 --- !u!1001 &314784766
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -726,6 +747,7 @@ GameObject:
   m_Component:
   - component: {fileID: 432801833}
   - component: {fileID: 432801834}
+  - component: {fileID: 432801835}
   m_Layer: 0
   m_Name: Face
   m_TagString: Untagged
@@ -742,7 +764,7 @@ Transform:
   m_GameObject: {fileID: 432801832}
   serializedVersion: 2
   m_LocalRotation: {x: 0.62726253, y: 0.3376311, z: -0.33641276, w: 0.615933}
-  m_LocalPosition: {x: -9.538, y: 0.819, z: -4.911}
+  m_LocalPosition: {x: -1.159, y: 0.822, z: -0.173}
   m_LocalScale: {x: 0.04354817, y: 0.04354817, z: 0.04354817}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -800,6 +822,26 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &432801835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 432801832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e6ae5eb2f6da6747bd540ce514add2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  readRadius: 2.5
+  heightTolerance: 3
+  humanPage: {fileID: 0}
+  dogPage: {fileID: 0}
+  prompt: "\u8FD9\u8FB9\u6709\u4E00\u4E2A\u516C\u544A\u677F\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
+  promptDuration: 3
+  promptRepeatInterval: 10
+  stopPromptingAfterRead: 1
 --- !u!1001 &486940034
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1558,7 +1600,7 @@ Transform:
   m_GameObject: {fileID: 750587168}
   serializedVersion: 2
   m_LocalRotation: {x: 0.5054059, y: -0.85947746, z: 0.06798186, w: 0.035238925}
-  m_LocalPosition: {x: 0.17800088, y: -0.14700042, z: 0.42999983}
+  m_LocalPosition: {x: 0.48, y: -0.28, z: 0.45}
   m_LocalScale: {x: 0.043739483, y: 0.043739483, z: 0.043739483}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1576,7 +1618,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e6ae5eb2f6da6747bd540ce514add2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  readRadius: 3
+  readRadius: 2.5
   heightTolerance: 3
   humanPage: {fileID: 21300000, guid: 1988fc24cfc6f0347abebe1fc8eee859, type: 3}
   dogPage: {fileID: 0}
@@ -1825,7 +1867,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e6ae5eb2f6da6747bd540ce514add2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  readRadius: 3
+  readRadius: 3.5
   heightTolerance: 3
   humanPage: {fileID: 21300000, guid: 15dd07c31a3d36f4f830822ef9f0c3a3, type: 3}
   dogPage: {fileID: 0}
@@ -1956,12 +1998,14 @@ MonoBehaviour:
   preloadRouteSuccessorOnOpen: 0
   unlockingEvent:
     idInternal: 0
-    valueGuidInternal:
-    WwiseObjectReference: {fileID: 11400000, guid: 2f4edbea5f614a789231ccab8d5c8203, type: 2}
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: 2f4edbea5f614a789231ccab8d5c8203,
+      type: 2}
   lockedEvent:
     idInternal: 0
-    valueGuidInternal:
-    WwiseObjectReference: {fileID: 11400000, guid: 9e7058d3a2df46ae8395b3ebc4fac8be, type: 2}
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: 9e7058d3a2df46ae8395b3ebc4fac8be,
+      type: 2}
   unlockDelaySeconds: 0.4
   promptReady: "\u6309 E \u5F00\u95E8"
   promptLocked: "\u95E8\u9501\u7740\uFF0C\u5F97\u5148\u627E\u5230\u94A5\u5319"
@@ -2115,12 +2159,14 @@ MonoBehaviour:
   preloadRouteSuccessorOnOpen: 0
   unlockingEvent:
     idInternal: 0
-    valueGuidInternal:
-    WwiseObjectReference: {fileID: 11400000, guid: 2f4edbea5f614a789231ccab8d5c8203, type: 2}
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: 2f4edbea5f614a789231ccab8d5c8203,
+      type: 2}
   lockedEvent:
     idInternal: 0
-    valueGuidInternal:
-    WwiseObjectReference: {fileID: 11400000, guid: 9e7058d3a2df46ae8395b3ebc4fac8be, type: 2}
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: 9e7058d3a2df46ae8395b3ebc4fac8be,
+      type: 2}
   unlockDelaySeconds: 0.4
   promptReady: "\u6309 E \u5F00\u95E8"
   promptLocked: "\u95E8\u9501\u7740\uFF0C\u5F97\u5148\u627E\u5230\u94A5\u5319"
@@ -2202,11 +2248,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e6ae5eb2f6da6747bd540ce514add2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  readRadius: 3
+  readRadius: 2.5
   heightTolerance: 3
   humanPage: {fileID: 21300000, guid: 15dd07c31a3d36f4f830822ef9f0c3a3, type: 3}
   dogPage: {fileID: 0}
-  prompt: "\u8FD9\u8FB9\u6709\u4E00\u4E2A\u516C\u544A\u677F\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
+  prompt: "\u8FD9\u91CC\u6709\u4E00\u4EFD\u5F02\u5E38\u89C2\u5BDF\u8BB0\u5F55\uFF0C\u6309
+    F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3
   promptRepeatInterval: 10
   stopPromptingAfterRead: 1
@@ -4074,7 +4121,7 @@ Transform:
   m_GameObject: {fileID: 1853364715}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.9675971, z: 0, w: 0.25249913}
-  m_LocalPosition: {x: 39.97, y: 12.67, z: -1.26}
+  m_LocalPosition: {x: 37.01, y: 12.67, z: -2.68}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

@@ -382,7 +382,7 @@ Transform:
   m_GameObject: {fileID: 89996977}
   serializedVersion: 2
   m_LocalRotation: {x: -0.000115230665, y: -0.99955153, z: -0.029694077, w: 0.003878578}
-  m_LocalPosition: {x: -0.27, y: -0, z: -0.159}
+  m_LocalPosition: {x: -0.26, y: -0.11, z: 1.74}
   m_LocalScale: {x: 0.06460677, y: 0.06460677, z: 0.06460677}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -539,7 +539,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hintMessage: "\u4E00\u4E2A\u4EBA\u7684\u91CD\u91CF\u4E0D\u591F\uFF0C\u53EA\u6709\u6211\u4EEC\u7AD9\u5728\u4E00\u8D77\uFF0C\u95E8\u624D\u4F1A\u6253\u5F00"
   hintDuration: 3
-  triggerRadius: 3.5
+  triggerRadius: 3
   releasePadding: 1.5
   minRepeatSeconds: 4
   heightTolerance: 3
@@ -553,7 +553,7 @@ Transform:
   m_GameObject: {fileID: 116707380}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.70153564, z: -0, w: 0.7126344}
-  m_LocalPosition: {x: -117.6, y: 11.46, z: 2.71}
+  m_LocalPosition: {x: -117.54, y: 11.46, z: 2.71}
   m_LocalScale: {x: 0.55805, y: 0.55805, z: 0.55805}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -715,7 +715,8 @@ MonoBehaviour:
   heightTolerance: 3
   humanPage: {fileID: 21300000, guid: f3634b04ee3f74d4eaa0260709e743de, type: 3}
   dogPage: {fileID: 0}
-  prompt: "\u8FD9\u91CC\u6709\u4E00\u5F20\u9648\u65E7\u7684zhita\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
+  prompt: "\u8FD9\u91CC\u6709\u4E00\u5F20\u9648\u65E7\u7684\u7EB8\u6761\uFF0C\u6309
+    F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3
   promptRepeatInterval: 10
   stopPromptingAfterRead: 1
@@ -1235,7 +1236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e6ae5eb2f6da6747bd540ce514add2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  readRadius: 3
+  readRadius: 4
   heightTolerance: 3
   humanPage: {fileID: 21300000, guid: fc8e33c093a51c348877151cc17b1d91, type: 3}
   dogPage: {fileID: 0}
@@ -1272,7 +1273,7 @@ Transform:
   m_GameObject: {fileID: 295531481}
   serializedVersion: 2
   m_LocalRotation: {x: 0.25932437, y: 0.6719193, z: 0.637656, w: -0.27325866}
-  m_LocalPosition: {x: -117.88, y: 12.32, z: 11.45}
+  m_LocalPosition: {x: -119.75, y: 11.94, z: 10.77}
   m_LocalScale: {x: 0.6731299, y: 0.6731299, z: 0.6731299}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2047,6 +2048,7 @@ GameObject:
   m_Component:
   - component: {fileID: 473334996}
   - component: {fileID: 473334995}
+  - component: {fileID: 473334997}
   m_Layer: 0
   m_Name: "Sticker_ChatGPT Image 2026\u5E748\u670824\u65E5 10_40_49 (1)"
   m_TagString: Untagged
@@ -2066,7 +2068,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36f72a078ddb5b74f91682b435afac8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hintMessage: "\u9634\u5F71\u91CC\u6709\u4E00\u5C0F\u5757\u5B89\u9759\u7684\u5730\u65B9\uFF0C\u4ED6\u4EEC\u8D70\u5230\u8FD9\u91CC\u5C31\u4F1A\u79BB\u5F00"
+  hintMessage: 
   hintDuration: 3
   triggerRadius: 3.5
   releasePadding: 1.5
@@ -2082,13 +2084,33 @@ Transform:
   m_GameObject: {fileID: 473334994}
   serializedVersion: 2
   m_LocalRotation: {x: -0.6956485, y: 0.18704785, z: 0.19552939, w: 0.6654732}
-  m_LocalPosition: {x: -98.29, y: 12.12, z: -13.23}
+  m_LocalPosition: {x: -98.25, y: 10.59, z: -13.17}
   m_LocalScale: {x: 0.82322, y: 0.82322, z: 0.82322}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 89996978}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: -92.54, y: 31.399002, z: 0}
+--- !u!114 &473334997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 473334994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e6ae5eb2f6da6747bd540ce514add2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  readRadius: 3
+  heightTolerance: 3
+  humanPage: {fileID: 0}
+  dogPage: {fileID: 0}
+  prompt: "\u8FD9\u91CC\u6709\u4E00\u4EFD\u7B14\u8BB0\u6B8B\u9875\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
+  promptDuration: 3
+  promptRepeatInterval: 10
+  stopPromptingAfterRead: 1
 --- !u!1 &502018194
 GameObject:
   m_ObjectHideFlags: 0
@@ -2130,6 +2152,7 @@ GameObject:
   m_Component:
   - component: {fileID: 541632095}
   - component: {fileID: 541632094}
+  - component: {fileID: 541632096}
   m_Layer: 0
   m_Name: "Sticker_ChatGPT Image 2026\u5E748\u670824\u65E5 10_40_49 (2)"
   m_TagString: Untagged
@@ -2149,7 +2172,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36f72a078ddb5b74f91682b435afac8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hintMessage: "\u8F6E\u5230\u6211\u66FF\u8C46\u8C46\u5F00\u95E8\u4E86\uFF0C\u6211\u4EEC\u8D70\u7684\u8DEF\u4E0D\u4E00\u6837\uFF0C\u5374\u4F1A\u901A\u5F80\u540C\u4E00\u4E2A\u5730\u65B9"
+  hintMessage: 
   hintDuration: 3
   triggerRadius: 3.5
   releasePadding: 1.5
@@ -2172,6 +2195,26 @@ Transform:
   - {fileID: 201575458}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -104.287, z: 0}
+--- !u!114 &541632096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 541632093}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e6ae5eb2f6da6747bd540ce514add2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  readRadius: 3
+  heightTolerance: 3
+  humanPage: {fileID: 0}
+  dogPage: {fileID: 0}
+  prompt: "\u8FD9\u91CC\u6709\u4E00\u4EFD\u7B14\u8BB0\u6B8B\u9875\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
+  promptDuration: 3
+  promptRepeatInterval: 10
+  stopPromptingAfterRead: 1
 --- !u!1 &542060588
 GameObject:
   m_ObjectHideFlags: 0
@@ -7296,13 +7339,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1995797715}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.02}
+  m_LocalRotation: {x: 0.00000003352761, y: -0.000000029802319, z: -0.07133599, w: 0.9974524}
+  m_LocalPosition: {x: -1.254, y: 2.696, z: 0.41}
   m_LocalScale: {x: 0.119760476, y: 0.119760476, z: 0.119760476}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 295531484}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -8.181}
 --- !u!212 &1995797717
 SpriteRenderer:
   m_ObjectHideFlags: 0
