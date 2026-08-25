@@ -848,7 +848,7 @@ Transform:
   m_GameObject: {fileID: 525113522}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.9999631, z: -0, w: 0.008587029}
-  m_LocalPosition: {x: 13.17, y: 11.93, z: -4.35}
+  m_LocalPosition: {x: 13.17, y: 8.98, z: -4.35}
   m_LocalScale: {x: 1.5009, y: 1.5009, z: 1.5009}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -885,12 +885,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e6ae5eb2f6da6747bd540ce514add2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  readRadius: 3
+  readRadius: 2.5
   heightTolerance: 3
   humanPages:
-  - {fileID: 21300000, guid: 274dbfda7dd159e4d8007ce4fbfac7ad, type: 3}
+  - {fileID: 21300000, guid: 5fc79ee6d4728fb4bacd414f3ebd503a, type: 3}
   dogPages:
-  - {fileID: 21300000, guid: 309e6a0c94ad93840bf494125085f513, type: 3}
+  - {fileID: 21300000, guid: cf2821d3a20132e4583776394e3e4c83, type: 3}
   prompt: "\u8FD9\u91CC\u597D\u50CF\u6709\u4E00\u4EFD\u62A5\u544A\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3
   promptRepeatInterval: 10
@@ -909,7 +909,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hintMessage: 
   hintDuration: 3
-  triggerRadius: 34
+  triggerRadius: 2.5
   releasePadding: 1.5
   minRepeatSeconds: 4
   heightTolerance: 3
@@ -923,7 +923,7 @@ Transform:
   m_GameObject: {fileID: 557738845}
   serializedVersion: 2
   m_LocalRotation: {x: -0.011982095, y: 0.76164764, z: -0.010191075, w: 0.6478005}
-  m_LocalPosition: {x: -3.15, y: 12.31, z: -14.1}
+  m_LocalPosition: {x: -5.53, y: 9.7, z: -14.89}
   m_LocalScale: {x: 0.87626, y: 0.87626, z: 0.87626}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1169,7 +1169,7 @@ Transform:
   m_GameObject: {fileID: 783337707}
   serializedVersion: 2
   m_LocalRotation: {x: 0.38714492, y: -0.59699684, z: 0.5760667, w: 0.40231937}
-  m_LocalPosition: {x: -0.285, y: 0.289, z: -1.116}
+  m_LocalPosition: {x: -1.996, y: 3.197, z: 1.69}
   m_LocalScale: {x: 0.07236562, y: 0.07236562, z: 0.07236562}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2191,7 +2191,7 @@ Transform:
   m_GameObject: {fileID: 994671935}
   serializedVersion: 2
   m_LocalRotation: {x: 0.28356642, y: -0.6494934, z: 0.6448998, w: 0.28609926}
-  m_LocalPosition: {x: -1.68, y: 0.86, z: -1.13}
+  m_LocalPosition: {x: -2.171, y: 2.577, z: -2.194}
   m_LocalScale: {x: 0.0806755, y: 0.0806755, z: 0.0806755}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3319,13 +3319,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1678323444}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.1657691, y: 0.9861377, z: 0.0012086274, w: -0.0071899584}
-  m_LocalPosition: {x: -0.978, y: 1.08, z: -0.441}
+  m_LocalRotation: {x: -0.09622389, y: 0.9953331, z: 0.00070157123, w: -0.007257002}
+  m_LocalPosition: {x: -1.042, y: 2.942, z: -0.44}
   m_LocalScale: {x: 0.1203422, y: 0.1203422, z: 0.1203422}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 525113524}
-  m_LocalEulerAnglesHint: {x: 0, y: 180.835, z: -19.084}
+  m_LocalEulerAnglesHint: {x: 0, y: 180.835, z: -11.044}
 --- !u!212 &1678323446
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3410,7 +3410,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hintMessage: 
   hintDuration: 3
-  triggerRadius: 3.5
+  triggerRadius: 2.5
   releasePadding: 1.5
   minRepeatSeconds: 4
   heightTolerance: 3
@@ -3424,7 +3424,7 @@ Transform:
   m_GameObject: {fileID: 1703455525}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.84068865, z: 0, w: 0.54151875}
-  m_LocalPosition: {x: -0.28, y: 11.56, z: -15.66}
+  m_LocalPosition: {x: 0.64, y: 9.86, z: -16.08}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3443,10 +3443,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e6ae5eb2f6da6747bd540ce514add2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  readRadius: 3
+  readRadius: 2.5
   heightTolerance: 3
-  humanPages: []
-  dogPages: []
+  humanPages:
+  - {fileID: 21300000, guid: 274dbfda7dd159e4d8007ce4fbfac7ad, type: 3}
+  dogPages:
+  - {fileID: 21300000, guid: 309e6a0c94ad93840bf494125085f513, type: 3}
   prompt: "\u8FD9\u6709\u4E00\u4EFD\u7B14\u8BB0\u6B8B\u9875\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3
   promptRepeatInterval: 10
