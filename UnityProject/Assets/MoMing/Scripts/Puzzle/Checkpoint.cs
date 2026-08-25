@@ -19,16 +19,7 @@ public class Checkpoint : MonoBehaviour
     public Material inactiveMaterial;
     public Material activeMaterial;
 
-    [Header("Audio")]
-    [SerializeField] private AudioClip activateClip;
-
     private bool isActivated = false;
-    private AudioSource audioSource;
-
-    void Awake()
-    {
-        audioSource = GetComponent<AudioSource>();
-    }
 
     void Start()
     {
@@ -45,8 +36,6 @@ public class Checkpoint : MonoBehaviour
 
         if (indicatorRenderer != null && activeMaterial != null)
             indicatorRenderer.material = activeMaterial;
-
-        PlayAudio(activateClip);
 
         if (GameManager.Instance != null)
         {
@@ -66,12 +55,6 @@ public class Checkpoint : MonoBehaviour
             PlayerManager.Instance.CameraFollow.PlayHint(hintTarget);
 
         Debug.Log("[Checkpoint] Activated! Respawn point saved.");
-    }
-
-    void PlayAudio(AudioClip clip)
-    {
-        // 统一走音效入口，受“音效”滑块控制（与 BGM 分开）
-        SettingsManager.PlaySfx(audioSource, clip);
     }
 
     public bool IsActivated => isActivated;

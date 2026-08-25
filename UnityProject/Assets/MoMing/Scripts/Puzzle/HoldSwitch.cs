@@ -19,21 +19,11 @@ public class HoldSwitch : MonoBehaviour
     public Material inactiveMaterial;
     public Material activeMaterial;
 
-    [Header("Audio")]
-    [SerializeField] private AudioClip activateClip;
-    [SerializeField] private AudioClip deactivateClip;
-
     private bool isActivated = false;
     private bool isPermanent = false;
     private float currentHoldTime = 0f;
     private bool isPlayerNearby = false;
     private bool isHolding = false;
-    private AudioSource audioSource;
-
-    void Awake()
-    {
-        audioSource = GetComponent<AudioSource>();
-    }
 
     void Start()
     {
@@ -95,8 +85,6 @@ public class HoldSwitch : MonoBehaviour
                 indicatorRenderer.material = inactiveMaterial;
         }
 
-        PlayAudio(active ? activateClip : deactivateClip);
-
         if (linkedGate != null)
         {
             if (active) linkedGate.Open();
@@ -135,12 +123,6 @@ public class HoldSwitch : MonoBehaviour
             indicatorRenderer.material = inactiveMaterial;
         if (linkedGate != null)
             linkedGate.Close();
-    }
-
-    void PlayAudio(AudioClip clip)
-    {
-        if (clip != null && audioSource != null)
-            audioSource.PlayOneShot(clip);
     }
 
     public bool IsActivated => isActivated;

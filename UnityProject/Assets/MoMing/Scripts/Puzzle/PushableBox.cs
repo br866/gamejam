@@ -14,10 +14,6 @@ public class PushableBox : MonoBehaviour
     private Transform attachedPlayer;
     private Vector3 attachOffset;
 
-    // 推箱子音效：挂住时 Start，移动中循环 Loop，脱离时 Stop
-    private AudioSource loopSource;
-    private Vector3 lastPos;
-
     public bool IsAttached => isAttached;
 
     void Awake()
@@ -26,14 +22,6 @@ public class PushableBox : MonoBehaviour
         rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotation;
         rb.isKinematic = true;
 
-        loopSource = gameObject.AddComponent<AudioSource>();
-        loopSource.playOnAwake = false;
-        loopSource.loop = true;
-        loopSource.spatialBlend = 1f;
-        loopSource.rolloffMode = AudioRolloffMode.Linear;
-        loopSource.maxDistance = 25f;
-        loopSource.volume = 0f;
-        lastPos = transform.position;
     }
 
     public void Attach(Transform player)
@@ -54,14 +42,6 @@ public class PushableBox : MonoBehaviour
         if (playerCol != null && boxCol != null)
             Physics.IgnoreCollision(playerCol, boxCol, true);
 
-        SfxManager.PlayAt(Sfx.CratePushStart, transform.position);
-        if (loopSource != null && loopSource.clip == null)
-            loopSource.clip = SfxManager.GetClip(Sfx.CratePushLoop);
-        if (loopSource != null && loopSource.clip != null)
-        {
-            loopSource.volume = 0f;
-            loopSource.Play();
-        }
     }
 
     public void Detach()
@@ -81,9 +61,6 @@ public class PushableBox : MonoBehaviour
             rb.isKinematic = true;
         }
 
-        if (loopSource != null && loopSource.isPlaying)
-            loopSource.Stop();
-        SfxManager.PlayAt(Sfx.CratePushStop, transform.position);
     }
 
     void LateUpdate()
@@ -94,13 +71,5 @@ public class PushableBox : MonoBehaviour
         targetPos.y = transform.position.y;
         transform.position = Vector3.Lerp(transform.position, targetPos, followSpeed * Time.deltaTime);
 
-        // 只有真的在动的时候循环声才出来，停住就淡下去
-        float moved = (transform.position - lastPos).magnitude;
-        lastPos = transform.position;
-        if (loopSource != null)
-        {
-            float target = (moved > 0.002f) ? 1f : 0f;
-            loopSource.volume = Mathf.MoveTowards(loopSource.volume, target, Time.deltaTime * 4f);
-        }
     }
 }

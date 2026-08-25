@@ -9,18 +9,12 @@ public class GateController : MonoBehaviour, IFormalLevelActuator
     public float openYOffset = 5f;
     public float moveSpeed = 3f;
 
-    [Header("Audio")]
-    [SerializeField] private AudioClip openClip;
-    [SerializeField] private AudioClip closeClip;
-
     private Vector3 closedPosition;
     private Vector3 openPosition;
     private bool isOpen = false;
-    private AudioSource audioSource;
 
     void Awake()
     {
-        audioSource = GetComponent<AudioSource>();
         closedPosition = transform.position;
         openPosition = closedPosition + new Vector3(0f, openYOffset, 0f);
     }
@@ -53,30 +47,18 @@ public class GateController : MonoBehaviour, IFormalLevelActuator
     public void Open()
     {
         if (!isOpen)
-        {
             isOpen = true;
-            PlayAudio(openClip);
-        }
     }
 
     public void Close()
     {
         if (isOpen)
-        {
             isOpen = false;
-            PlayAudio(closeClip);
-        }
     }
 
     void ResetGate()
     {
         isOpen = false;
-    }
-
-    void PlayAudio(AudioClip clip)
-    {
-        if (clip != null && audioSource != null)
-            audioSource.PlayOneShot(clip);
     }
 
     public bool IsOpen => isOpen;

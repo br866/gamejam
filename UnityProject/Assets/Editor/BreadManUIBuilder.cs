@@ -335,7 +335,7 @@ public static class BreadManUIBuilder
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
 
         // --- 相机（纯黑底，视频贴在近裁剪面上）---
-        var camGO = new GameObject("Main Camera", typeof(Camera), typeof(AudioListener));
+        var camGO = new GameObject("Main Camera", typeof(Camera));
         camGO.tag = "MainCamera";
         var cam = camGO.GetComponent<Camera>();
         cam.clearFlags = CameraClearFlags.SolidColor;

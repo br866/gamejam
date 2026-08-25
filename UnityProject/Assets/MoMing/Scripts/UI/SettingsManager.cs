@@ -234,12 +234,6 @@ public class SettingsManager : MonoBehaviour
         }
     }
 
-    /// <summary>Legacy compatibility only. Unity AudioSources are intentionally disabled.</summary>
-    public static void PlaySfx(AudioSource source, AudioClip clip)
-    {
-        // Intentionally silent. Migrate the caller to a Wwise Event instead.
-    }
-
     public void Close()
     {
         gameObject.SetActive(false);
