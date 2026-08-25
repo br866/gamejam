@@ -208,6 +208,7 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
         }
 
         IgnoreCrateCollision(actor, true);
+        actor.Stop();
         actor.LockMoverInteraction(transform.position);
         actor.SnapToMoverPoint(GetPointPosition(point));
         SettleOnGround();
