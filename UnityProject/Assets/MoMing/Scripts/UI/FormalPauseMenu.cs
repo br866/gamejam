@@ -83,6 +83,7 @@ public class FormalPauseMenu : MonoBehaviour
             if (settingsPanel != null && settingsPanel.activeSelf)
             {
                 settingsPanel.SetActive(false);
+                FormalParchmentAudio.PlayClose();
             }
             else if (IsPaused)
             {
@@ -119,6 +120,7 @@ public class FormalPauseMenu : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
 
         pauseRoot.SetActive(true);
+        FormalParchmentAudio.PlayOpen();
         if (hideHudWhilePaused && hudRoot != null)
             hudRoot.SetActive(false);
     }
@@ -137,6 +139,7 @@ public class FormalPauseMenu : MonoBehaviour
         if (pauseRoot != null) pauseRoot.SetActive(false);
         if (settingsPanel != null) settingsPanel.SetActive(false);
         if (hudRoot != null) hudRoot.SetActive(true);
+        FormalParchmentAudio.PlayClose();
     }
 
     public void OpenSettings()
@@ -145,6 +148,7 @@ public class FormalPauseMenu : MonoBehaviour
             return;
 
         settingsPanel.SetActive(true);
+        FormalParchmentAudio.PlayOpen();
         // 两层 UI 别叠在一起
         if (pauseRoot != null) pauseRoot.SetActive(false);
     }

@@ -17,12 +17,15 @@ namespace AK
         static const AkUniqueID PLAY_FOOTSTEP_BRUTEDOC = 3546231729U;
         static const AkUniqueID PLAY_FOOTSTEP_DOG = 1441942263U;
         static const AkUniqueID PLAY_FOOTSTEP_HUMAN = 1846914642U;
+        static const AkUniqueID PLAY_GAMEPLAY_MUSIC = 1231987938U;
         static const AkUniqueID PLAY_KEY_PICKUP = 2881789206U;
-        static const AkUniqueID PLAY_MUSICMODE = 3324110046U;
         static const AkUniqueID PLAY_TITLE_MUSIC = 2604896900U;
         static const AkUniqueID PLAY_UI_CLICK = 1749424733U;
         static const AkUniqueID PLAY_UI_HOVER = 1339559671U;
+        static const AkUniqueID PLAY_UI_PARCHMENT_CLOSE = 3581212516U;
+        static const AkUniqueID PLAY_UI_PARCHMENT_OPEN = 1586167264U;
         static const AkUniqueID STOP_CRATE_PUSH = 708504560U;
+        static const AkUniqueID STOP_GAMEPLAY_MUSIC = 3536547992U;
     } // namespace EVENTS
 
     namespace STATES

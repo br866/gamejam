@@ -243,10 +243,12 @@ public class SettingsManager : MonoBehaviour
     public void Close()
     {
         gameObject.SetActive(false);
+        FormalParchmentAudio.PlayClose();
     }
 
     public void Open()
     {
         gameObject.SetActive(true);
+        FormalParchmentAudio.PlayOpen();
     }
 }

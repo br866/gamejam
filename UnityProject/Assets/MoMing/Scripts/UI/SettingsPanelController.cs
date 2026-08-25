@@ -11,12 +11,18 @@ public class SettingsPanelController : MonoBehaviour
     public void ShowSettings()
     {
         if (settingsPanel != null)
+        {
             settingsPanel.SetActive(true);
+            FormalParchmentAudio.PlayOpen();
+        }
     }
 
     public void HideSettings()
     {
         if (settingsPanel != null)
+        {
             settingsPanel.SetActive(false);
+            FormalParchmentAudio.PlayClose();
+        }
     }
 }

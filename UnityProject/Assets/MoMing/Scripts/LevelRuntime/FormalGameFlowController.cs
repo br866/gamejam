@@ -711,6 +711,10 @@ public class FormalGameFlowController : MonoBehaviour
         if (string.IsNullOrEmpty(currentLevelScene))
             return;
 
+        FormalWwiseMusicController music = FindObjectOfType<FormalWwiseMusicController>();
+        if (music != null)
+            music.RestartFromBeginning();
+
         // 下面有一条异步重载关卡的分支走不到 FormalLevelController.RequestRecovery()，
         // 所以这里先无条件清一次焦虑。
         if (FormalAnxietyState.Instance != null)
