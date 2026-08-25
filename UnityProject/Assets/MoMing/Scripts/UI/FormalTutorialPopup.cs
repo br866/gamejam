@@ -171,6 +171,19 @@ public class FormalTutorialPopup : MonoBehaviour
 
         if (!IsShowing)
         {
+            // GM：不用真跑到那一关也能验证图对不对
+            if (Input.GetKeyDown(KeyCode.Keypad3))
+            {
+                ForceShow(RolePages(humanCheckpointPages, dogCheckpointPages, "存档地毯介绍"), checkpointPrefKey);
+                return;
+            }
+
+            if (Input.GetKeyDown(KeyCode.Keypad9))
+            {
+                ForceShow(RolePages(humanLevelIntroPages, dogLevelIntroPages, "本关介绍"), levelIntroPrefKey);
+                return;
+            }
+
             if (!finished && ShouldTrigger())
                 Show();
             else
@@ -305,6 +318,19 @@ public class FormalTutorialPopup : MonoBehaviour
     public void Show()
     {
         ShowPages(RolePages(humanPages, dogPages, "开局教学"), PrefKey, true);
+    }
+
+    /// <summary>GM 用：无视“看过了”直接弹，没配图就报警告。</summary>
+    void ForceShow(Sprite[] content, string prefKey)
+    {
+        if (content == null || content.Length == 0)
+        {
+            Debug.LogWarning("[FormalTutorialPopup] 这组图没配，弹不出来。" +
+                             "去 FormalPersistent 场景跑 Tools/默名/挂上额外教程图（地毯 + 4.5 关），然后 Ctrl+S。", this);
+            return;
+        }
+
+        ShowPages(content, prefKey, false);
     }
 
     /// <summary>
