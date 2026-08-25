@@ -42,6 +42,31 @@
 								</Action>
 							</ChildrenList>
 						</Event>
+						<Event Name="Stop_DeathCause_Music" ID="{C5FB4D93-7C00-4036-AAF8-9FA4965CCA98}">
+							<ChildrenList>
+								<Action Name="" ID="{FF8EEC53-D805-42E4-B1F6-392D0FBE838C}" ShortID="384141942">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="2"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="DeathCause_Music" ID="{5C4239ED-AE13-4C00-A48D-F2B6B06064A8}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Play_DeathCause_Music" ID="{CEA6B069-0917-45AF-B1E6-5878BCDDA0F1}">
+							<ChildrenList>
+								<Action Name="" ID="{43C1BD0E-1807-41D2-B702-E269942A4B5E}" ShortID="980248201">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="DeathCause_Music" ID="{5C4239ED-AE13-4C00-A48D-F2B6B06064A8}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
 					</ChildrenList>
 				</Folder>
 				<Folder Name="SFX" ID="{408478FE-1361-4AEA-B641-1A089677C69D}" ShortID="433650339">
@@ -79,6 +104,17 @@
 											<ReferenceList>
 												<Reference Name="Target">
 													<ObjectRef Name="SFX_Footstep_Dog" ID="{A398260B-19BA-49E7-A3E1-9CE80C9A6C2C}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="Play_PlayerDeath_Stinger" ID="{292DC424-9092-4CD3-BC79-68F18EF97CFB}">
+									<ChildrenList>
+										<Action Name="" ID="{D51433AF-B8DB-412C-A8DA-16363A74F7D1}" ShortID="536127404">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="SFX_PlayerDeath_Stinger" ID="{B14CC8AF-C5D1-4C23-8AC7-9EDAE9DA040E}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
 												</Reference>
 											</ReferenceList>
 										</Action>
@@ -142,6 +178,38 @@
 											<ReferenceList>
 												<Reference Name="Target">
 													<ObjectRef Name="WoodenCrate_Push_Stop" ID="{C965C03D-9463-4C14-A7AA-F136CCE3DE81}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="Play_Door_Unlocking" ID="{5C3B4078-75AC-4720-B0CF-83B0A0DCCC7A}">
+									<ChildrenList>
+										<Action Name="" ID="{B2F5D02E-63B7-4A0B-9706-3A9FC64547B0}" ShortID="401928009">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="Door_Unlocking" ID="{F92AFDA7-7E6B-4630-B76E-76854B61EA29}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+										<Action Name="" ID="{19C01849-2C92-4CF4-B9F4-54B357D35429}" ShortID="143474753">
+											<PropertyList>
+												<Property Name="Delay" Type="Real64" Value="0.4"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="RC_Door_Hinge" ID="{989AF11F-2BBF-4910-B675-90FE6B81F9C9}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="Play_Door_Locked" ID="{BDC1828B-0BB5-4A93-9A62-B01676B1781F}">
+									<ChildrenList>
+										<Action Name="" ID="{F96C64CE-341A-4869-8CE9-3DE26A3A2B80}" ShortID="705083457">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="Door_Locked" ID="{85E0C47E-57FA-4D26-82EB-8AB13C047B9F}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
 												</Reference>
 											</ReferenceList>
 										</Action>

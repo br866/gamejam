@@ -109,6 +109,8 @@ public class FormalDeathScreen : MonoBehaviour
         prevTimeScale = Time.timeScale > 0f ? Time.timeScale : 1f;
         Time.timeScale = 0f;
 
+        FormalWwiseDeathAudio.PlayDeath(cause == DeathCause.Anxiety);
+
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 
@@ -235,6 +237,8 @@ public class FormalDeathScreen : MonoBehaviour
 
     void Hide()
     {
+        FormalWwiseDeathAudio.StopDeathAudio();
+
         if (showRoutine != null)
         {
             StopCoroutine(showRoutine);

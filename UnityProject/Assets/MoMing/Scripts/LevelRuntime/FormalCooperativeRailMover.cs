@@ -168,7 +168,7 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
     public void SetAttachedPullAnimation()
     {
         if (human != null)
-            human.SetMoverIdle();
+            human.SetMoverInteraction(false, transform.position);
     }
 
     public void SetAttachedIdleAnimation()

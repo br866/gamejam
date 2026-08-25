@@ -720,6 +720,8 @@ public class FormalGameFlowController : MonoBehaviour
         if (FormalAnxietyState.Instance != null)
             FormalAnxietyState.Instance.ResetAnxiety();
 
+        ResetLevel045Level05SharedDoorForRecovery();
+
         if (!string.IsNullOrEmpty(pendingUnloadScene))
         {
             FormalLevelController retainedLevel = FormalLevelActors.FindLevelController(SceneManager.GetSceneByName(currentLevelScene));
@@ -739,6 +741,47 @@ public class FormalGameFlowController : MonoBehaviour
         FormalLevelController level = FormalLevelActors.FindLevelController(SceneManager.GetSceneByName(currentLevelScene));
         if (level != null)
             level.RequestRecovery();
+    }
+
+    void ResetLevel045Level05SharedDoorForRecovery()
+    {
+        if (currentLevelScene != "FormalLevel045" && currentLevelScene != "FormalLevel05")
+            return;
+
+        FormalDoor door = FindTransitionDoor("FormalLevel045", "FormalLevel05");
+        if (door == null)
+        {
+            Debug.LogWarning("[L045ExitRecovery] shared transition door to Level 5 was not found during recovery.", this);
+            return;
+        }
+
+        door.SetClosedImmediate();
+
+        if (currentLevelScene == "FormalLevel045")
+            ResetLevel045ExitCrateTrigger(door);
+    }
+
+    void ResetLevel045ExitCrateTrigger(FormalDoor exitDoor)
+    {
+        Scene level045 = SceneManager.GetSceneByName("FormalLevel045");
+        if (!level045.isLoaded)
+            return;
+
+        int resetCount = 0;
+        foreach (GameObject root in level045.GetRootGameObjects())
+        {
+            foreach (FormalCrateDoorTrigger trigger in root.GetComponentsInChildren<FormalCrateDoorTrigger>(true))
+            {
+                if (trigger.Door != exitDoor)
+                    continue;
+
+                trigger.ResetForLevelRecovery();
+                resetCount++;
+            }
+        }
+
+        if (resetCount == 0)
+            Debug.LogWarning("[L045ExitRecovery] crate-exit trigger for the Level 5 transition door was not found.", this);
     }
 
     IEnumerator RestoreRetainedPredecessorForLevel045Recovery(string retainedSceneName)

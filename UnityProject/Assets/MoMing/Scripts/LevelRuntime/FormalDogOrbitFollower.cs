@@ -5,7 +5,9 @@ public class FormalDogOrbitFollower : MonoBehaviour
 {
     [SerializeField] private float orbitRadius = 2f;
     [SerializeField] private float orbitSpeed = 1.6f;
-    [SerializeField] private float moveSpeed = 4.5f;
+    [Tooltip("强制跟随时，狗的速度相对于角色 walkSpeed 的倍率。")]
+    [SerializeField] private float followSpeedMultiplier = 1.3f;
+    [SerializeField] private float movementThreshold = 0.01f;
 
     private FormalPlayerActor human;
     private FormalPlayerActor dog;
@@ -34,6 +36,9 @@ public class FormalDogOrbitFollower : MonoBehaviour
 
     public void StopOrbit()
     {
+        if (dog != null)
+            dog.SetExternalDogMovement(false);
+
         active = false;
         human = null;
         dog = null;
@@ -67,7 +72,12 @@ public class FormalDogOrbitFollower : MonoBehaviour
             moveTarget.y = dog.transform.position.y;
         }
 
-        dog.transform.position = Vector3.MoveTowards(dog.transform.position, moveTarget, moveSpeed * Time.deltaTime);
+        Vector3 previousPosition = dog.transform.position;
+        dog.transform.position = Vector3.MoveTowards(
+            previousPosition,
+            moveTarget,
+            dog.ConfiguredWalkSpeed * Mathf.Max(0f, followSpeedMultiplier) * Time.deltaTime);
+        dog.SetExternalDogMovement(FlatDistance(previousPosition, dog.transform.position) > movementThreshold);
 
         Vector3 look = human.transform.position - dog.transform.position;
         look.y = 0f;

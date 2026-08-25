@@ -13,6 +13,11 @@ public class FormalPlayerActor : MonoBehaviour
     [SerializeField] private float jumpHeight = 2.2f;
     [SerializeField] private bool walkOnlyAnimation;
     [SerializeField] private bool canJump = true;
+    [Header("Dog Locomotion")]
+    [Tooltip("没有方向输入时，狗的水平速度每秒降低的数值。")]
+    [SerializeField] private float dogStoppingDeceleration = 12f;
+    [Tooltip("狗的水平速度低于该值时，视为已经停下并播放 Idle。")]
+    [SerializeField] private float dogIdleSpeedThreshold = 0.05f;
     [SerializeField] private Transform focusAnchor;
     [SerializeField] private Transform moverAttachPoint;
 
@@ -101,7 +106,10 @@ public class FormalPlayerActor : MonoBehaviour
         transform.SetPositionAndRotation(target, transform.rotation);
         if (moverRotationLocked)
             transform.rotation = moverRotation;
-        body.velocity = velocity;
+        // 挂点是水平位置约束：不能把挂接前残留的 X/Z 惯性带回去，
+        // 否则刚体会在本物理步滑离挂点，再于下一帧被强制吸回而抖动。
+        // Y 仍由重力和地面接触解算，避免角色被固定在空中或穿过地面。
+        body.velocity = new Vector3(0f, velocity.y, 0f);
         Physics.SyncTransforms();
     }
 
@@ -174,6 +182,23 @@ public class FormalPlayerActor : MonoBehaviour
         if (moverRotationLocked || IsExecutionLocked)
             return;
 
+        bool hasMovementInput = direction.sqrMagnitude > 0.01f;
+        if (role == ActorRole.Dog && !hasMovementInput)
+        {
+            Vector3 horizontalVelocity = new Vector3(body.velocity.x, 0f, body.velocity.z);
+            horizontalVelocity = Vector3.MoveTowards(
+                horizontalVelocity,
+                Vector3.zero,
+                Mathf.Max(0f, dogStoppingDeceleration) * Time.fixedDeltaTime);
+            body.velocity = new Vector3(horizontalVelocity.x, ClampFall(body.velocity.y), horizontalVelocity.z);
+
+            bool isStillMoving = horizontalVelocity.sqrMagnitude > dogIdleSpeedThreshold * dogIdleSpeedThreshold;
+            SetState(!IsGrounded()
+                ? ActorState.Jumping
+                : isStillMoving ? ActorState.Walking : ActorState.Idle);
+            return;
+        }
+
         bool sprinting = sprint && role == ActorRole.Human;
         float speed = sprinting ? sprintSpeed : walkSpeed;
         if (role == ActorRole.Dog)
@@ -181,12 +206,23 @@ public class FormalPlayerActor : MonoBehaviour
         body.velocity = new Vector3(direction.x * speed, ClampFall(body.velocity.y), direction.z * speed);
         SetState(!IsGrounded()
             ? ActorState.Jumping
-            : direction.sqrMagnitude > 0.01f
+            : hasMovementInput
                 ? sprinting ? ActorState.Sprinting : ActorState.Walking
                 : ActorState.Idle);
 
-        if (direction.sqrMagnitude > 0.01f && !moverRotationLocked)
+        if (hasMovementInput && !moverRotationLocked)
             body.MoveRotation(Quaternion.Slerp(body.rotation, Quaternion.LookRotation(direction), turnSpeed * Time.fixedDeltaTime));
+    }
+
+    /// <summary>供强制跟随等外部位移使用，按实际位移同步狗的 Walk / Idle 状态。</summary>
+    public void SetExternalDogMovement(bool isMoving)
+    {
+        if (role != ActorRole.Dog)
+            return;
+
+        SetState(!IsGrounded()
+            ? ActorState.Jumping
+            : isMoving ? ActorState.Walking : ActorState.Idle);
     }
 
     public void Stop()
@@ -309,7 +345,8 @@ public class FormalPlayerActor : MonoBehaviour
         if (!animationInitialized || animator == null)
             return;
 
-        string stateName = walkOnlyAnimation ? "Walk" :
+        string stateName = state == ActorState.Idle && role == ActorRole.Dog ? "Idle" :
+            walkOnlyAnimation ? "Walk" :
             state == ActorState.Jumping ? "Jump" :
             state == ActorState.Pushing ? "Push" :
             state == ActorState.Pulling ? "Pull" :

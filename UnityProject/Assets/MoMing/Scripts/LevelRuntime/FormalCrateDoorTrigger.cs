@@ -7,10 +7,18 @@ public class FormalCrateDoorTrigger : MonoBehaviour
     private bool preloadRouteSuccessor;
     private bool completed;
 
+    public FormalDoor Door => door;
+
     /// <summary>由场景自有的实体出口绑定在运行时设置，不改动 Prefab 资源。</summary>
     public void SetPreloadRouteSuccessor(bool enabled)
     {
         preloadRouteSuccessor = enabled;
+    }
+
+    /// <summary>供关卡恢复流程重开同一出口的箱子机关。</summary>
+    public void ResetForLevelRecovery()
+    {
+        completed = false;
     }
 
     void Awake()

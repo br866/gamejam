@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -41,6 +42,14 @@ public class FormalDoorInteraction : MonoBehaviour, IFormalLevelTemporaryState
     [Tooltip("开启门后预加载下一关，但保持玩家位置，等待实体穿过入口后再确认切关。")]
     [SerializeField] private bool preloadRouteSuccessorOnOpen;
 
+    [Header("Wwise Audio")]
+    [Tooltip("Play_Door_Unlocking. Its Wwise Event also plays RC_Door_Hinge after the configured delay.")]
+    [SerializeField] private AK.Wwise.Event unlockingEvent = new AK.Wwise.Event();
+    [Tooltip("Play_Door_Locked.")]
+    [SerializeField] private AK.Wwise.Event lockedEvent = new AK.Wwise.Event();
+    [Tooltip("Must match the delay on RC_Door_Hinge inside Play_Door_Unlocking.")]
+    [SerializeField, Min(0f)] private float unlockDelaySeconds = 0.4f;
+
     [Header("提示文字（留空=不提示）")]
     [SerializeField] private string promptReady = "按 E 开门";
     [SerializeField] private string promptLocked = "门锁着，得先找到钥匙";
@@ -49,8 +58,11 @@ public class FormalDoorInteraction : MonoBehaviour, IFormalLevelTemporaryState
 
     private readonly HashSet<Object> occupants = new HashSet<Object>();
     private bool opened;
+    private bool opening;
     private bool lastCanOpen;
     private bool promptShown;
+    private bool warnedMissingUnlockingEvent;
+    private bool warnedMissingLockedEvent;
     private FormalDoor resolvedDoor;
 
     /// <summary>
@@ -65,7 +77,9 @@ public class FormalDoorInteraction : MonoBehaviour, IFormalLevelTemporaryState
     /// </summary>
     public void ResetTemporaryState()
     {
+        StopAllCoroutines();
         occupants.Clear();
+        opening = false;
         promptShown = false;
         lastCanOpen = false;
 
@@ -147,7 +161,7 @@ public class FormalDoorInteraction : MonoBehaviour, IFormalLevelTemporaryState
     {
         occupants.RemoveWhere(occupant => occupant == null);
 
-        if (!PlayerInside || (onceOnly && opened))
+        if (!PlayerInside || opening || (onceOnly && opened))
             return;
 
         // 站在门口的时候条件变了（拿到钥匙 / 狗踩上踏板），提示要跟着换一次
@@ -168,6 +182,7 @@ public class FormalDoorInteraction : MonoBehaviour, IFormalLevelTemporaryState
 
         if (!HasKey)
         {
+            PostDoorEvent(lockedEvent, ResolveAudioEmitter(), false);
             ShowHint(promptLocked);
             return;
         }
@@ -179,8 +194,36 @@ public class FormalDoorInteraction : MonoBehaviour, IFormalLevelTemporaryState
             return;
         }
 
+        // Doors without a required key keep their original immediate-open behaviour.
+        if (requiredKey == null)
+        {
+            CompleteOpen(target);
+            return;
+        }
+
+        opening = true;
+        PostDoorEvent(unlockingEvent, ResolveAudioEmitter(), true);
+        StartCoroutine(OpenAfterUnlockDelay(target));
+    }
+
+    IEnumerator OpenAfterUnlockDelay(FormalDoor target)
+    {
+        yield return new WaitForSeconds(unlockDelaySeconds);
+
+        if (target == null)
+        {
+            opening = false;
+            yield break;
+        }
+
+        CompleteOpen(target);
+    }
+
+    void CompleteOpen(FormalDoor target)
+    {
         target.OpenPermanently();
         opened = true;
+        opening = false;
         ShowHint(promptOpened);
 
         if (preloadRouteSuccessorOnOpen)
@@ -195,6 +238,45 @@ public class FormalDoorInteraction : MonoBehaviour, IFormalLevelTemporaryState
             if (flow != null)
                 flow.RequestRouteAdvance(this);
         }
+    }
+
+    void PostDoorEvent(AK.Wwise.Event doorEvent, GameObject emitter, bool unlocking)
+    {
+        if (doorEvent != null && doorEvent.IsValid())
+        {
+            doorEvent.Post(emitter);
+            return;
+        }
+
+        if (unlocking)
+        {
+            if (!warnedMissingUnlockingEvent)
+            {
+                Debug.LogWarning("[FormalDoorInteraction] Play_Door_Unlocking is not assigned.", this);
+                warnedMissingUnlockingEvent = true;
+            }
+        }
+        else if (!warnedMissingLockedEvent)
+        {
+            Debug.LogWarning("[FormalDoorInteraction] Play_Door_Locked is not assigned.", this);
+            warnedMissingLockedEvent = true;
+        }
+    }
+
+    GameObject ResolveAudioEmitter()
+    {
+        foreach (Object occupant in occupants)
+        {
+            Component component = occupant as Component;
+            if (component != null)
+                return component.gameObject;
+
+            GameObject occupantObject = occupant as GameObject;
+            if (occupantObject != null)
+                return occupantObject;
+        }
+
+        return gameObject;
     }
 
     void RefreshPrompt()

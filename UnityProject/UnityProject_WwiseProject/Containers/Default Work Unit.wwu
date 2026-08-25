@@ -2152,6 +2152,336 @@
 								</MusicSegment>
 							</ChildrenList>
 						</MusicPlaylistContainer>
+						<MusicSwitchContainer Name="DeathCause_Music" ID="{5C4239ED-AE13-4C00-A48D-F2B6B06064A8}" ShortID="10486474">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Music" ID="{C9500D84-D768-40E5-BD17-88C44BF14AF0}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}"/>
+								</Reference>
+								<Reference Name="TransitionRoot">
+									<Custom>
+										<MusicTransition Name="Root" ID="{8378544B-C4E8-467A-8CC8-6401D4256203}">
+											<PropertyList>
+												<Property Name="IsFolder" Type="bool" Value="True"/>
+											</PropertyList>
+											<ChildrenList>
+												<MusicTransition Name="Transition" ID="{EF18644E-FBDF-4B79-8E1E-0905F60885E2}">
+													<TransitionInfo/>
+												</MusicTransition>
+											</ChildrenList>
+											<TransitionInfo/>
+										</MusicTransition>
+									</Custom>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<MusicPlaylistContainer Name="DeathCause_Anxiety" ID="{5F81C8BD-1113-44A1-9966-FB4F619E84AA}" ShortID="320449921">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}"/>
+										</Reference>
+										<Reference Name="PlaylistRoot">
+											<Custom>
+												<MusicPlaylistItem Name="" ID="{447841AF-1595-4607-918D-4DF6DF48A143}" ShortID="614174243">
+													<PropertyList>
+														<Property Name="LoopCount" Type="int16" Value="0"/>
+													</PropertyList>
+													<ChildrenList>
+														<MusicPlaylistItem Name="" ID="{387A44C6-8017-45B4-BC9B-40858822BBA9}" ShortID="1033064969">
+															<PropertyList>
+																<Property Name="PlaylistItemType" Type="int16" Value="1"/>
+															</PropertyList>
+															<ReferenceList>
+																<Reference Name="Segment">
+																	<ObjectRef Name="DeathCause_Anxiety" ID="{5F08D13B-9203-4381-82D3-BF720E4F4FF4}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+																</Reference>
+															</ReferenceList>
+														</MusicPlaylistItem>
+													</ChildrenList>
+												</MusicPlaylistItem>
+											</Custom>
+										</Reference>
+										<Reference Name="TransitionRoot">
+											<Custom>
+												<MusicTransition Name="Root" ID="{5BCAFF78-30A2-4C65-80A4-44C593AC5E83}">
+													<PropertyList>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+													</PropertyList>
+													<ChildrenList>
+														<MusicTransition Name="Transition" ID="{092549CE-92F5-4D11-BB21-44BDEED07E20}">
+															<TransitionInfo/>
+														</MusicTransition>
+													</ChildrenList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</Custom>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<MusicSegment Name="DeathCause_Anxiety" ID="{5F08D13B-9203-4381-82D3-BF720E4F4FF4}" ShortID="721633361">
+											<PropertyList>
+												<Property Name="EndPosition" Type="Real64" Value="168680"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<MusicTrack Name="COD_AnxietyOverload" ID="{1B152900-B6F4-4294-8E54-DE2B48B410B5}" ShortID="152914387">
+													<ReferenceList>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}"/>
+														</Reference>
+														<Reference Name="TransitionRoot">
+															<Custom>
+																<MusicTransition Name="Root" ID="{F62B7272-015B-47B1-9EC2-22AC3C8DC230}">
+																	<PropertyList>
+																		<Property Name="IsFolder" Type="bool" Value="True"/>
+																	</PropertyList>
+																	<TransitionInfo/>
+																</MusicTransition>
+															</Custom>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="COD_AnxietyOverload" ID="{51254B8E-D8A1-477C-B019-9FA886D890B7}">
+															<Language>SFX</Language>
+															<AudioFile>COD_AnxietyOverload.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="403915748"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ObjectLists>
+														<ObjectList Name="Sequences">
+															<MusicTrackSequence Name="" ID="{61ABAAF0-827A-44D5-8DB1-5A46ACAB52A1}">
+																<ObjectLists>
+																	<ObjectList Name="Clips">
+																		<MusicClip Name="COD_AnxietyOverload" ID="{2C06B414-BA67-4860-AC7D-CCFCD3998D5E}">
+																			<PropertyList>
+																				<Property Name="EndTrimOffset" Type="Real64" Value="168680"/>
+																				<Property Name="FadeInMode" Type="int16" Value="0"/>
+																				<Property Name="FadeOutMode" Type="int16" Value="0"/>
+																			</PropertyList>
+																			<AudioSourceRef Name="COD_AnxietyOverload" ID="{51254B8E-D8A1-477C-B019-9FA886D890B7}"/>
+																		</MusicClip>
+																	</ObjectList>
+																</ObjectLists>
+															</MusicTrackSequence>
+														</ObjectList>
+													</ObjectLists>
+												</MusicTrack>
+											</ChildrenList>
+											<ObjectLists>
+												<ObjectList Name="Cues">
+													<MusicCue Name="Entry Cue" ID="{36BA3C8F-3750-4460-9BF7-12DAB87BC030}"/>
+													<MusicCue Name="Exit Cue" ID="{25CBAB85-BDD2-471A-B25B-19EB468C07E3}">
+														<PropertyList>
+															<Property Name="CueType" Type="int16" Value="1"/>
+															<Property Name="TimeMs" Type="Real64" Value="168680"/>
+														</PropertyList>
+													</MusicCue>
+												</ObjectList>
+											</ObjectLists>
+										</MusicSegment>
+									</ChildrenList>
+								</MusicPlaylistContainer>
+								<MusicPlaylistContainer Name="DeathCause_Caught" ID="{174D450F-A82C-4983-8A15-66D5DDC0ABEB}" ShortID="650222706">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}"/>
+										</Reference>
+										<Reference Name="PlaylistRoot">
+											<Custom>
+												<MusicPlaylistItem Name="" ID="{3CE0DF44-BD1E-4822-B982-5D43331B5EA8}" ShortID="550102762">
+													<PropertyList>
+														<Property Name="LoopCount" Type="int16" Value="0"/>
+													</PropertyList>
+													<ChildrenList>
+														<MusicPlaylistItem Name="" ID="{DBD9007D-74B7-463F-8930-A6ECAB3AC4C2}" ShortID="90295054">
+															<PropertyList>
+																<Property Name="PlaylistItemType" Type="int16" Value="1"/>
+															</PropertyList>
+															<ReferenceList>
+																<Reference Name="Segment">
+																	<ObjectRef Name="DeathCause_Caught" ID="{FD78BBC7-608C-4068-8B7B-53AF5FEC3C67}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+																</Reference>
+															</ReferenceList>
+														</MusicPlaylistItem>
+													</ChildrenList>
+												</MusicPlaylistItem>
+											</Custom>
+										</Reference>
+										<Reference Name="TransitionRoot">
+											<Custom>
+												<MusicTransition Name="Root" ID="{340AE93A-53C6-4EA6-B1F7-29FF01EB1A8E}">
+													<PropertyList>
+														<Property Name="IsFolder" Type="bool" Value="True"/>
+													</PropertyList>
+													<ChildrenList>
+														<MusicTransition Name="Transition" ID="{63122D53-C6CC-462B-93C5-DED8F6CABCA4}">
+															<TransitionInfo/>
+														</MusicTransition>
+													</ChildrenList>
+													<TransitionInfo/>
+												</MusicTransition>
+											</Custom>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<MusicSegment Name="DeathCause_Caught" ID="{FD78BBC7-608C-4068-8B7B-53AF5FEC3C67}" ShortID="29307518">
+											<PropertyList>
+												<Property Name="EndPosition" Type="Real64" Value="39920"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<MusicTrack Name="COD_EliminatedbyDoc" ID="{8F9DF14D-DA98-4D2A-A99F-F090EAACE47C}" ShortID="103532865">
+													<ReferenceList>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}"/>
+														</Reference>
+														<Reference Name="TransitionRoot">
+															<Custom>
+																<MusicTransition Name="Root" ID="{1582AFF9-987F-45DC-9CA6-64CB9C909EF5}">
+																	<PropertyList>
+																		<Property Name="IsFolder" Type="bool" Value="True"/>
+																	</PropertyList>
+																	<TransitionInfo/>
+																</MusicTransition>
+															</Custom>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="COD_EliminatedbyDoc" ID="{83818D57-3508-4EF5-B5C0-BD32F944C358}">
+															<Language>SFX</Language>
+															<AudioFile>COD_EliminatedbyDoc.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="1063668187"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ObjectLists>
+														<ObjectList Name="Sequences">
+															<MusicTrackSequence Name="" ID="{A02033A5-92DD-471F-8CB8-974A0972FB3D}">
+																<ObjectLists>
+																	<ObjectList Name="Clips">
+																		<MusicClip Name="COD_EliminatedbyDoc" ID="{49C679AF-9716-4105-943E-66198B44E679}">
+																			<PropertyList>
+																				<Property Name="EndTrimOffset" Type="Real64" Value="39920"/>
+																				<Property Name="FadeInMode" Type="int16" Value="0"/>
+																				<Property Name="FadeOutMode" Type="int16" Value="0"/>
+																			</PropertyList>
+																			<AudioSourceRef Name="COD_EliminatedbyDoc" ID="{83818D57-3508-4EF5-B5C0-BD32F944C358}"/>
+																		</MusicClip>
+																	</ObjectList>
+																</ObjectLists>
+															</MusicTrackSequence>
+														</ObjectList>
+													</ObjectLists>
+												</MusicTrack>
+											</ChildrenList>
+											<ObjectLists>
+												<ObjectList Name="Cues">
+													<MusicCue Name="Entry Cue" ID="{148585A1-1774-4C4D-91DF-AE2CD2DDD96F}"/>
+													<MusicCue Name="Exit Cue" ID="{5A23B78B-324E-4BA1-BB5A-ABD9C1A99F95}">
+														<PropertyList>
+															<Property Name="CueType" Type="int16" Value="1"/>
+															<Property Name="TimeMs" Type="Real64" Value="39920"/>
+														</PropertyList>
+													</MusicCue>
+												</ObjectList>
+											</ObjectLists>
+										</MusicSegment>
+									</ChildrenList>
+								</MusicPlaylistContainer>
+							</ChildrenList>
+							<ObjectLists>
+								<ObjectList Name="Arguments">
+									<PluginInnerObject Name="" ID="{AE09C4B6-5E79-4DE1-8008-BACC92EEC091}" PluginName="MusicArgumentsSlot" CompanyID="0" PluginID="89">
+										<ReferenceList>
+											<Reference Name="Argument">
+												<ObjectRef Name="COD" ID="{B5D1F04D-C539-4D61-A6FA-E3AE6FD86226}" WorkUnitID="{4D7AD5A6-DE40-4A3A-8164-DDEFBA3145CA}"/>
+											</Reference>
+										</ReferenceList>
+									</PluginInnerObject>
+								</ObjectList>
+								<ObjectList Name="Entries">
+									<MultiSwitchEntry Name="" ID="{A4D12BFC-8E9E-4097-AA9B-7F0518F73EF3}">
+										<ReferenceList>
+											<Reference Name="AudioNode">
+												<ObjectRef Name="DeathCause_Anxiety" ID="{5F81C8BD-1113-44A1-9966-FB4F619E84AA}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+											</Reference>
+										</ReferenceList>
+										<ObjectLists>
+											<ObjectList Name="EntryPath">
+												<PluginInnerObject Name="" ID="{E7A33A6C-4DBC-405B-B789-BE5F5381AB3A}" PluginName="EntryPathSlot" CompanyID="0" PluginID="88">
+													<ReferenceList>
+														<Reference Name="EntryPathObject">
+															<ObjectRef Name="Anxiety" ID="{D1EB2FDB-3656-4570-8514-FD9E87CEAFCA}" WorkUnitID="{4D7AD5A6-DE40-4A3A-8164-DDEFBA3145CA}"/>
+														</Reference>
+													</ReferenceList>
+												</PluginInnerObject>
+											</ObjectList>
+										</ObjectLists>
+									</MultiSwitchEntry>
+									<MultiSwitchEntry Name="" ID="{AE02E0C6-8BB4-4CB5-989B-94B5EF294EE1}">
+										<ReferenceList>
+											<Reference Name="AudioNode">
+												<ObjectRef Name="DeathCause_Caught" ID="{174D450F-A82C-4983-8A15-66D5DDC0ABEB}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+											</Reference>
+										</ReferenceList>
+										<ObjectLists>
+											<ObjectList Name="EntryPath">
+												<PluginInnerObject Name="" ID="{DCC7BEB6-A3FB-42D0-A3AC-52775A614D1B}" PluginName="EntryPathSlot" CompanyID="0" PluginID="88">
+													<ReferenceList>
+														<Reference Name="EntryPathObject">
+															<ObjectRef Name="Eliminated" ID="{8BEBCA5E-38A4-47FF-916C-6C208FAE7631}" WorkUnitID="{4D7AD5A6-DE40-4A3A-8164-DDEFBA3145CA}"/>
+														</Reference>
+													</ReferenceList>
+												</PluginInnerObject>
+											</ObjectList>
+										</ObjectLists>
+									</MultiSwitchEntry>
+									<MultiSwitchEntry Name="" ID="{ED233440-6D16-4CF1-B4B8-677EC2B9E34E}">
+										<ReferenceList>
+											<Reference Name="AudioNode">
+												<ObjectRef Name="DeathCause_Anxiety" ID="{5F81C8BD-1113-44A1-9966-FB4F619E84AA}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+											</Reference>
+										</ReferenceList>
+										<ObjectLists>
+											<ObjectList Name="EntryPath">
+												<PluginInnerObject Name="" ID="{62DADF4C-5401-4896-A35E-0EECACA072BE}" PluginName="EntryPathSlot" CompanyID="0" PluginID="88">
+													<ReferenceList>
+														<Reference Name="EntryPathObject">
+															<ObjectRef Name="None" ID="{95FAD3F6-7D49-4837-B0A0-880362D2DEA3}" WorkUnitID="{4D7AD5A6-DE40-4A3A-8164-DDEFBA3145CA}"/>
+														</Reference>
+													</ReferenceList>
+												</PluginInnerObject>
+											</ObjectList>
+										</ObjectLists>
+									</MultiSwitchEntry>
+								</ObjectList>
+							</ObjectLists>
+						</MusicSwitchContainer>
 					</ChildrenList>
 				</Folder>
 				<Folder Name="SFX" ID="{EF48E7EE-9371-4944-BF4C-85EE0A3496C1}" ShortID="1051744466">
@@ -2184,7 +2514,7 @@
 												</Property>
 												<Property Name="Volume" Type="Real64">
 													<ValueList>
-														<Value>-8</Value>
+														<Value>-3</Value>
 													</ValueList>
 												</Property>
 											</PropertyList>
@@ -2399,7 +2729,7 @@
 												<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="2"/>
 												<Property Name="Volume" Type="Real64">
 													<ValueList>
-														<Value>-10</Value>
+														<Value>-5</Value>
 													</ValueList>
 													<ModifierList>
 														<ModifierInfo>
@@ -2803,6 +3133,13 @@
 									</ReferenceList>
 									<ChildrenList>
 										<Sound Name="SFX_Key_Pickup" ID="{0DED23B4-6710-4180-AFF9-DE91B02234E4}" ShortID="501492833">
+											<PropertyList>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>3</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
 											<ReferenceList>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}"/>
@@ -2812,16 +3149,16 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<AudioFileSource Name="key_pickup" ID="{B4BC9E6B-03B3-430F-8FCA-5721DAFAB714}">
+												<AudioFileSource Name="KeyPickupNew" ID="{2BF093F0-BE7E-472B-B0C5-BC7EC392E45F}">
 													<Language>SFX</Language>
-													<AudioFile>key_pickup.wav</AudioFile>
+													<AudioFile>KeyPickupNew.wav</AudioFile>
 													<MediaIDList>
-														<MediaID ID="105672495"/>
+														<MediaID ID="321213245"/>
 													</MediaIDList>
 												</AudioFileSource>
 											</ChildrenList>
 											<ActiveSourceList>
-												<ActiveSource Name="key_pickup" ID="{B4BC9E6B-03B3-430F-8FCA-5721DAFAB714}" Platform="Linked"/>
+												<ActiveSource Name="KeyPickupNew" ID="{2BF093F0-BE7E-472B-B0C5-BC7EC392E45F}" Platform="Linked"/>
 											</ActiveSourceList>
 										</Sound>
 									</ChildrenList>
@@ -2953,9 +3290,284 @@
 										</Sound>
 									</ChildrenList>
 								</PropertyContainer>
+								<PropertyContainer Name="PC_Door" ID="{7E18A915-E475-4107-83C2-CF2A1C78457E}" ShortID="196050845">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<Sound Name="Door_Unlocking" ID="{F92AFDA7-7E6B-4630-B76E-76854B61EA29}" ShortID="892796374">
+											<PropertyList>
+												<Property Name="Lowpass" Type="int16">
+													<ValueList>
+														<Value>15</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="Door_Unlocked" ID="{B3201924-9D93-4B7D-B3A2-DC73987ADF4B}">
+													<Language>SFX</Language>
+													<AudioFile>Door_Unlocked.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="796660970"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="Door_Unlocked" ID="{B3201924-9D93-4B7D-B3A2-DC73987ADF4B}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="Door_Locked" ID="{85E0C47E-57FA-4D26-82EB-8AB13C047B9F}" ShortID="638993605">
+											<PropertyList>
+												<Property Name="Lowpass" Type="int16">
+													<ValueList>
+														<Value>30</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="LockedDoor" ID="{C3389F08-FCFB-49F7-BC29-ED8927D780F4}">
+													<Language>SFX</Language>
+													<AudioFile>LockedDoor.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="395802647"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="LockedDoor" ID="{C3389F08-FCFB-49F7-BC29-ED8927D780F4}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<RandomSequenceContainer Name="RC_Door_Hinge" ID="{989AF11F-2BBF-4910-B675-90FE6B81F9C9}" ShortID="1005553365">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<Sound Name="Door_Hinge_01" ID="{1AF48EDD-9A56-4804-8A5C-0A444A8D996B}" ShortID="1023694509">
+													<PropertyList>
+														<Property Name="Highpass" Type="int16">
+															<ValueList>
+																<Value>25</Value>
+															</ValueList>
+															<ModifierList>
+																<ModifierInfo>
+																	<Modifier Name="" ID="{DCF61A85-BA21-4DC6-B919-A95E28EDD6F5}">
+																		<PropertyList>
+																			<Property Name="Enabled" Type="bool" Value="True"/>
+																			<Property Name="Max" Type="Real64" Value="5"/>
+																			<Property Name="Min" Type="Real64" Value="-3"/>
+																		</PropertyList>
+																	</Modifier>
+																</ModifierInfo>
+															</ModifierList>
+														</Property>
+														<Property Name="Lowpass" Type="int16">
+															<ValueList>
+																<Value>36</Value>
+															</ValueList>
+															<ModifierList>
+																<ModifierInfo>
+																	<Modifier Name="" ID="{BC1A62A8-C832-41EF-8CD8-7B4AEB525C01}">
+																		<PropertyList>
+																			<Property Name="Enabled" Type="bool" Value="True"/>
+																			<Property Name="Max" Type="Real64" Value="5"/>
+																			<Property Name="Min" Type="Real64" Value="-5"/>
+																		</PropertyList>
+																	</Modifier>
+																</ModifierInfo>
+															</ModifierList>
+														</Property>
+														<Property Name="Pitch" Type="int32">
+															<ValueList>
+																<Value>2350</Value>
+															</ValueList>
+															<ModifierList>
+																<ModifierInfo>
+																	<Modifier Name="" ID="{17342591-640D-44BB-AD5F-A8FDA2AD6866}">
+																		<PropertyList>
+																			<Property Name="Enabled" Type="bool" Value="True"/>
+																			<Property Name="Max" Type="Real64" Value="80"/>
+																			<Property Name="Min" Type="Real64" Value="-80"/>
+																		</PropertyList>
+																	</Modifier>
+																</ModifierInfo>
+															</ModifierList>
+														</Property>
+														<Property Name="Volume" Type="Real64">
+															<ValueList>
+																<Value>-3</Value>
+															</ValueList>
+														</Property>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="Doorhinge1" ID="{4120FB74-93D1-4E5C-8694-F448736FF6B7}">
+															<Language>SFX</Language>
+															<AudioFile>Doorhinge1.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="408598900"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="Doorhinge1" ID="{4120FB74-93D1-4E5C-8694-F448736FF6B7}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="Door_Hinge_02" ID="{C9A8BBF1-7F62-46F6-B46D-12042D32EC97}" ShortID="674979097">
+													<PropertyList>
+														<Property Name="Highpass" Type="int16">
+															<ValueList>
+																<Value>35</Value>
+															</ValueList>
+															<ModifierList>
+																<ModifierInfo>
+																	<Modifier Name="" ID="{D77842B3-ACA7-48D1-B334-B0E74FA0E9E5}">
+																		<PropertyList>
+																			<Property Name="Enabled" Type="bool" Value="True"/>
+																			<Property Name="Max" Type="Real64" Value="10"/>
+																			<Property Name="Min" Type="Real64" Value="-10"/>
+																		</PropertyList>
+																	</Modifier>
+																</ModifierInfo>
+															</ModifierList>
+														</Property>
+														<Property Name="Lowpass" Type="int16">
+															<ValueList>
+																<Value>36</Value>
+															</ValueList>
+															<ModifierList>
+																<ModifierInfo>
+																	<Modifier Name="" ID="{B8F7E844-3C1F-4702-85BF-91DF297EDEF1}">
+																		<PropertyList>
+																			<Property Name="Enabled" Type="bool" Value="True"/>
+																			<Property Name="Max" Type="Real64" Value="5"/>
+																			<Property Name="Min" Type="Real64" Value="-5"/>
+																		</PropertyList>
+																	</Modifier>
+																</ModifierInfo>
+															</ModifierList>
+														</Property>
+														<Property Name="Pitch" Type="int32">
+															<ValueList>
+																<Value>2280</Value>
+															</ValueList>
+															<ModifierList>
+																<ModifierInfo>
+																	<Modifier Name="" ID="{10363E77-7AA9-43D8-A1DF-DF553B296483}">
+																		<PropertyList>
+																			<Property Name="Enabled" Type="bool" Value="True"/>
+																			<Property Name="Max" Type="Real64" Value="100"/>
+																			<Property Name="Min" Type="Real64" Value="-100"/>
+																		</PropertyList>
+																	</Modifier>
+																</ModifierInfo>
+															</ModifierList>
+														</Property>
+														<Property Name="Volume" Type="Real64">
+															<ValueList>
+																<Value>-2</Value>
+															</ValueList>
+														</Property>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="Doorhinge2" ID="{782D20DC-CA65-491A-ADA6-FA65C61F7C69}">
+															<Language>SFX</Language>
+															<AudioFile>Doorhinge2.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="379798709"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="Doorhinge2" ID="{782D20DC-CA65-491A-ADA6-FA65C61F7C69}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+											</ChildrenList>
+										</RandomSequenceContainer>
+									</ChildrenList>
+								</PropertyContainer>
 							</ChildrenList>
 						</Folder>
-						<Folder Name="Game" ID="{73D263F7-903D-4775-82A5-AB2E58248A50}" ShortID="817449612"/>
+						<Folder Name="Game" ID="{73D263F7-903D-4775-82A5-AB2E58248A50}" ShortID="817449612">
+							<ChildrenList>
+								<Sound Name="SFX_PlayerDeath_Stinger" ID="{B14CC8AF-C5D1-4C23-8AC7-9EDAE9DA040E}" ShortID="185766394">
+									<PropertyList>
+										<Property Name="EnableAttenuation" Type="bool" Value="False"/>
+										<Property Name="OverridePositioning" Type="bool" Value="True"/>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-5</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="SFX" ID="{DD53D271-C931-4458-8E68-DCD744186D77}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="SFX_PlayerDeath_Stinger" ID="{4D97B9B8-17B2-4285-A4D2-472FDB9F7FF3}">
+											<PropertyList>
+												<Property Name="FadeInDuration" Type="Real64" Value="0.04782"/>
+												<Property Name="FadeOutDuration" Type="Real64" Value="0.13388"/>
+												<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+											</PropertyList>
+											<Language>SFX</Language>
+											<AudioFile>SFX_PlayerDeath_Stinger.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="86932433"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="SFX_PlayerDeath_Stinger" ID="{4D97B9B8-17B2-4285-A4D2-472FDB9F7FF3}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+							</ChildrenList>
+						</Folder>
 					</ChildrenList>
 				</Folder>
 				<Folder Name="Ambience" ID="{FAFF5754-3AC4-4672-90AF-084F04AF4655}" ShortID="203132561"/>

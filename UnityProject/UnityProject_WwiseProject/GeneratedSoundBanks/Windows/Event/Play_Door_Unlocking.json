@@ -1,0 +1,72 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "4191924555",
+    "Type": "Event",
+    "GUID": "{5C3B4078-75AC-4720-B0CF-83B0A0DCCC7A}",
+    "Language": "SFX",
+    "Hash": "{251AB871-2181-F83A-1255-6105CF8D0557}",
+    "ObjectPath": "Play_Door_Unlocking",
+    "ShortName": "Play_Door_Unlocking",
+    "Path": "Event/Play_Door_Unlocking.bnk",
+    "Media": [
+     {
+      "Id": "379798709",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Doorhinge2.wav",
+      "Path": "Media/379798709.wem",
+      "CachePath": "E2/{E253725A-BB8F-E4B9-25F7-8A9365A2E0BD}.wem"
+     },
+     {
+      "Id": "408598900",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Doorhinge1.wav",
+      "Path": "Media/408598900.wem",
+      "CachePath": "91/{911054F1-3699-B866-15D0-AB2BF806CB93}.wem"
+     },
+     {
+      "Id": "796660970",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Door_Unlocked.wav",
+      "Path": "Media/796660970.wem",
+      "CachePath": "56/{56DB58D9-0F1F-979B-3B32-15603D157A3A}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "4191924555",
+      "Name": "Play_Door_Unlocking",
+      "ObjectPath": "\\Events\\Default Work Unit\\SFX\\Puzzle\\Play_Door_Unlocking",
+      "GUID": "{5C3B4078-75AC-4720-B0CF-83B0A0DCCC7A}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.1789219",
+      "DurationMax": "1.4344977",
+      "MediaRefs": [
+       {
+        "Id": "379798709"
+       },
+       {
+        "Id": "408598900"
+       },
+       {
+        "Id": "796660970"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{90E2C0D7-A69A-1051-E0FC-C102EDDC169E}"
+ }
+}

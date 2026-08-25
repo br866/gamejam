@@ -1704,7 +1704,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58e9393a17fd2584faea47c9e908efec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialLevelScene: FormalLevel02
+  initialLevelScene: FormalLevel01
   routeCatalog:
   - levelId: Level01
     sceneName: FormalLevel01
@@ -4062,6 +4062,7 @@ GameObject:
   - component: {fileID: 1097121057}
   - component: {fileID: 1097121060}
   - component: {fileID: 9000000000000000010}
+  - component: {fileID: 9000000000000000011}
   m_Layer: 0
   m_Name: Audio_Music
   m_TagString: Untagged
@@ -7279,6 +7280,37 @@ MonoBehaviour:
     valueGuidInternal: 
     WwiseObjectReference: {fileID: 11400000, guid: f3e39c9c563341a99943131430388b97,
       type: 2}
+--- !u!114 &9000000000000000011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097121056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c1d9aa3216e4a44bce2f4ae03be81e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deathStingerEvent:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: 56b304b27fad41b9cae4a04c77b25e33,
+      type: 2}
+  playDeathCauseMusicEvent:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: 34f1e2905d8b4f9fa8c28e2a55903c11,
+      type: 2}
+  stopDeathCauseMusicEvent:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: 45a2f3a16e9c40a8b9d39f3b66a14d22,
+      type: 2}
+  deathCauseGroup: COD
+  anxietyState: Anxiety
+  caughtState: Eliminated
+  stingerStopFadeMilliseconds: 100
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
