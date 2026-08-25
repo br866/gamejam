@@ -21,9 +21,14 @@ public class FormalCheckpoint : MonoBehaviour, IFormalLevelPermanentState
              "和 4.5 关入口封关区是同一份、只弹一次，谁先碰到算谁的。只在 4.5 关那个存档点勾。")]
     [SerializeField] private bool showLevelIntroTutorial = false;
 
+    [Header("Wwise Audio")]
+    [Tooltip("Play_CheckpointSFX. The Event is posted only after this checkpoint successfully saves both recovery anchors.")]
+    [SerializeField] private AK.Wwise.Event checkpointEvent = new AK.Wwise.Event();
+
     private static readonly HashSet<FormalCheckpoint> RegisteredCheckpoints =
         new HashSet<FormalCheckpoint>();
     private bool registeredWithOwningLevel;
+    private bool warnedMissingCheckpointEvent;
 
     public bool IsComplete { get; private set; }
     public string OwningLevelScene => owningLevelScene;
@@ -76,15 +81,37 @@ public class FormalCheckpoint : MonoBehaviour, IFormalLevelPermanentState
 
     public void ActivateCheckpoint()
     {
+        if (IsComplete)
+            return;
+
         if (level == null)
             level = FormalLevelActors.FindLevelController(gameObject.scene);
 
         if (level == null || !PrerequisitesComplete())
             return;
 
-        IsComplete = true;
         // 传 null 时 FormalLevelController 会退回关卡自带的复活锚点
         level.SetCheckpoint(humanRespawnAnchor, dogRespawnAnchor);
+        if (!level.HasCheckpoint)
+            return;
+
+        IsComplete = true;
+        PostCheckpointAudio();
+    }
+
+    void PostCheckpointAudio()
+    {
+        if (checkpointEvent != null && checkpointEvent.IsValid())
+        {
+            checkpointEvent.Post(gameObject);
+            return;
+        }
+
+        if (warnedMissingCheckpointEvent)
+            return;
+
+        Debug.LogWarning("[FormalCheckpoint] Play_CheckpointSFX is not assigned.", this);
+        warnedMissingCheckpointEvent = true;
     }
 
     void OnTriggerEnter(Collider other)

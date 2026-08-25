@@ -11,16 +11,20 @@ public sealed class WwiseUIFeedbackSettings : ScriptableObject
 
     [SerializeField] private AK.Wwise.Event hoverEvent = new AK.Wwise.Event();
     [SerializeField] private AK.Wwise.Event clickEvent = new AK.Wwise.Event();
+    [SerializeField] private AK.Wwise.Event fluorescentLightEvent = new AK.Wwise.Event();
     [SerializeField] private AK.Wwise.RTPC musicVolumeRtpc = new AK.Wwise.RTPC();
     [SerializeField] private AK.Wwise.RTPC sfxVolumeRtpc = new AK.Wwise.RTPC();
 
     public AK.Wwise.Event HoverEvent => hoverEvent;
     public AK.Wwise.Event ClickEvent => clickEvent;
+    public AK.Wwise.Event FluorescentLightEvent => fluorescentLightEvent;
     public AK.Wwise.RTPC MusicVolumeRtpc => musicVolumeRtpc;
     public AK.Wwise.RTPC SfxVolumeRtpc => sfxVolumeRtpc;
 
     public bool HasValidHoverEvent => hoverEvent != null && hoverEvent.IsValid();
     public bool HasValidClickEvent => clickEvent != null && clickEvent.IsValid();
+    public bool HasValidFluorescentLightEvent =>
+        fluorescentLightEvent != null && fluorescentLightEvent.IsValid();
     public bool HasValidMusicVolumeRtpc => musicVolumeRtpc != null && musicVolumeRtpc.IsValid();
     public bool HasValidSfxVolumeRtpc => sfxVolumeRtpc != null && sfxVolumeRtpc.IsValid();
     public bool IsConfigured => HasValidHoverEvent && HasValidClickEvent;
@@ -35,6 +39,8 @@ public sealed class WwiseUIFeedbackSettings : ScriptableObject
         Guid hoverGuid,
         string clickName,
         Guid clickGuid,
+        string fluorescentLightName,
+        Guid fluorescentLightGuid,
         string musicVolumeName,
         Guid musicVolumeGuid,
         string sfxVolumeName,
@@ -44,6 +50,8 @@ public sealed class WwiseUIFeedbackSettings : ScriptableObject
             hoverEvent = new AK.Wwise.Event();
         if (clickEvent == null)
             clickEvent = new AK.Wwise.Event();
+        if (fluorescentLightEvent == null)
+            fluorescentLightEvent = new AK.Wwise.Event();
         if (musicVolumeRtpc == null)
             musicVolumeRtpc = new AK.Wwise.RTPC();
         if (sfxVolumeRtpc == null)
@@ -61,6 +69,13 @@ public sealed class WwiseUIFeedbackSettings : ScriptableObject
             || clickEvent.ObjectReference.Guid != clickGuid)
         {
             clickEvent.SetupReference(clickName, clickGuid);
+        }
+
+        if (!fluorescentLightEvent.IsValid()
+            || fluorescentLightEvent.Name != fluorescentLightName
+            || fluorescentLightEvent.ObjectReference.Guid != fluorescentLightGuid)
+        {
+            fluorescentLightEvent.SetupReference(fluorescentLightName, fluorescentLightGuid);
         }
 
         if (!musicVolumeRtpc.IsValid()
