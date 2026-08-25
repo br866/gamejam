@@ -1,0 +1,48 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "3779672947",
+    "Type": "Event",
+    "GUID": "{BDC1828B-0BB5-4A93-9A62-B01676B1781F}",
+    "Language": "SFX",
+    "Hash": "{C1DCBE6D-55AF-E2EF-98EB-2F87DB7420F2}",
+    "ObjectPath": "Play_Door_Locked",
+    "ShortName": "Play_Door_Locked",
+    "Path": "Event/Play_Door_Locked.bnk",
+    "Media": [
+     {
+      "Id": "395802647",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "LockedDoor.wav",
+      "Path": "Media/395802647.wem",
+      "CachePath": "92/{921FAC41-2C53-9C11-6662-B34B9D3DF8BA}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "3779672947",
+      "Name": "Play_Door_Locked",
+      "ObjectPath": "\\Events\\Default Work Unit\\SFX\\Puzzle\\Play_Door_Locked",
+      "GUID": "{BDC1828B-0BB5-4A93-9A62-B01676B1781F}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.94533336",
+      "DurationMax": "0.94533336",
+      "MediaRefs": [
+       {
+        "Id": "395802647"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{97B128CD-EE18-0C50-D29E-4F6C9C65A9AD}"
+ }
+}
