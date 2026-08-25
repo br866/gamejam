@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7999660359241871535}
   - component: {fileID: 430567000217604494}
   - component: {fileID: 320548926218801290}
+  - component: {fileID: 320548926218801291}
   m_Layer: 0
   m_Name: Pedal
   m_TagString: Untagged
@@ -73,6 +74,23 @@ MonoBehaviour:
   opensTransitionDoor: 0
   successorScene: 
   preloadRouteSuccessor: 0
+--- !u!114 &320548926218801291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 702291881316420071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3f90a7d1e264b8fa5d27c60b48e1f39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  trigger: {fileID: 320548926218801290}
+  pressTarget: {fileID: 3738176149523189354}
+  pressDepth: 0.1
+  pressDuration: 0.18
+  releaseDuration: 0.35
 --- !u!1 &3024104278647572416
 GameObject:
   m_ObjectHideFlags: 0
@@ -89,7 +107,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &3738176149523189354
 Transform:
