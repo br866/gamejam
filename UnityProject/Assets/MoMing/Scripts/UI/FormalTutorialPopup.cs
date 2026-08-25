@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 /// <summary>
@@ -24,20 +25,28 @@ public class FormalTutorialPopup : MonoBehaviour
     public Button prevButton;
     public Button nextButton;
 
-    [Header("内容")]
-    public Sprite[] pages;
+    [Header("开局教学")]
+    [FormerlySerializedAs("pages")]
+    public Sprite[] humanPages;
+    public Sprite[] dogPages;
 
     [Header("存档地毯介绍（第二关踩到存档点时弹）")]
-    [Tooltip("踩到存档点时弹的图。留空就不弹")]
-    public Sprite[] checkpointPages;
+    [Tooltip("人踩到存档点时弹的图。留空就不弹")]
+    [FormerlySerializedAs("checkpointPages")]
+    public Sprite[] humanCheckpointPages;
+    [Tooltip("狗踩到存档点时弹的图。留空就不弹")]
+    public Sprite[] dogCheckpointPages;
     [Tooltip("记\u201c看过了\u201d用的 PlayerPrefs 键，和开局介绍分开记")]
     public string checkpointPrefKey = CheckpointPrefKeyDefault;
     [Tooltip("踩上去之后等几秒再弹，给玩家一点“我踩到了什么”的反应时间")]
     public float checkpointDelaySeconds = 1f;
 
     [Header("第四点五关长廊介绍（进 4.5 关时弹）")]
-    [Tooltip("进到 levelIntroScene 这一关之后弹的图。留空就不弹")]
-    public Sprite[] levelIntroPages;
+    [Tooltip("人进到 levelIntroScene 这一关之后弹的图。留空就不弹")]
+    [FormerlySerializedAs("levelIntroPages")]
+    public Sprite[] humanLevelIntroPages;
+    [Tooltip("狗进到 levelIntroScene 这一关之后弹的图。留空就不弹")]
+    public Sprite[] dogLevelIntroPages;
     [Tooltip("哪一关进去之后弹")]
     public string levelIntroScene = "FormalLevel045";
     [Tooltip("记“看过了”用的 PlayerPrefs 键，和别的介绍分开记")]
@@ -82,15 +91,15 @@ public class FormalTutorialPopup : MonoBehaviour
 
         // 开局把三组图的挂载情况和“看过了”状态打出来，省得每次靠猜
         Debug.Log("[FormalTutorialPopup] 教程图配置：" +
-                  "开局 " + Count(pages) + " 张(已看=" + Seen(PrefKey) + ")、" +
-                  "存档地毯 " + Count(checkpointPages) + " 张(已看=" + Seen(checkpointPrefKey) + ")、" +
-                  "本关介绍/" + levelIntroScene + " " + Count(levelIntroPages) + " 张(已看=" + Seen(levelIntroPrefKey) + ")。" +
+                  "开局 人/狗 " + Count(humanPages) + "/" + Count(dogPages) + " 张(已看=" + Seen(PrefKey) + ")、" +
+                  "存档地毯 人/狗 " + Count(humanCheckpointPages) + "/" + Count(dogCheckpointPages) + " 张(已看=" + Seen(checkpointPrefKey) + ")、" +
+                  "本关介绍/" + levelIntroScene + " 人/狗 " + Count(humanLevelIntroPages) + "/" + Count(dogLevelIntroPages) + " 张(已看=" + Seen(levelIntroPrefKey) + ")。" +
                   " 小键盘 3 = 强制弹地毯介绍，小键盘 9 = 强制弹本关介绍。", this);
 
         Trace("========== 新的一跑 ==========");
-        Trace("图配置：开局 " + Count(pages) + " 张(已看=" + Seen(PrefKey) + ")、" +
-              "地毯 " + Count(checkpointPages) + " 张(已看=" + Seen(checkpointPrefKey) + ")、" +
-              "本关介绍/" + levelIntroScene + " " + Count(levelIntroPages) + " 张(已看=" + Seen(levelIntroPrefKey) + ")");
+        Trace("图配置：开局 人/狗 " + Count(humanPages) + "/" + Count(dogPages) + " 张(已看=" + Seen(PrefKey) + ")、" +
+              "地毯 人/狗 " + Count(humanCheckpointPages) + "/" + Count(dogCheckpointPages) + " 张(已看=" + Seen(checkpointPrefKey) + ")、" +
+              "本关介绍/" + levelIntroScene + " 人/狗 " + Count(humanLevelIntroPages) + "/" + Count(dogLevelIntroPages) + " 张(已看=" + Seen(levelIntroPrefKey) + ")");
     }
 
     /// <summary>把诊断写到工程根目录的 tutorial-debug.log，方便离线看这一跑到底发生了什么。</summary>
@@ -111,6 +120,21 @@ public class FormalTutorialPopup : MonoBehaviour
     static int Count(Sprite[] arr)
     {
         return arr == null ? 0 : arr.Length;
+    }
+
+    Sprite[] RolePages(Sprite[] humanContent, Sprite[] dogContent, string contentName)
+    {
+        FormalPlayerControl control = FindObjectOfType<FormalPlayerControl>();
+        bool isDog = control != null && control.IsDogActive;
+        Sprite[] selected = isDog ? dogContent : humanContent;
+        if (selected == null || selected.Length == 0)
+        {
+            Debug.LogWarning("[FormalTutorialPopup] " + contentName + " 没配 " +
+                             (isDog ? "Dog Pages" : "Human Pages") + "，这次不弹。", this);
+            return null;
+        }
+
+        return selected;
     }
 
     static string Seen(string prefKey)
@@ -150,15 +174,13 @@ public class FormalTutorialPopup : MonoBehaviour
             // GM：不用真跑到那一关也能验证图对不对
             if (Input.GetKeyDown(KeyCode.Keypad3))
             {
-                Debug.Log("[FormalTutorialPopup] GM 强制弹存档地毯介绍（" + Count(checkpointPages) + " 张）。", this);
-                ForceShow(checkpointPages, checkpointPrefKey);
+                ForceShow(RolePages(humanCheckpointPages, dogCheckpointPages, "存档地毯介绍"), checkpointPrefKey);
                 return;
             }
 
             if (Input.GetKeyDown(KeyCode.Keypad9))
             {
-                Debug.Log("[FormalTutorialPopup] GM 强制弹本关介绍（" + Count(levelIntroPages) + " 张）。", this);
-                ForceShow(levelIntroPages, levelIntroPrefKey);
+                ForceShow(RolePages(humanLevelIntroPages, dogLevelIntroPages, "本关介绍"), levelIntroPrefKey);
                 return;
             }
 
@@ -190,12 +212,12 @@ public class FormalTutorialPopup : MonoBehaviour
             ? actors.Human.transform.position.ToString("F2")
             : "<没有人>";
         Trace("当前关卡 -> " + now + "，人在 " + human +
-              "，本关介绍已弹过=" + levelIntroDone + "，图=" + Count(levelIntroPages) + " 张");
+              "，本关介绍已弹过=" + levelIntroDone + "，图=" + Count(RolePages(humanLevelIntroPages, dogLevelIntroPages, "本关介绍")) + " 张");
     }
 
     bool ShouldTrigger()
     {
-        if (pages == null || pages.Length == 0)
+        if ((humanPages == null || humanPages.Length == 0) && (dogPages == null || dogPages.Length == 0))
             return false;
 
         return LevelReady(triggerLevelScene);
@@ -270,7 +292,8 @@ public class FormalTutorialPopup : MonoBehaviour
     {
         levelIntroDone = true;
 
-        if (levelIntroPages == null || levelIntroPages.Length == 0)
+        Sprite[] rolePages = RolePages(humanLevelIntroPages, dogLevelIntroPages, "本关介绍");
+        if (rolePages == null)
         {
             Debug.LogWarning("[FormalTutorialPopup] 该弹本关介绍了（" + reason +
                              "），但 Level Intro Pages 是空的，这次不弹。" +
@@ -283,18 +306,18 @@ public class FormalTutorialPopup : MonoBehaviour
 
         if (levelIntroDelaySeconds <= 0f)
         {
-            ShowOnce(levelIntroPages, levelIntroPrefKey);
+            ShowOnce(rolePages, levelIntroPrefKey);
             return;
         }
 
         levelIntroQueued = true;
-        StartCoroutine(ShowDelayed(levelIntroPages, levelIntroPrefKey, levelIntroDelaySeconds,
+        StartCoroutine(ShowDelayed(rolePages, levelIntroPrefKey, levelIntroDelaySeconds,
             () => levelIntroQueued = false));
     }
 
     public void Show()
     {
-        ShowPages(pages, PrefKey, true);
+        ShowPages(RolePages(humanPages, dogPages, "开局教学"), PrefKey, true);
     }
 
     /// <summary>GM 用：无视“看过了”直接弹，没配图就报警告。</summary>
@@ -332,7 +355,8 @@ public class FormalTutorialPopup : MonoBehaviour
     /// </summary>
     public bool ShowCheckpointTutorial()
     {
-        if (checkpointPages == null || checkpointPages.Length == 0)
+        Sprite[] rolePages = RolePages(humanCheckpointPages, dogCheckpointPages, "存档地毯介绍");
+        if (rolePages == null)
         {
             Debug.LogWarning("[FormalTutorialPopup] 存档地毯介绍没配图（Checkpoint Pages 是空的），这次不弹。" +
                              "去 FormalPersistent 场景跑一下 Tools/默名/挂上额外教程图（地毯 + 4.5 关）。", this);
@@ -347,10 +371,10 @@ public class FormalTutorialPopup : MonoBehaviour
             return false;
 
         if (checkpointDelaySeconds <= 0f)
-            return ShowOnce(checkpointPages, checkpointPrefKey);
+            return ShowOnce(rolePages, checkpointPrefKey);
 
         checkpointQueued = true;
-        StartCoroutine(ShowDelayed(checkpointPages, checkpointPrefKey, checkpointDelaySeconds,
+        StartCoroutine(ShowDelayed(rolePages, checkpointPrefKey, checkpointDelaySeconds,
             () => checkpointQueued = false));
         return true;
     }

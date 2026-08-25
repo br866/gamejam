@@ -69,8 +69,8 @@ public static class FormalNoticeBoardBuilder
         FitFace(renderer.transform, boardSprite);
 
         SerializedObject serialized = new SerializedObject(notice);
-        serialized.FindProperty("humanPage").objectReferenceValue = humanPage;
-        serialized.FindProperty("dogPage").objectReferenceValue = dogPage;
+        SetSinglePage(serialized.FindProperty("humanPages"), humanPage);
+        SetSinglePage(serialized.FindProperty("dogPages"), dogPage);
         serialized.ApplyModifiedProperties();
 
         EditorSceneManager.MarkSceneDirty(scene);
@@ -79,6 +79,12 @@ public static class FormalNoticeBoardBuilder
         Debug.Log("[NoticeBoard] " + (created ? "已新建" : "已刷新") + " " + BoardObjectName +
                   "，位置 " + board.transform.position.ToString("F2") +
                   "。贴着墙微调好之后 Ctrl+S 保存第三关。", board);
+    }
+
+    static void SetSinglePage(SerializedProperty pages, Sprite page)
+    {
+        pages.arraySize = 1;
+        pages.GetArrayElementAtIndex(0).objectReferenceValue = page;
     }
 
     [MenuItem("Tools/SuperBreadMan/第三关/把公告牌移到当前视角中心")]

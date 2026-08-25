@@ -191,17 +191,23 @@ MonoBehaviour:
   pageLabel: {fileID: 1514903601}
   prevButton: {fileID: 257153182}
   nextButton: {fileID: 1893775788}
-  pages:
+  humanPages:
   - {fileID: 21300000, guid: 210bd5f3f6b730d4587d18f333808e33, type: 3}
   - {fileID: 21300000, guid: e398845e8e9ce1c4f99bb026a77f740f, type: 3}
   - {fileID: 21300000, guid: 4b3164a77d19a4c438b01b9df2ccd83d, type: 3}
-  checkpointPages:
+  dogPages:
+  - {fileID: 21300000, guid: 210bd5f3f6b730d4587d18f333808e33, type: 3}
+  humanCheckpointPages:
   - {fileID: 21300000, guid: 217bac19874211248aa2c03034e5d97d, type: 3}
   - {fileID: 21300000, guid: 86d5efbba836bea448797e0d7a9f49d9, type: 3}
+  dogCheckpointPages:
+  - {fileID: 21300000, guid: e398845e8e9ce1c4f99bb026a77f740f, type: 3}
   checkpointPrefKey: MoMing.SaveAreaTutorialShown
   checkpointDelaySeconds: 1
-  levelIntroPages:
+  humanLevelIntroPages:
   - {fileID: 21300000, guid: a001b6a9b9a22c74d97bd6a5114cefaa, type: 3}
+  dogLevelIntroPages:
+  - {fileID: 21300000, guid: e398845e8e9ce1c4f99bb026a77f740f, type: 3}
   levelIntroScene: FormalLevel045
   levelIntroPrefKey: MoMing.Level045TutorialShown
   levelIntroDelaySeconds: 1

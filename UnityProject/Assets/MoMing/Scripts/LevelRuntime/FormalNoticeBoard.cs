@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// 场景里的公告牌：走近弹一句「按 F 可以阅读」，按 F 弹出整页公告图。
 ///
-/// 人和狗看到的内容不一样：humanPage 给人，dogPage 给狗。
+/// 人和狗看到的内容不一样：Human Pages 给人，Dog Pages 给狗；各自都能配多张。
 /// 弹图复用 FormalPersistent 场景里那个 FormalTutorialPopup 面板（同一套翻页/关闭/暂停逻辑），
 /// 但不写 PlayerPrefs，所以公告牌可以反复阅读，不是只能看一次。
 ///
@@ -25,11 +25,11 @@ public class FormalNoticeBoard : MonoBehaviour
     [SerializeField] private float heightTolerance = 3f;
 
     [Header("公告内容")]
-    [Tooltip("人读到的那一页。留空 = 人读不了")]
-    [SerializeField] private Sprite humanPage;
+    [Tooltip("人读到的页面，按数组顺序翻阅。留空 = 人读不了。")]
+    [SerializeField] private Sprite[] humanPages;
 
-    [Tooltip("狗读到的那一页。留空 = 狗读不了")]
-    [SerializeField] private Sprite dogPage;
+    [Tooltip("狗读到的页面，按数组顺序翻阅。留空 = 狗读不了。")]
+    [SerializeField] private Sprite[] dogPages;
 
     [Header("引导提示")]
     [Tooltip("走进范围时弹在屏幕上的提示。留空 = 不提示")]
@@ -47,8 +47,6 @@ public class FormalNoticeBoard : MonoBehaviour
 
     private static readonly List<FormalNoticeBoard> boards = new List<FormalNoticeBoard>();
 
-    // 每次阅读都要给弹窗一个 Sprite[]，缓存一份免得每帧 new
-    private readonly Sprite[] pageBuffer = new Sprite[1];
     private bool someoneInside;
     private bool hasBeenRead;
     private float nextPromptTime;
@@ -143,11 +141,12 @@ public class FormalNoticeBoard : MonoBehaviour
 
     bool Read(FormalPlayerActor actor)
     {
-        Sprite page = actor.Role == FormalPlayerActor.ActorRole.Dog ? dogPage : humanPage;
-        if (page == null)
+        bool isDog = actor.Role == FormalPlayerActor.ActorRole.Dog;
+        Sprite[] pages = PagesFor(isDog);
+        if (pages == null)
         {
             Debug.LogWarning("[FormalNoticeBoard] " + name + " 没配 " +
-                             (actor.Role == FormalPlayerActor.ActorRole.Dog ? "Dog Page" : "Human Page") +
+                             (isDog ? "Dog Pages" : "Human Pages") +
                              "，这次读不出东西。", this);
             return false;
         }
@@ -159,14 +158,44 @@ public class FormalNoticeBoard : MonoBehaviour
             return false;
         }
 
-        pageBuffer[0] = page;
-
         // prefKey 传空：公告牌可以反复读，不写“看过了”。
-        if (!popup.ShowOnce(pageBuffer, null))
+        if (!popup.ShowOnce(pages, null))
             return false;
 
         hasBeenRead = true;
         return true;
+    }
+
+    Sprite[] PagesFor(bool isDog)
+    {
+        Sprite[] configuredPages = isDog ? dogPages : humanPages;
+        if (configuredPages != null && configuredPages.Length > 0)
+        {
+            int validCount = 0;
+            for (int i = 0; i < configuredPages.Length; i++)
+            {
+                if (configuredPages[i] != null)
+                    validCount++;
+            }
+
+            if (validCount == configuredPages.Length)
+                return configuredPages;
+
+            if (validCount > 0)
+            {
+                Sprite[] validPages = new Sprite[validCount];
+                int index = 0;
+                for (int i = 0; i < configuredPages.Length; i++)
+                {
+                    if (configuredPages[i] != null)
+                        validPages[index++] = configuredPages[i];
+                }
+
+                return validPages;
+            }
+        }
+
+        return null;
     }
 
     static FormalPlayerActor ActorOf(FormalPlayerActor.ActorRole role)

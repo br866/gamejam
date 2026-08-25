@@ -153,8 +153,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   readRadius: 5
   heightTolerance: 5
-  humanPage: {fileID: 21300000, guid: 46513ec07d8603442993e95b5d67b704, type: 3}
-  dogPage: {fileID: 21300000, guid: a92e8b0a342bbff44a8316dd5a877c08, type: 3}
+  humanPages:
+  - {fileID: 21300000, guid: 46513ec07d8603442993e95b5d67b704, type: 3}
+  dogPages:
+  - {fileID: 21300000, guid: a92e8b0a342bbff44a8316dd5a877c08, type: 3}
   prompt: "\u8FD9\u8FB9\u6709\u4E00\u4E2A\u516C\u544A\u677F\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3
   promptRepeatInterval: 10
@@ -804,8 +806,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   readRadius: 3.5
   heightTolerance: 3
-  humanPage: {fileID: 21300000, guid: 4a94e2db1ed146541b2096275321acde, type: 3}
-  dogPage: {fileID: 0}
+  humanPages: []
+  dogPages: []
   prompt: "\u8FD9\u91CC\u6709\u4E00\u5F20\u9648\u65E7\u7684\u7EB8\u6761\uFF0C\u6309
     F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3

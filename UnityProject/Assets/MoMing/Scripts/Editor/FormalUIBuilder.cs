@@ -369,11 +369,11 @@ public static class FormalUIBuilder
         tutorial.pageLabel = label;
         tutorial.prevButton = prev;
         tutorial.nextButton = next;
-        tutorial.pages = sprites;
-        tutorial.checkpointPages = LoadCheckpointSprites();
+        tutorial.humanPages = sprites;
+        tutorial.humanCheckpointPages = LoadCheckpointSprites();
         tutorial.checkpointPrefKey = FormalTutorialPopup.CheckpointPrefKeyDefault;
         tutorial.checkpointDelaySeconds = 1f;
-        tutorial.levelIntroPages = LoadLevel045Sprites();
+        tutorial.humanLevelIntroPages = LoadLevel045Sprites();
         tutorial.levelIntroScene = "FormalLevel045";
         tutorial.levelIntroPrefKey = FormalTutorialPopup.Level045PrefKeyDefault;
         tutorial.levelIntroDelaySeconds = 1f;
@@ -448,12 +448,12 @@ public static class FormalUIBuilder
         if (sprites[0] == null)
             return;
 
-        popup.checkpointPages = sprites;
+        popup.humanCheckpointPages = sprites;
         popup.checkpointPrefKey = FormalTutorialPopup.CheckpointPrefKeyDefault;
         if (popup.checkpointDelaySeconds <= 0f)
             popup.checkpointDelaySeconds = 1f;
 
-        popup.levelIntroPages = LoadLevel045Sprites();
+        popup.humanLevelIntroPages = LoadLevel045Sprites();
         if (string.IsNullOrEmpty(popup.levelIntroScene))
             popup.levelIntroScene = "FormalLevel045";
         popup.levelIntroPrefKey = FormalTutorialPopup.Level045PrefKeyDefault;
