@@ -1926,11 +1926,29 @@ MonoBehaviour:
   arrivalThreshold: 0.3
   detectionRange: 8
   fieldOfView: 60
-  hearingRadius: 4
   catchRadius: 1.2
   loseTargetTime: 3
   chaseSpeed: 4.5
   chaseStopDistance: 1
+  attackRange: 2
+  attackWindup: 0.5
+  attackCooldown: 1
+  attackStateName: 
+  safeZones: []
+  footstepEvent:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 0}
+  patrolFootstepDistance: 1.8
+  chaseFootstepDistance: 2.2
+  sightBlockMask:
+    serializedVersion: 2
+    m_Bits: 0
+  eyeHeight: 1.5
+  showDetectionGizmos: 1
+  fieldOfViewGizmoColor: {r: 1, g: 0.85, b: 0, a: 0.9}
+  showRoomBounds: 1
+  roomBoundsGizmoColor: {r: 0, g: 1, b: 0.55, a: 0.9}
 --- !u!23 &702511076
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2268,7 +2286,9 @@ MonoBehaviour:
   walkSpeed: 4
   sprintSpeed: 8
   rotationSpeed: 10
-  jumpForce: 5
+  jumpHeight: 2
+  riseGravityMultiplier: 2
+  fallGravityMultiplier: 3
   groundCheckDistance: 0.15
   interactRange: 1.5
 --- !u!54 &827220569
@@ -2650,11 +2670,29 @@ MonoBehaviour:
   arrivalThreshold: 0.3
   detectionRange: 8
   fieldOfView: 60
-  hearingRadius: 4
   catchRadius: 1.2
   loseTargetTime: 3
   chaseSpeed: 4.5
   chaseStopDistance: 1
+  attackRange: 2
+  attackWindup: 0.5
+  attackCooldown: 1
+  attackStateName: 
+  safeZones: []
+  footstepEvent:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 0}
+  patrolFootstepDistance: 1.8
+  chaseFootstepDistance: 2.2
+  sightBlockMask:
+    serializedVersion: 2
+    m_Bits: 0
+  eyeHeight: 1.5
+  showDetectionGizmos: 1
+  fieldOfViewGizmoColor: {r: 1, g: 0.85, b: 0, a: 0.9}
+  showRoomBounds: 1
+  roomBoundsGizmoColor: {r: 0, g: 1, b: 0.55, a: 0.9}
 --- !u!23 &907454575
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3562,6 +3600,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecdd0c3a79ce0ea4c880ec4c66e25055, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  followSpeed: 10
 --- !u!54 &1258759033
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4067,9 +4106,49 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 827220573}
-  height: 18
+  distance: 5.5
+  angle: 55
+  initialYawOffset: 0
   followSpeed: 8
-  tiltAngle: 55
+  autoFocusHeight: 1
+  focusHeightRatio: 0.8
+  minFocusHeight: 0.35
+  maxFocusHeight: 2
+  focusHeight: 1.4
+  autoDistance: 1
+  referenceHeight: 1.8
+  distanceScaleStrength: 0.5
+  distanceBlendSpeed: 6
+  enableMouseRotation: 1
+  mouseSensitivity: 3
+  enableMouseTilt: 1
+  mouseYSensitivity: 2
+  minAngle: -25
+  maxAngle: 70
+  invertY: 0
+  enableZoom: 1
+  minDistance: 2
+  maxDistance: 9
+  zoomSpeed: 3
+  hideCursor: 1
+  linkedDistanceBonus: 0.35
+  enableCameraCollision: 1
+  collisionMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  collisionRadius: 0.25
+  collisionBuffer: 0.2
+  minCollisionDistance: 0.8
+  collisionRecoverSpeed: 4
+  enableObstructionHide: 1
+  obstructionMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  focusSmoothTime: 0.05
+  switchSmoothTime: 0.35
+  hintMoveTime: 0.8
+  hintHoldTime: 1.5
+  hintFocusSmoothTime: 0.6
 --- !u!20 &1426374562
 Camera:
   m_ObjectHideFlags: 0
@@ -4414,7 +4493,9 @@ MonoBehaviour:
   walkSpeed: 4
   sprintSpeed: 8
   rotationSpeed: 10
-  jumpForce: 5
+  jumpHeight: 2
+  riseGravityMultiplier: 2
+  fallGravityMultiplier: 3
   groundCheckDistance: 0.15
   interactRange: 1.5
 --- !u!54 &1493904468
@@ -4651,6 +4732,78 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 28, y: 0.5, z: 0}
   m_LocalScale: {x: 0.8, y: 0.3, z: 0.8}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1547821036
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1547821039}
+  - component: {fileID: 1547821038}
+  - component: {fileID: 1547821037}
+  m_Layer: 0
+  m_Name: WwiseGlobal
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1547821037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1547821036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed39f2b237e573f4f85990bb5d1440ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InitBank: {fileID: 0}
+--- !u!114 &1547821038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1547821036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d3f6826e1ffdfa4193e6609830b6fe4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InitializationSettings: {fileID: 11400000, guid: 13f2e4ff27671054a8a8df5a5c85ee78,
+    type: 2}
+  basePath: 
+  language: 
+  defaultPoolSize: 0
+  lowerPoolSize: 0
+  streamingPoolSize: 0
+  memoryCutoffThreshold: 0
+  monitorPoolSize: 0
+  monitorQueuePoolSize: 0
+  callbackManagerBufferSize: 0
+  spatialAudioPoolSize: 0
+  maxSoundPropagationDepth: 0
+  engineLogging: 0
+--- !u!4 &1547821039
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1547821036}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -5004,11 +5157,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d9b5ec58ed548443a6545a16a2a52c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  linkedGate: {fileID: 1381730544}
+  linkedGates:
+  - {fileID: 0}
   requiredCount: 1
+  requireContinuousPressure: 0
   indicatorRenderer: {fileID: 1660372714}
   inactiveMaterial: {fileID: 2100000, guid: 3ed24b66dc6a39b43ad2200a18c7f746, type: 2}
   activeMaterial: {fileID: 2100000, guid: 11e287257bd3dca40a56fc13fe69bbd1, type: 2}
+  lockVisual: 0
 --- !u!23 &1660372714
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5129,10 +5285,45 @@ MonoBehaviour:
   maxAnxiety: 100
   anxietyIncreaseRate: 8
   anxietyDecreaseRate: 15
-  anxietyBarFill: {fileID: 0}
+  vignetteRadius: 0.35
+  vignetteSoftness: 0.08
+  vignetteMask: {fileID: 0}
+  criticalThreshold: 0.7
+  spotlightTransitionSpeed: 3
+  spotlightMask: {fileID: 0}
+  spotlightHeight: 8
+  spotlightRange: 6
+  spotlightAngle: 20
+  spotlightIntensity: 100
+  spotlightColor: {r: 1, g: 0.95, b: 0.8, a: 1}
+  normalAmbientIntensity: 1
+  fullDarknessRange: 0.1
+  redVignetteThreshold: 0.6
+  redVignette: {fileID: 0}
+  redVignetteEdgeWidth: 0.06
+  redVignetteColor: {r: 0.55, g: 0.08, b: 0.08, a: 0.5}
+  redVignetteNoiseStrength: 0.6
+  useDirtOverlay: 1
+  dirtOverlayTexture: {fileID: 0}
+  dirtOverlayResourceName: AnxietyDirtMask
+  dirtStartThreshold: 0.5
+  dirtOverlayMaxStrength: 0.85
+  dirtSmoothSpeed: 4
+  dirtPulseAmount: 0.22
+  dirtPulseSpeed: 1.6
+  forceMaxDirtKey: 284
+  anxietyBarSlider: {fileID: 0}
   darknessOverlay: {fileID: 0}
   levelStartHuman: {x: 0, y: 1, z: -3}
   levelStartDog: {x: 1.5, y: 0.6, z: -3}
+  useSceneSpawnAsLevelStart: 1
+  enableFallSafety: 1
+  fallYThreshold: -20
+  fallRescueCooldown: 1
+  nextSceneName: 
+  teleportToLevel2Key: 283
+  debugLevel2HumanPosition: {x: 15.7, y: 12.6, z: -5.98}
+  debugLevel2DogPosition: {x: 17.2, y: 12.6, z: -5.98}
 --- !u!4 &1669934557
 Transform:
   m_ObjectHideFlags: 0
@@ -5753,3 +5944,4 @@ SceneRoots:
   - {fileID: 1582787652}
   - {fileID: 360088366}
   - {fileID: 178853700}
+  - {fileID: 1547821039}
