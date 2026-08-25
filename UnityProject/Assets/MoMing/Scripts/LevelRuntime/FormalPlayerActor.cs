@@ -106,7 +106,10 @@ public class FormalPlayerActor : MonoBehaviour
         transform.SetPositionAndRotation(target, transform.rotation);
         if (moverRotationLocked)
             transform.rotation = moverRotation;
-        body.velocity = velocity;
+        // 挂点是水平位置约束：不能把挂接前残留的 X/Z 惯性带回去，
+        // 否则刚体会在本物理步滑离挂点，再于下一帧被强制吸回而抖动。
+        // Y 仍由重力和地面接触解算，避免角色被固定在空中或穿过地面。
+        body.velocity = new Vector3(0f, velocity.y, 0f);
         Physics.SyncTransforms();
     }
 
