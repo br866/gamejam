@@ -251,7 +251,7 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
     public void SetAttachedPullAnimation()
     {
         if (human != null)
-            human.SetMoverIdle();
+            human.SetMoverInteraction(false, transform.position);
     }
 
     public void SetAttachedIdleAnimation()
