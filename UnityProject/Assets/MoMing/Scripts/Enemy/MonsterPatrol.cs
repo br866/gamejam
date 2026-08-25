@@ -40,8 +40,6 @@ public class MonsterPatrol : MonoBehaviour
     [SerializeField] private AK.Wwise.Event footstepEvent;
     [SerializeField, Min(0.1f)] private float patrolFootstepDistance = 1.8f;
     [SerializeField, Min(0.1f)] private float chaseFootstepDistance = 2.2f;
-    [SerializeField] private AudioClip catchClip;
-    [SerializeField] private AudioClip detectClip;
 
     [Header("Line of Sight")]
     [SerializeField] private LayerMask sightBlockMask;
@@ -169,7 +167,6 @@ public class MonsterPatrol : MonoBehaviour
         get { return currentState == State.Chase; }
     }
     private int currentWaypoint = 0;
-    private AudioSource audioSource;
     private LevelMonsterNavigation navigation;
     private MonsterAnimatorDriver animatorDriver;
     private Vector3 startPos;
@@ -193,7 +190,6 @@ public class MonsterPatrol : MonoBehaviour
             return;
         }
 
-        audioSource = GetComponent<AudioSource>();
         navigation = GetComponent<LevelMonsterNavigation>();
         animatorDriver = GetComponent<MonsterAnimatorDriver>();
         startPos = transform.position;
@@ -618,19 +614,12 @@ public class MonsterPatrol : MonoBehaviour
 
                     if (!wasChasing)
                     {
-                        PlayAudio(detectClip);
                         Debug.Log("[Monster] saw " + hit.gameObject.name + " in room! Chasing!");
                     }
                     return;
                 }
             }
         }
-    }
-
-    void PlayAudio(AudioClip clip)
-    {
-        if (clip != null && audioSource != null)
-            audioSource.PlayOneShot(clip);
     }
 
     bool TryCatch(Transform player)
@@ -764,10 +753,7 @@ public class MonsterPatrol : MonoBehaviour
         // 正式关卡：先弹死亡画面。Trigger 内部会挡住重复触发，
         // 所以不用担心怪物每帧都调一次。旧场景没有这个组件，会自动落到下面的老逻辑。
         if (FormalDeathScreen.Trigger(FormalDeathScreen.DeathCause.Caught))
-        {
-            PlayAudio(catchClip);
             return;
-        }
 
         FormalGameFlowController flow = UnityEngine.Object.FindObjectOfType<FormalGameFlowController>();
         if (flow != null)
@@ -776,7 +762,6 @@ public class MonsterPatrol : MonoBehaviour
             GameManager.Instance.OnPlayerCaught();
         else
             Debug.LogError("[MonsterPatrol] Formal monster capture requires FormalGameFlowController for shared recovery.", this);
-        PlayAudio(catchClip);
     }
 
     public void ResetPatrol()

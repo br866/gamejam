@@ -16,16 +16,7 @@ public class PuzzleSwitch : MonoBehaviour
     [Header("Require Item")]
     public bool requiresItem = false;
 
-    [Header("Audio")]
-    [SerializeField] private AudioClip activateClip;
-
     private bool isActivated = false;
-    private AudioSource audioSource;
-
-    void Awake()
-    {
-        audioSource = GetComponent<AudioSource>();
-    }
 
     void Start()
     {
@@ -62,8 +53,6 @@ public class PuzzleSwitch : MonoBehaviour
         if (indicatorRenderer != null && activeMaterial != null)
             indicatorRenderer.material = activeMaterial;
 
-        PlayAudio(activateClip);
-
         if (linkedGate != null)
             linkedGate.Open();
 
@@ -77,12 +66,6 @@ public class PuzzleSwitch : MonoBehaviour
             indicatorRenderer.material = inactiveMaterial;
         if (linkedGate != null)
             linkedGate.Close();
-    }
-
-    void PlayAudio(AudioClip clip)
-    {
-        if (clip != null && audioSource != null)
-            audioSource.PlayOneShot(clip);
     }
 
     public bool IsActivated => isActivated;

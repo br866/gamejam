@@ -909,9 +909,6 @@ MonoBehaviour:
   chaseSpeed: 4.5
   chaseStopDistance: 1
   safeZones: []
-  footstepClip: {fileID: 0}
-  catchClip: {fileID: 0}
-  detectClip: {fileID: 0}
   sightBlockMask:
     serializedVersion: 2
     m_Bits: 0
@@ -1103,7 +1100,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1471729351}
   - component: {fileID: 1471729350}
-  - component: {fileID: 1471729349}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1111,14 +1107,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &1471729349
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1471729348}
-  m_Enabled: 1
 --- !u!20 &1471729350
 Camera:
   m_ObjectHideFlags: 0
@@ -1777,9 +1765,6 @@ MonoBehaviour:
   chaseSpeed: 4.5
   chaseStopDistance: 1
   safeZones: []
-  footstepClip: {fileID: 0}
-  catchClip: {fileID: 0}
-  detectClip: {fileID: 0}
   sightBlockMask:
     serializedVersion: 2
     m_Bits: 0

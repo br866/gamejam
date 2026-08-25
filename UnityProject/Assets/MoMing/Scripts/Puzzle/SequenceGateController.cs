@@ -25,20 +25,9 @@ public class SequenceGateController : MonoBehaviour
     [Tooltip("重置时踏板显示的材质（黄色）")]
     public Material inactiveMaterial;
 
-    [Header("Audio")]
-    [SerializeField] private AudioClip correctStepClip;
-    [SerializeField] private AudioClip wrongOrderClip;
-    [SerializeField] private AudioClip unlockedClip;
-
     private int currentStep = 0;
     private bool[] wasActive;
     private bool isUnlocked = false;
-    private AudioSource audioSource;
-
-    void Awake()
-    {
-        audioSource = GetComponent<AudioSource>();
-    }
 
     void Start()
     {
@@ -86,7 +75,6 @@ public class SequenceGateController : MonoBehaviour
         {
             currentStep++;
             SetPlateVisual(plateIndex, true);
-            PlayAudio(correctStepClip);
             Debug.Log("[SequenceGate] Correct step " + currentStep + "/" + sequencePlates.Count);
 
             if (currentStep >= sequencePlates.Count)
@@ -104,7 +92,6 @@ public class SequenceGateController : MonoBehaviour
                     wasActive[i] = false;
                 }
             }
-            PlayAudio(wrongOrderClip);
             Debug.Log("[SequenceGate] Wrong order! Sequence reset.");
         }
     }
@@ -112,7 +99,6 @@ public class SequenceGateController : MonoBehaviour
     void Unlock()
     {
         isUnlocked = true;
-        PlayAudio(unlockedClip);
         if (gate != null)
             gate.Open();
         Debug.Log("[SequenceGate] Unlocked! Gate opening.");
@@ -152,12 +138,6 @@ public class SequenceGateController : MonoBehaviour
             if (sequencePlates[i].indicatorRenderer != null && inactiveMaterial != null)
                 sequencePlates[i].indicatorRenderer.material = inactiveMaterial;
         }
-    }
-
-    void PlayAudio(AudioClip clip)
-    {
-        if (clip != null && audioSource != null)
-            audioSource.PlayOneShot(clip);
     }
 
     public bool IsUnlocked => isUnlocked;

@@ -23,20 +23,10 @@ public class PressurePlate : MonoBehaviour
     public Material inactiveMaterial;
     public Material activeMaterial;
 
-    [Header("Audio")]
-    [SerializeField] private AudioClip activateClip;
-    [SerializeField] private AudioClip deactivateClip;
-
     [HideInInspector] public bool lockVisual = false;
 
     private HashSet<Collider> steppedObjects = new HashSet<Collider>();
     private bool isActive = false;
-    private AudioSource audioSource;
-
-    void Awake()
-    {
-        audioSource = GetComponent<AudioSource>();
-    }
 
     void Start()
     {
@@ -81,7 +71,6 @@ public class PressurePlate : MonoBehaviour
             isActive = true;
             if (!lockVisual && indicatorRenderer != null && activeMaterial != null)
                 indicatorRenderer.material = activeMaterial;
-            PlayAudio(activateClip);
             OpenAllGates();
             Debug.Log("[PressurePlate] Activated! Total=" + steppedObjects.Count);
         }
@@ -90,7 +79,6 @@ public class PressurePlate : MonoBehaviour
             isActive = false;
             if (!lockVisual && indicatorRenderer != null && inactiveMaterial != null)
                 indicatorRenderer.material = inactiveMaterial;
-            PlayAudio(deactivateClip);
             CloseAllGates();
             Debug.Log("[PressurePlate] Deactivated (pressure lost). Total=" + steppedObjects.Count);
         }
@@ -133,12 +121,6 @@ public class PressurePlate : MonoBehaviour
         lockVisual = false;
         if (indicatorRenderer != null && inactiveMaterial != null)
             indicatorRenderer.material = inactiveMaterial;
-    }
-
-    void PlayAudio(AudioClip clip)
-    {
-        if (clip != null && audioSource != null)
-            audioSource.PlayOneShot(clip);
     }
 
     public bool IsActive => isActive;
