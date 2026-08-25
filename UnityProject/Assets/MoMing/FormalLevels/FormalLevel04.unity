@@ -714,7 +714,7 @@ MonoBehaviour:
   readRadius: 3
   heightTolerance: 3
   humanPage: {fileID: 21300000, guid: f3634b04ee3f74d4eaa0260709e743de, type: 3}
-  dogPage: {fileID: 0}
+  dogPage: {fileID: 21300000, guid: a3de9e8e5f16b10408dd3e2eb54cf325, type: 3}
   prompt: "\u8FD9\u91CC\u6709\u4E00\u5F20\u9648\u65E7\u7684\u7EB8\u6761\uFF0C\u6309
     F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3
@@ -1239,7 +1239,7 @@ MonoBehaviour:
   readRadius: 4
   heightTolerance: 3
   humanPage: {fileID: 21300000, guid: fc8e33c093a51c348877151cc17b1d91, type: 3}
-  dogPage: {fileID: 0}
+  dogPage: {fileID: 21300000, guid: 7dac52b296e95444d83477dd25021942, type: 3}
   prompt: "\u8FD9\u91CC\u6709\u4E00\u4EFD\u9648\u65E7\u7684\u62A5\u544A\uFF0C\u6309
     F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3
@@ -2105,8 +2105,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   readRadius: 3
   heightTolerance: 3
-  humanPage: {fileID: 0}
-  dogPage: {fileID: 0}
+  humanPage: {fileID: 21300000, guid: d469db7180404ac4a920a1da3cd9438b, type: 3}
+  dogPage: {fileID: 21300000, guid: 79c554642ac70a546baed8c51c6e71fd, type: 3}
   prompt: "\u8FD9\u91CC\u6709\u4E00\u4EFD\u7B14\u8BB0\u6B8B\u9875\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3
   promptRepeatInterval: 10
@@ -2209,8 +2209,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   readRadius: 3
   heightTolerance: 3
-  humanPage: {fileID: 0}
-  dogPage: {fileID: 0}
+  humanPage: {fileID: 21300000, guid: b0dc1c4d2cecbc54286338fe2c14d53e, type: 3}
+  dogPage: {fileID: 21300000, guid: 26bfd31b96347e146b3541a819861a54, type: 3}
   prompt: "\u8FD9\u91CC\u6709\u4E00\u4EFD\u7B14\u8BB0\u6B8B\u9875\uFF0C\u6309 F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3
   promptRepeatInterval: 10
@@ -7339,13 +7339,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1995797715}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.00000003352761, y: -0.000000029802319, z: -0.07133599, w: 0.9974524}
+  m_LocalRotation: {x: -0.071332015, y: 0.9974526, z: -0, w: 0}
   m_LocalPosition: {x: -1.254, y: 2.696, z: 0.41}
   m_LocalScale: {x: 0.119760476, y: 0.119760476, z: 0.119760476}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 295531484}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -8.181}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: -8.181}
 --- !u!212 &1995797717
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7705,10 +7705,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 2112926352}
-    - targetCorrespondingSourceObject: {fileID: 1372534679605217380, guid: b45a1db82e4433d45900e1a5f107db48,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2112926351}
     - targetCorrespondingSourceObject: {fileID: 1372534679605217380, guid: b45a1db82e4433d45900e1a5f107db48,
         type: 3}
       insertIndex: -1

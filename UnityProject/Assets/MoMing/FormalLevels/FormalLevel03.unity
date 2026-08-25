@@ -805,7 +805,7 @@ MonoBehaviour:
   readRadius: 3.5
   heightTolerance: 3
   humanPage: {fileID: 21300000, guid: 4a94e2db1ed146541b2096275321acde, type: 3}
-  dogPage: {fileID: 0}
+  dogPage: {fileID: 21300000, guid: ee29356df7c3ed9488a8313aaddb1e6a, type: 3}
   prompt: "\u8FD9\u91CC\u6709\u4E00\u5F20\u9648\u65E7\u7684\u7EB8\u6761\uFF0C\u6309
     F \u53EF\u4EE5\u9605\u8BFB"
   promptDuration: 3
@@ -1685,6 +1685,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2002827539}
     m_Modifications:
+    - target: {fileID: 320548926218801290, guid: 68ba85b6aa78ee44bb2b8524947467d6,
+        type: 3}
+      propertyPath: opensTransitionDoor
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 320548926218801290, guid: 68ba85b6aa78ee44bb2b8524947467d6,
+        type: 3}
+      propertyPath: preloadRouteSuccessor
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1454948191414848216, guid: 7d932fd1207cbf84e8379f0b8c406dd4,
         type: 3}
       propertyPath: m_Name
@@ -1774,16 +1784,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.z
       value: -20.98
-      objectReference: {fileID: 0}
-    - target: {fileID: 320548926218801290, guid: 68ba85b6aa78ee44bb2b8524947467d6,
-        type: 3}
-      propertyPath: opensTransitionDoor
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 320548926218801290, guid: 68ba85b6aa78ee44bb2b8524947467d6,
-        type: 3}
-      propertyPath: preloadRouteSuccessor
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
