@@ -37,7 +37,7 @@ public static class BreadManUIBuilder
 
     // ---------- 场景流程 ----------
     const string S_START    = "Assets/MoMing/Scenes/Game/Start.unity";
-    const string S_CUTSCENE = "Assets/MoMing/Scenes/Game/Cutscene_Intro.unity";
+    const string S_CUTSCENE = "Assets/MoMing/FormalLevels/Cutscene_Intro.unity";
     const string S_LEVEL    = "Assets/Scenes/Test/superbreadman 1.unity";
     const string S_END      = "Assets/MoMing/Scenes/Game/End.unity";
     const string LEVEL_SCENE_NAME = "superbreadman 1";

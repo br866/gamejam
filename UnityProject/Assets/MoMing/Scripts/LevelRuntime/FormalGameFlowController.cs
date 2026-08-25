@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class FormalGameFlowController : MonoBehaviour
 {
@@ -18,6 +19,21 @@ public class FormalGameFlowController : MonoBehaviour
     [SerializeField] private string initialLevelScene = "FormalLevel01";
     [SerializeField] private FormalRouteEntry[] routeCatalog;
     [SerializeField] private bool level02TransitionDiagnostics;
+
+    [Header("通关之后")]
+    [Tooltip("走出第五关之后整场切到哪个场景。默认是结尾动画；\n" +
+             "那个场景上的 CutscenePlayer 播完会自己跳去主菜单（Start）。\n" +
+             "留空 = 通关之后什么都不做。")]
+    [SerializeField] private string endingCutsceneScene = "Cutscene_End";
+
+    [Tooltip("出门之后先停这么久，让玩家看清自己走出去了，然后才开始渐黑")]
+    [SerializeField] private float endingDelaySeconds = 0.6f;
+
+    [Tooltip("渐黑用多久（秒）。黑透之后才切场景，结尾动画自己会从黑幕淡入，接得上")]
+    [SerializeField] private float endingFadeSeconds = 1.2f;
+
+    [Tooltip("通关之后在屏幕中间画一个带 Restart 按钮的调试面板。正式版关掉")]
+    [SerializeField] private bool showRouteCompleteDebugPanel;
 
     // Kept as serialized migration inputs for existing FormalPersistent scenes.
     [SerializeField] private string level01Level02SharedArtScene = "FormalSharedArt_L01_L02";
@@ -190,7 +206,13 @@ public class FormalGameFlowController : MonoBehaviour
     {
         string successor = GetRouteSuccessor(currentLevelScene);
         if (string.IsNullOrEmpty(successor))
+        {
+            // 已经站在路线最后一关（第五关）上还要求推进 = 通关了。
+            // 于是最后一关的出口不用另配东西，和前面每一关用同一套触发器就行。
+            if (IsLastRouteLevel(currentLevelScene))
+                CompleteRoute();
             return;
+        }
 
         LogLevel02AdvanceRequest(source, successor);
 
@@ -422,8 +444,98 @@ public class FormalGameFlowController : MonoBehaviour
             return;
         }
 
+        if (routeComplete)
+            return;
+
         routeComplete = true;
         SetFormalControlsEnabled(false);
+        StartCoroutine(PlayEndingRoutine());
+    }
+
+    /// <summary>
+    /// 通关之后：停一小会儿让玩家看清自己出去了，然后整场切到结尾动画场景。
+    /// 结尾动画播完（或被跳过）由 CutscenePlayer 自己跳去主菜单，这边不管。
+    ///
+    /// 注意这里要先把自己从 DontDestroyOnLoad 里拿出来：FormalGameFlow 是常驻的，
+    /// 不处理的话它会跟着飘进结尾动画和主菜单，玩家再点「开始游戏」时
+    /// 场景里就会出现两个 FormalGameFlowController。
+    /// </summary>
+    IEnumerator PlayEndingRoutine()
+    {
+        Time.timeScale = 1f;
+
+        if (endingDelaySeconds > 0f)
+            yield return new WaitForSecondsRealtime(endingDelaySeconds);
+
+        yield return FadeToBlackRoutine();
+
+        if (string.IsNullOrEmpty(endingCutsceneScene))
+        {
+            Debug.LogWarning("[FormalGameFlowController] Ending Cutscene Scene 是空的，通关之后停在原地。", this);
+            yield break;
+        }
+
+        if (!Application.CanStreamedLevelBeLoaded(endingCutsceneScene))
+        {
+            Debug.LogError("[FormalGameFlowController] 场景 \"" + endingCutsceneScene +
+                           "\" 不在 Build Settings 里，结尾动画放不了。" +
+                           "去 File → Build Settings 把它加进去。", this);
+            yield break;
+        }
+
+        Debug.Log("[FormalGameFlowController] 通关，切到结尾动画 " + endingCutsceneScene + "。", this);
+
+        // 从 DontDestroyOnLoad 搬回当前场景，下面的 LoadScene(Single) 就会顺手把它卸掉；
+        // 直接 Destroy 的话销毁和加载都排在帧末，谁先谁后不保证。
+        Scene host = SceneManager.GetActiveScene();
+        if (host.IsValid() && host.isLoaded)
+            SceneManager.MoveGameObjectToScene(gameObject, host);
+
+        SceneManager.LoadScene(endingCutsceneScene);
+    }
+
+    /// <summary>
+    /// 临时拉一层全屏黑幕把画面盖掉。
+    ///
+    /// 不用场景里现成的 UI：HUD、焦虑污渍、暂停菜单各挂各的 Canvas，
+    /// 想盖住全部就得有个排在最上面的自己的 Canvas。sortingOrder 拉到很高，
+    /// 保证盖在 HUD 和焦虑暗角上面。
+    ///
+    /// 这层黑幕不做 DontDestroyOnLoad —— 下一句 LoadScene 会把它卸掉，
+    /// 而结尾动画场景自己就是从全黑淡入的，两边正好接上，中间不会闪一下。
+    /// </summary>
+    IEnumerator FadeToBlackRoutine()
+    {
+        GameObject canvasObject = new GameObject("FormalEndingFade");
+        Canvas canvas = canvasObject.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = short.MaxValue - 8;
+
+        GameObject imageObject = new GameObject("Black");
+        imageObject.transform.SetParent(canvasObject.transform, false);
+
+        Image black = imageObject.AddComponent<Image>();
+        black.color = new Color(0f, 0f, 0f, 0f);
+        black.raycastTarget = false;
+
+        RectTransform rect = black.rectTransform;
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+
+        float duration = Mathf.Max(0f, endingFadeSeconds);
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            // 用 unscaled：万一有别的东西把 timeScale 压住了，渐黑照样按真实时间走
+            elapsed += Time.unscaledDeltaTime;
+            black.color = new Color(0f, 0f, 0f, Mathf.Clamp01(elapsed / duration));
+            yield return null;
+        }
+
+        black.color = Color.black;
+        yield return null;
     }
 
     public void RestartRoute()
@@ -968,6 +1080,13 @@ public class FormalGameFlowController : MonoBehaviour
         return index < 0 ? null : routeCatalog[index].sceneName;
     }
 
+    /// <summary>这一关是不是路线里的最后一关（在表里，而且后面没有了）。</summary>
+    bool IsLastRouteLevel(string sceneName)
+    {
+        int index = FindRouteIndex(sceneName);
+        return index >= 0 && index + 1 >= routeCatalog.Length;
+    }
+
     int FindRouteSuccessorIndex(string fromScene)
     {
         int index = FindRouteIndex(fromScene);
@@ -1169,7 +1288,7 @@ public class FormalGameFlowController : MonoBehaviour
 
     void OnGUI()
     {
-        if (!routeComplete)
+        if (!routeComplete || !showRouteCompleteDebugPanel)
             return;
 
         const float width = 360f;
