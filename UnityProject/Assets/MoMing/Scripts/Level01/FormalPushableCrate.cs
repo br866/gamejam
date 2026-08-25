@@ -176,9 +176,8 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
 
     void Update()
     {
-        // The death screen freezes Time.timeScale, so FixedUpdate can no longer
-        // reach the normal movement-stop path. Update still runs while paused.
-        if (pushAudioPlaying && FormalDeathScreen.IsShowing)
+        // Update still runs when the physics loop is suspended by blocking UI.
+        if (pushAudioPlaying && !FormalGameplayState.CanSimulate)
             StopPushAudioImmediate();
     }
 
@@ -269,6 +268,8 @@ public class FormalPushableCrate : MonoBehaviour, IFormalLevelTemporaryState, IF
 
     void UpdatePushAudio(bool moving)
     {
+        moving = moving && FormalGameplayState.CanSimulate;
+
         if (moving)
         {
             pushAudioStopRemaining = pushAudioStopDelay;

@@ -14,6 +14,12 @@ public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState, 
     [Tooltip("完成后只预加载正式路线的下一关，保持角色位置并等待实体进入目标关入口确认。")]
     [SerializeField] private bool preloadRouteSuccessor;
 
+    [Header("Wwise Audio")]
+    [Tooltip("Optional successful-completion Event for visible pressure plates.")]
+    [SerializeField] private AK.Wwise.Event completionEvent = new AK.Wwise.Event();
+    [Tooltip("Enable only on standalone pressure plates that should use the common completion sound.")]
+    [SerializeField] private bool playCompletionAudio;
+
     [Header("调试")]
     [Tooltip("勾上之后：谁踩上来、谁离开、当前占用者是谁、条件为什么没满足，都会打到 Console。\n" +
              "查「踩了没反应」的时候勾上跑一次，查完记得取消。")]
@@ -182,6 +188,10 @@ public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState, 
     void CompleteTrigger(bool triggerRouteOutput = true)
     {
         complete = true;
+
+        if (playCompletionAudio && completionEvent != null && completionEvent.IsValid())
+            completionEvent.Post(gameObject);
+
         foreach (MonoBehaviour behaviour in actuators)
         {
             IFormalLevelActuator actuator = behaviour as IFormalLevelActuator;

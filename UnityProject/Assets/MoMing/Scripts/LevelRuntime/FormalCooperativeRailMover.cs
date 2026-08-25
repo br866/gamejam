@@ -160,8 +160,8 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
 
     void Update()
     {
-        // Death freezes the physics loop before it can reach the normal stop path.
-        if (pushAudioPlaying && FormalDeathScreen.IsShowing)
+        // Update still runs when the physics loop is suspended by blocking UI.
+        if (pushAudioPlaying && !FormalGameplayState.CanSimulate)
             StopPushAudioImmediate();
     }
 
@@ -229,6 +229,8 @@ public class FormalCooperativeRailMover : MonoBehaviour, IFormalLevelTemporarySt
 
     void UpdatePushAudio(bool moving)
     {
+        moving = moving && FormalGameplayState.CanSimulate;
+
         if (moving)
         {
             pushAudioStopRemaining = pushAudioStopDelay;

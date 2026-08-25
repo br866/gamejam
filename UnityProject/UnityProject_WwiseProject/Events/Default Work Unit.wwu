@@ -109,17 +109,6 @@
 										</Action>
 									</ChildrenList>
 								</Event>
-								<Event Name="Play_PlayerDeath_Stinger" ID="{292DC424-9092-4CD3-BC79-68F18EF97CFB}">
-									<ChildrenList>
-										<Action Name="" ID="{D51433AF-B8DB-412C-A8DA-16363A74F7D1}" ShortID="536127404">
-											<ReferenceList>
-												<Reference Name="Target">
-													<ObjectRef Name="SFX_PlayerDeath_Stinger" ID="{B14CC8AF-C5D1-4C23-8AC7-9EDAE9DA040E}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
-												</Reference>
-											</ReferenceList>
-										</Action>
-									</ChildrenList>
-								</Event>
 							</ChildrenList>
 						</Folder>
 						<Folder Name="Enemy" ID="{20156A4C-6AA8-427E-991F-95113A033015}" ShortID="580592470">
@@ -215,9 +204,34 @@
 										</Action>
 									</ChildrenList>
 								</Event>
+								<Event Name="Play_PressurePlate" ID="{BDF850F8-13D1-43A5-8FC1-6F26454783AD}">
+									<ChildrenList>
+										<Action Name="" ID="{61696ADA-58FE-43ED-B99D-F49B9BB7885E}" ShortID="305436154">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="PressurePlate" ID="{CC2D7B82-B91C-4F4F-B981-9FC19E6779B7}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
 							</ChildrenList>
 						</Folder>
-						<Folder Name="Game" ID="{3A5097FA-C7BF-40CC-A827-A46BE32AC4C8}" ShortID="890467270"/>
+						<Folder Name="Game" ID="{3A5097FA-C7BF-40CC-A827-A46BE32AC4C8}" ShortID="890467270">
+							<ChildrenList>
+								<Event Name="Play_PlayerDeath_Stinger" ID="{292DC424-9092-4CD3-BC79-68F18EF97CFB}">
+									<ChildrenList>
+										<Action Name="" ID="{D51433AF-B8DB-412C-A8DA-16363A74F7D1}" ShortID="536127404">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="SFX_PlayerDeath_Stinger" ID="{B14CC8AF-C5D1-4C23-8AC7-9EDAE9DA040E}" WorkUnitID="{6723D48E-8F18-4E9F-B23D-1A208B72CC08}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+							</ChildrenList>
+						</Folder>
 					</ChildrenList>
 				</Folder>
 				<Folder Name="Ambience" ID="{09F179E9-50B6-4E9F-B465-231176AC85F1}" ShortID="175513565"/>
