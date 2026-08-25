@@ -17,6 +17,8 @@ public static class WwiseUIFeedbackSettingsBootstrap
     private const string HoverGuid = "39A8FF1E-71FF-4F9A-8DF2-CEDFEF889CFB";
     private const string ClickName = "Play_UI_Click";
     private const string ClickGuid = "37854238-6358-4DCC-9A9F-C4FB8C36EC72";
+    private const string FluorescentLightName = "Play_Fluorescent_Light";
+    private const string FluorescentLightGuid = "D1801EA0-EB5F-48BE-9757-2DCDE2A6B50F";
     private const string MusicVolumeName = "MusicVolume";
     private const string MusicVolumeGuid = "19F97BBC-96A2-467C-98C6-C4CC546EB40A";
     private const string SfxVolumeName = "SFXVolume";
@@ -80,6 +82,8 @@ public static class WwiseUIFeedbackSettingsBootstrap
             new Guid(HoverGuid),
             ClickName,
             new Guid(ClickGuid),
+            FluorescentLightName,
+            new Guid(FluorescentLightGuid),
             MusicVolumeName,
             new Guid(MusicVolumeGuid),
             SfxVolumeName,
@@ -89,12 +93,13 @@ public static class WwiseUIFeedbackSettingsBootstrap
         AssetDatabase.SaveAssets();
 
         if (settings.IsConfigured
+            && settings.HasValidFluorescentLightEvent
             && settings.HasValidMusicVolumeRtpc
             && settings.HasValidSfxVolumeRtpc)
         {
             if (created || logSuccess)
                 Debug.Log(
-                    "[WwiseUIFeedback] UI Events and Music/SFX volume RTPCs are ready.",
+                    "[WwiseUIFeedback] Shared UI, environment, and volume references are ready.",
                     settings);
             return true;
         }

@@ -16,6 +16,15 @@ public sealed class FormalWwiseMusicController : MonoBehaviour
     [Min(0f)]
     [SerializeField] private float restartFadeSeconds = 0.5f;
 
+    [Header("Level 4.5 Long Corridor Music")]
+    [Tooltip("The Wwise Event is named Level5 for design-document compatibility; its runtime scope is FormalLevel045.")]
+    [SerializeField] private AK.Wwise.Event playLevel5MusicEvent = new AK.Wwise.Event();
+    [SerializeField] private AK.Wwise.Event stopLevel5MusicEvent = new AK.Wwise.Event();
+    [SerializeField] private string level5MusicScene = "FormalLevel045";
+    [Min(0f)]
+    [Tooltip("Matches the Stop_Level5_Music fade authored in Wwise.")]
+    [SerializeField] private float level5RestartFadeSeconds = 2f;
+
     [Header("Wwise State Names")]
     [SerializeField] private string musicModeGroup = "MusicMode";
     [SerializeField] private string exploreState = "Explore";
@@ -41,12 +50,16 @@ public sealed class FormalWwiseMusicController : MonoBehaviour
 
     private AkAmbient musicEvent;
     private FormalAnxietyState anxietyState;
+    private FormalGameFlowController gameFlow;
     private MonsterPatrol[] monsters = new MonsterPatrol[0];
     private int appliedMusicMode = -1;
     private AnxietyBand appliedAnxietyBand = AnxietyBand.Unset;
     private Coroutine restartMusicRoutine;
+    private bool level5MusicActive;
     private bool warnedMissingPlayEvent;
     private bool warnedMissingStopEvent;
+    private bool warnedMissingPlayLevel5Event;
+    private bool warnedMissingStopLevel5Event;
 
     void OnEnable()
     {
@@ -70,12 +83,14 @@ public sealed class FormalWwiseMusicController : MonoBehaviour
             yield return null;
 
         anxietyState = FormalAnxietyState.Instance;
+        gameFlow = FindObjectOfType<FormalGameFlowController>();
         RefreshMonsters();
         ApplyStates(true);
 
         // AkAmbient must use Trigger On = Nothing, otherwise the Event is
         // posted once by AkAmbient and once again here.
-        PostGameplayMusic();
+        level5MusicActive = IsLevel5MusicSceneCurrent();
+        PostCurrentMusic();
     }
 
     void Update()
@@ -87,7 +102,11 @@ public sealed class FormalWwiseMusicController : MonoBehaviour
             force = true;
         }
 
+        if (gameFlow == null)
+            gameFlow = FindObjectOfType<FormalGameFlowController>();
+
         ApplyStates(force);
+        ApplyRouteMusic();
     }
 
     void ApplyStates(bool force)
@@ -99,8 +118,8 @@ public sealed class FormalWwiseMusicController : MonoBehaviour
     }
 
     /// <summary>
-    /// Stops the persistent gameplay-music instance and starts a fresh one after
-    /// the Wwise Stop Event's fade, so a level restart also resets the timeline.
+    /// Stops the active route-music instance and starts the correct one fresh,
+    /// so a level restart also resets its timeline.
     /// </summary>
     public void RestartFromBeginning()
     {
@@ -112,7 +131,7 @@ public sealed class FormalWwiseMusicController : MonoBehaviour
         restartMusicRoutine = StartCoroutine(RestartFromBeginningRoutine());
     }
 
-    /// <summary>Stops the persistent gameplay-music instance without reposting it.</summary>
+    /// <summary>Stops the active route soundtrack without reposting it.</summary>
     public void StopGameplayMusic()
     {
         if (restartMusicRoutine != null)
@@ -121,25 +140,37 @@ public sealed class FormalWwiseMusicController : MonoBehaviour
             restartMusicRoutine = null;
         }
 
-        TryPostStopGameplayMusic();
+        TryPostStopCurrentMusic();
     }
 
     IEnumerator RestartFromBeginningRoutine()
     {
-        if (!TryPostStopGameplayMusic())
+        bool restartingLevel5Music = IsLevel5MusicSceneCurrent();
+        if (!TryPostStopCurrentMusic())
         {
             restartMusicRoutine = null;
             yield break;
         }
 
-        if (restartFadeSeconds > 0f)
-            yield return new WaitForSecondsRealtime(restartFadeSeconds);
+        float fadeSeconds = restartingLevel5Music
+            ? level5RestartFadeSeconds
+            : restartFadeSeconds;
+        if (fadeSeconds > 0f)
+            yield return new WaitForSecondsRealtime(fadeSeconds);
 
         appliedMusicMode = -1;
         appliedAnxietyBand = AnxietyBand.Unset;
         ApplyStates(true);
-        PostGameplayMusic();
+        level5MusicActive = IsLevel5MusicSceneCurrent();
+        PostCurrentMusic();
         restartMusicRoutine = null;
+    }
+
+    bool TryPostStopCurrentMusic()
+    {
+        return level5MusicActive
+            ? TryPostStopLevel5Music()
+            : TryPostStopGameplayMusic();
     }
 
     bool TryPostStopGameplayMusic()
@@ -172,6 +203,86 @@ public sealed class FormalWwiseMusicController : MonoBehaviour
             Debug.LogWarning("[FormalWwiseMusicController] Play_Gameplay_Music is not assigned on AkAmbient.", this);
             warnedMissingPlayEvent = true;
         }
+    }
+
+    void PostCurrentMusic()
+    {
+        if (level5MusicActive)
+            PostLevel5Music();
+        else
+            PostGameplayMusic();
+    }
+
+    void PostLevel5Music()
+    {
+        if (playLevel5MusicEvent != null && playLevel5MusicEvent.IsValid())
+        {
+            playLevel5MusicEvent.Post(gameObject);
+            return;
+        }
+
+        if (!warnedMissingPlayLevel5Event)
+        {
+            Debug.LogWarning("[FormalWwiseMusicController] Play_Level5_Music is not assigned.", this);
+            warnedMissingPlayLevel5Event = true;
+        }
+    }
+
+    bool TryPostStopLevel5Music()
+    {
+        if (stopLevel5MusicEvent != null && stopLevel5MusicEvent.IsValid())
+        {
+            stopLevel5MusicEvent.Post(gameObject);
+            return true;
+        }
+
+        if (!warnedMissingStopLevel5Event)
+        {
+            Debug.LogWarning("[FormalWwiseMusicController] Stop_Level5_Music is not assigned.", this);
+            warnedMissingStopLevel5Event = true;
+        }
+
+        return false;
+    }
+
+    void ApplyRouteMusic()
+    {
+        if (gameFlow == null || string.IsNullOrEmpty(gameFlow.CurrentLevelScene))
+            return;
+
+        bool shouldUseLevel5Music = IsLevel5MusicSceneCurrent();
+        if (shouldUseLevel5Music == level5MusicActive)
+            return;
+
+        if (restartMusicRoutine != null)
+        {
+            StopCoroutine(restartMusicRoutine);
+            restartMusicRoutine = null;
+        }
+
+        if (shouldUseLevel5Music)
+        {
+            TryPostStopGameplayMusic();
+            level5MusicActive = true;
+            PostLevel5Music();
+            Debug.Log("[FormalWwiseMusicController] Entered FormalLevel045; playing Level5 corridor music.", this);
+            return;
+        }
+
+        TryPostStopLevel5Music();
+        level5MusicActive = false;
+        appliedMusicMode = -1;
+        appliedAnxietyBand = AnxietyBand.Unset;
+        ApplyStates(true);
+        PostGameplayMusic();
+        Debug.Log("[FormalWwiseMusicController] Left FormalLevel045; restored gameplay music.", this);
+    }
+
+    bool IsLevel5MusicSceneCurrent()
+    {
+        return gameFlow != null
+            && !string.IsNullOrEmpty(level5MusicScene)
+            && gameFlow.CurrentLevelScene == level5MusicScene;
     }
 
     void ApplyMusicMode(bool force)
@@ -254,6 +365,7 @@ public sealed class FormalWwiseMusicController : MonoBehaviour
     void OnValidate()
     {
         restartFadeSeconds = Mathf.Max(0f, restartFadeSeconds);
+        level5RestartFadeSeconds = Mathf.Max(0f, level5RestartFadeSeconds);
         midThreshold = Mathf.Clamp01(midThreshold);
         highThreshold = Mathf.Clamp(highThreshold, midThreshold, 1f);
     }
