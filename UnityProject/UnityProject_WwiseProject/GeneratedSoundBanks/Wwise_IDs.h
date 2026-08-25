@@ -14,17 +14,20 @@ namespace AK
     namespace EVENTS
     {
         static const AkUniqueID PLAY_CRATE_PUSH = 470824146U;
+        static const AkUniqueID PLAY_DEATHCAUSE_MUSIC = 2229278265U;
         static const AkUniqueID PLAY_FOOTSTEP_BRUTEDOC = 3546231729U;
         static const AkUniqueID PLAY_FOOTSTEP_DOG = 1441942263U;
         static const AkUniqueID PLAY_FOOTSTEP_HUMAN = 1846914642U;
         static const AkUniqueID PLAY_GAMEPLAY_MUSIC = 1231987938U;
         static const AkUniqueID PLAY_KEY_PICKUP = 2881789206U;
+        static const AkUniqueID PLAY_PLAYERDEATH_STINGER = 2509310786U;
         static const AkUniqueID PLAY_TITLE_MUSIC = 2604896900U;
         static const AkUniqueID PLAY_UI_CLICK = 1749424733U;
         static const AkUniqueID PLAY_UI_HOVER = 1339559671U;
         static const AkUniqueID PLAY_UI_PARCHMENT_CLOSE = 3581212516U;
         static const AkUniqueID PLAY_UI_PARCHMENT_OPEN = 1586167264U;
         static const AkUniqueID STOP_CRATE_PUSH = 708504560U;
+        static const AkUniqueID STOP_DEATHCAUSE_MUSIC = 1522432571U;
         static const AkUniqueID STOP_GAMEPLAY_MUSIC = 3536547992U;
     } // namespace EVENTS
 
@@ -42,6 +45,18 @@ namespace AK
                 static const AkUniqueID NONE = 748895195U;
             } // namespace STATE
         } // namespace ANXIETYLEVEL
+
+        namespace COD
+        {
+            static const AkUniqueID GROUP = 1083682085U;
+
+            namespace STATE
+            {
+                static const AkUniqueID ANXIETY = 4143496951U;
+                static const AkUniqueID ELIMINATED = 1342227465U;
+                static const AkUniqueID NONE = 748895195U;
+            } // namespace STATE
+        } // namespace COD
 
         namespace MUSICMODE
         {

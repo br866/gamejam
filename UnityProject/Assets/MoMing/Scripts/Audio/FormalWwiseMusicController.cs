@@ -112,20 +112,25 @@ public sealed class FormalWwiseMusicController : MonoBehaviour
         restartMusicRoutine = StartCoroutine(RestartFromBeginningRoutine());
     }
 
+    /// <summary>Stops the persistent gameplay-music instance without reposting it.</summary>
+    public void StopGameplayMusic()
+    {
+        if (restartMusicRoutine != null)
+        {
+            StopCoroutine(restartMusicRoutine);
+            restartMusicRoutine = null;
+        }
+
+        TryPostStopGameplayMusic();
+    }
+
     IEnumerator RestartFromBeginningRoutine()
     {
-        if (stopGameplayMusicEvent == null || !stopGameplayMusicEvent.IsValid())
+        if (!TryPostStopGameplayMusic())
         {
-            if (!warnedMissingStopEvent)
-            {
-                Debug.LogWarning("[FormalWwiseMusicController] Stop_Gameplay_Music is not assigned.", this);
-                warnedMissingStopEvent = true;
-            }
             restartMusicRoutine = null;
             yield break;
         }
-
-        stopGameplayMusicEvent.Post(gameObject);
 
         if (restartFadeSeconds > 0f)
             yield return new WaitForSecondsRealtime(restartFadeSeconds);
@@ -135,6 +140,23 @@ public sealed class FormalWwiseMusicController : MonoBehaviour
         ApplyStates(true);
         PostGameplayMusic();
         restartMusicRoutine = null;
+    }
+
+    bool TryPostStopGameplayMusic()
+    {
+        if (stopGameplayMusicEvent != null && stopGameplayMusicEvent.IsValid())
+        {
+            stopGameplayMusicEvent.Post(gameObject);
+            return true;
+        }
+
+        if (!warnedMissingStopEvent)
+        {
+            Debug.LogWarning("[FormalWwiseMusicController] Stop_Gameplay_Music is not assigned.", this);
+            warnedMissingStopEvent = true;
+        }
+
+        return false;
     }
 
     void PostGameplayMusic()
