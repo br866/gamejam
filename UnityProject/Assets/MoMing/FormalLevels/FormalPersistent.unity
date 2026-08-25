@@ -4061,6 +4061,7 @@ GameObject:
   - component: {fileID: 1097121058}
   - component: {fileID: 1097121057}
   - component: {fileID: 1097121060}
+  - component: {fileID: 9000000000000000010}
   m_Layer: 0
   m_Name: Audio_Music
   m_TagString: Untagged
@@ -4155,6 +4156,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebce666b13044d29bc66bfbbb1d93118, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stopGameplayMusicEvent:
+    idInternal: 0
+    valueGuidInternal:
+    WwiseObjectReference: {fileID: 11400000, guid: 950db076e12b47139746d0739a9c85bd,
+      type: 2}
+  restartFadeSeconds: 0.5
   musicModeGroup: MusicMode
   exploreState: Explore
   combatState: Combat
@@ -4164,6 +4171,28 @@ MonoBehaviour:
   highAnxietyState: High
   midThreshold: 0.45
   highThreshold: 0.75
+--- !u!114 &9000000000000000010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097121056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86a1e5d9933242df8a320a9efaa54f5d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  openEvent:
+    idInternal: 0
+    valueGuidInternal:
+    WwiseObjectReference: {fileID: 11400000, guid: d9055d88910e49a99a77c1090cb7c098,
+      type: 2}
+  closeEvent:
+    idInternal: 0
+    valueGuidInternal:
+    WwiseObjectReference: {fileID: 11400000, guid: f3e39c9c563341a99943131430388b97,
+      type: 2}
 --- !u!1 &1124233885
 GameObject:
   m_ObjectHideFlags: 0

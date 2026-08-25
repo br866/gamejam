@@ -10,6 +10,12 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(AkAmbient))]
 public sealed class FormalWwiseMusicController : MonoBehaviour
 {
+    [Header("Wwise Events")]
+    [Tooltip("Stops Gameplay_Music. Its Wwise Stop Action currently fades for 0.5 seconds.")]
+    [SerializeField] private AK.Wwise.Event stopGameplayMusicEvent = new AK.Wwise.Event();
+    [Min(0f)]
+    [SerializeField] private float restartFadeSeconds = 0.5f;
+
     [Header("Wwise State Names")]
     [SerializeField] private string musicModeGroup = "MusicMode";
     [SerializeField] private string exploreState = "Explore";
@@ -38,6 +44,9 @@ public sealed class FormalWwiseMusicController : MonoBehaviour
     private MonsterPatrol[] monsters = new MonsterPatrol[0];
     private int appliedMusicMode = -1;
     private AnxietyBand appliedAnxietyBand = AnxietyBand.Unset;
+    private Coroutine restartMusicRoutine;
+    private bool warnedMissingPlayEvent;
+    private bool warnedMissingStopEvent;
 
     void OnEnable()
     {
@@ -66,7 +75,7 @@ public sealed class FormalWwiseMusicController : MonoBehaviour
 
         // AkAmbient must use Trigger On = Nothing, otherwise the Event is
         // posted once by AkAmbient and once again here.
-        musicEvent.data.Post(gameObject);
+        PostGameplayMusic();
     }
 
     void Update()
@@ -87,6 +96,60 @@ public sealed class FormalWwiseMusicController : MonoBehaviour
 
         if (anxietyState != null)
             ApplyAnxietyLevel(force);
+    }
+
+    /// <summary>
+    /// Stops the persistent gameplay-music instance and starts a fresh one after
+    /// the Wwise Stop Event's fade, so a level restart also resets the timeline.
+    /// </summary>
+    public void RestartFromBeginning()
+    {
+        if (!isActiveAndEnabled)
+            return;
+
+        if (restartMusicRoutine != null)
+            StopCoroutine(restartMusicRoutine);
+        restartMusicRoutine = StartCoroutine(RestartFromBeginningRoutine());
+    }
+
+    IEnumerator RestartFromBeginningRoutine()
+    {
+        if (stopGameplayMusicEvent == null || !stopGameplayMusicEvent.IsValid())
+        {
+            if (!warnedMissingStopEvent)
+            {
+                Debug.LogWarning("[FormalWwiseMusicController] Stop_Gameplay_Music is not assigned.", this);
+                warnedMissingStopEvent = true;
+            }
+            restartMusicRoutine = null;
+            yield break;
+        }
+
+        stopGameplayMusicEvent.Post(gameObject);
+
+        if (restartFadeSeconds > 0f)
+            yield return new WaitForSecondsRealtime(restartFadeSeconds);
+
+        appliedMusicMode = -1;
+        appliedAnxietyBand = AnxietyBand.Unset;
+        ApplyStates(true);
+        PostGameplayMusic();
+        restartMusicRoutine = null;
+    }
+
+    void PostGameplayMusic()
+    {
+        if (musicEvent != null && musicEvent.data != null && musicEvent.data.IsValid())
+        {
+            musicEvent.data.Post(gameObject);
+            return;
+        }
+
+        if (!warnedMissingPlayEvent)
+        {
+            Debug.LogWarning("[FormalWwiseMusicController] Play_Gameplay_Music is not assigned on AkAmbient.", this);
+            warnedMissingPlayEvent = true;
+        }
     }
 
     void ApplyMusicMode(bool force)
@@ -168,8 +231,8 @@ public sealed class FormalWwiseMusicController : MonoBehaviour
 
     void OnValidate()
     {
+        restartFadeSeconds = Mathf.Max(0f, restartFadeSeconds);
         midThreshold = Mathf.Clamp01(midThreshold);
         highThreshold = Mathf.Clamp(highThreshold, midThreshold, 1f);
     }
 }
-

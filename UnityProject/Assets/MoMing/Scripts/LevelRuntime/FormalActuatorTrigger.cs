@@ -58,10 +58,14 @@ public class FormalActuatorTrigger : MonoBehaviour, IFormalLevelTemporaryState, 
     public void ResetTemporaryState()
     {
         occupants.Clear();
-        if (permanent || !complete)
+        if (permanent)
             return;
 
         complete = false;
+
+        // 不看之前记的 complete，一律把机关关回去。
+        // 关一扇本来就关着的门是空操作，代价为零；
+        // 反过来漏关一扇开着的门，玩家重开之后就能直接走过去，谜题白送。
         foreach (MonoBehaviour behaviour in actuators)
         {
             IFormalLevelActuator actuator = behaviour as IFormalLevelActuator;

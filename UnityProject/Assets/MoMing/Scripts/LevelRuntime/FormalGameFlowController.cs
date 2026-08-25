@@ -65,10 +65,34 @@ public class FormalGameFlowController : MonoBehaviour
     public bool SuccessorArrivalConfirmed => successorArrivalConfirmed;
     public bool HasPendingPhysicalTransition => !string.IsNullOrEmpty(pendingPhysicalTransitionToScene);
 
+    private static FormalGameFlowController activeInstance;
+
     void Awake()
     {
+        // 这个物体是 DontDestroyOnLoad 的：玩家回主菜单再点「开始游戏」时，
+        // 上一局那个控制器会活着飘过来，新加载的 FormalPersistent 又带来一个新的，
+        // 场里就同时存在两个。各处都是 FindObjectOfType<FormalGameFlowController>() 拿引用，
+        // 抓到上一局那个陈旧的就会出各种怪事：CurrentLevelScene 还停在上一局的关卡，
+        // 于是过关触发器、门的推进逻辑一律静默失效（踩踏板这类不碰控制器的机关反而照常）。
+        // 新来的这个才属于这一局，把旧的立刻停掉并销毁。
+        if (activeInstance != null && activeInstance != this)
+        {
+            // 先 SetActive(false)：Destroy 要等到帧末，
+            // 中间这段时间 FindObjectOfType 还是会找到它。
+            activeInstance.gameObject.SetActive(false);
+            Destroy(activeInstance.gameObject);
+            Debug.Log("[FormalGameFlowController] 清掉了上一局残留的流程控制器。", this);
+        }
+
+        activeInstance = this;
         DontDestroyOnLoad(gameObject);
         EnsureRouteCatalog();
+    }
+
+    void OnDestroy()
+    {
+        if (activeInstance == this)
+            activeInstance = null;
     }
 
     void Start()
@@ -686,6 +710,10 @@ public class FormalGameFlowController : MonoBehaviour
     {
         if (string.IsNullOrEmpty(currentLevelScene))
             return;
+
+        FormalWwiseMusicController music = FindObjectOfType<FormalWwiseMusicController>();
+        if (music != null)
+            music.RestartFromBeginning();
 
         // 下面有一条异步重载关卡的分支走不到 FormalLevelController.RequestRecovery()，
         // 所以这里先无条件清一次焦虑。

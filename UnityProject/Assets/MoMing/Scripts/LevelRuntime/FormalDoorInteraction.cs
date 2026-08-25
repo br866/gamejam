@@ -12,7 +12,7 @@ using UnityEngine;
 /// </summary>
 [RequireComponent(typeof(Collider))]
 [AddComponentMenu("MoMing/Formal Door Interaction")]
-public class FormalDoorInteraction : MonoBehaviour
+public class FormalDoorInteraction : MonoBehaviour, IFormalLevelTemporaryState
 {
     [Header("开哪扇门")]
     [SerializeField] private FormalDoor door;
@@ -52,6 +52,31 @@ public class FormalDoorInteraction : MonoBehaviour
     private bool lastCanOpen;
     private bool promptShown;
     private FormalDoor resolvedDoor;
+
+    /// <summary>
+    /// 关卡复位时重新解锁这个交互区。
+    ///
+    /// 不这么做的话会出这个 bug：重开之后门被机关关回去了，但这里的 opened 还是 true，
+    /// 配合 onceOnly 会让 Update() 一进来就 return —— 玩家重新捡到钥匙走到门口，
+    /// 按 E 完全没反应，连提示都不弹，门就成了死门。
+    ///
+    /// 但门要是还开着（过关门那种永久打开的），就不解锁：
+    /// 否则玩家能对着一扇已经开了的门再按一次 E，把开门后的流程再触发一遍。
+    /// </summary>
+    public void ResetTemporaryState()
+    {
+        occupants.Clear();
+        promptShown = false;
+        lastCanOpen = false;
+
+        // 跨场景的门可能已经被卸载重载过，缓存的引用作废，下次重新按名字找
+        if (!string.IsNullOrEmpty(doorNameToken))
+            resolvedDoor = null;
+
+        FormalDoor target = door != null ? door : resolvedDoor;
+        if (target == null || !target.IsOpen)
+            opened = false;
+    }
 
     /// <summary>Inspector 拖的门优先；没拖就按名字片段跨场景找一次并记住。</summary>
     FormalDoor ResolvedDoor
