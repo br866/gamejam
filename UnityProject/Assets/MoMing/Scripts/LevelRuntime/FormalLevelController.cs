@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class FormalLevelController : MonoBehaviour
 {
@@ -71,6 +72,13 @@ public class FormalLevelController : MonoBehaviour
         recoveryInProgress = true;
         try
         {
+            // 重置前先全场扫一遍。只靠 Awake 里的注册不保险：
+            // 关卡是 additive 加载的，各组件 Awake 的时候这个场景还没加载完，
+            // 那一刻 scene.GetRootGameObjects() 拿到的根物体列表可能是不全的，
+            // 漏注册的机关重开之后就不会复位（门一直开着，谜题白送）。
+            // 走到这里场景肯定已经加载完了，扫一遍补齐最稳。
+            CollectSceneTemporaryStates();
+
             foreach (IFormalLevelTemporaryState state in temporaryStates)
                 state.ResetTemporaryState();
 
@@ -90,6 +98,34 @@ public class FormalLevelController : MonoBehaviour
     public void ResetLevel()
     {
         RequestRecovery();
+    }
+
+    /// <summary>
+    /// 把本关场景里所有可复位机关都收进来（只管自己这个场景，
+    /// 过关门那种摆在 SharedArt 场景里的不碰，它们本来就该保持打开）。
+    /// </summary>
+    void CollectSceneTemporaryStates()
+    {
+        Scene scene = gameObject.scene;
+        if (!scene.IsValid() || !scene.isLoaded)
+            return;
+
+        int added = 0;
+        foreach (GameObject root in scene.GetRootGameObjects())
+        {
+            foreach (MonoBehaviour behaviour in root.GetComponentsInChildren<MonoBehaviour>(true))
+            {
+                IFormalLevelTemporaryState state = behaviour as IFormalLevelTemporaryState;
+                if (state == null || temporaryStates.Contains(state))
+                    continue;
+
+                temporaryStates.Add(state);
+                added++;
+            }
+        }
+
+        if (added > 0)
+            Debug.Log($"[FormalLevelController] {levelId} 复位时补登记了 {added} 个漏注册的机关。", this);
     }
 
     void RegisterChildren()
