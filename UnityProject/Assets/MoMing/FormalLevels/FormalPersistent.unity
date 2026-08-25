@@ -634,6 +634,7 @@ GameObject:
   m_Component:
   - component: {fileID: 88116694}
   - component: {fileID: 88116693}
+  - component: {fileID: 88116695}
   m_Layer: 0
   m_Name: WwiseGlobal
   m_TagString: Untagged
@@ -682,6 +683,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &88116695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 88116692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed39f2b237e573f4f85990bb5d1440ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InitBank: {fileID: 0}
 --- !u!1001 &92652767
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4171,12 +4185,12 @@ MonoBehaviour:
   restartFadeSeconds: 0.5
   playLevel5MusicEvent:
     idInternal: 0
-    valueGuidInternal:
+    valueGuidInternal: 
     WwiseObjectReference: {fileID: 11400000, guid: f4a5b45ca38b4bc8a9d7e6f132d52236,
       type: 2}
   stopLevel5MusicEvent:
     idInternal: 0
-    valueGuidInternal:
+    valueGuidInternal: 
     WwiseObjectReference: {fileID: 11400000, guid: 75c3b2f00aef45aa9381bba88c5ba2a0,
       type: 2}
   level5MusicScene: FormalLevel045
