@@ -93,8 +93,7 @@ public class FormalTutorialPopup : MonoBehaviour
         Debug.Log("[FormalTutorialPopup] 教程图配置：" +
                   "开局 人/狗 " + Count(humanPages) + "/" + Count(dogPages) + " 张(已看=" + Seen(PrefKey) + ")、" +
                   "存档地毯 人/狗 " + Count(humanCheckpointPages) + "/" + Count(dogCheckpointPages) + " 张(已看=" + Seen(checkpointPrefKey) + ")、" +
-                  "本关介绍/" + levelIntroScene + " 人/狗 " + Count(humanLevelIntroPages) + "/" + Count(dogLevelIntroPages) + " 张(已看=" + Seen(levelIntroPrefKey) + ")。" +
-                  " 小键盘 3 = 强制弹地毯介绍，小键盘 9 = 强制弹本关介绍。", this);
+                  "本关介绍/" + levelIntroScene + " 人/狗 " + Count(humanLevelIntroPages) + "/" + Count(dogLevelIntroPages) + " 张(已看=" + Seen(levelIntroPrefKey) + ")。", this);
 
         Trace("========== 新的一跑 ==========");
         Trace("图配置：开局 人/狗 " + Count(humanPages) + "/" + Count(dogPages) + " 张(已看=" + Seen(PrefKey) + ")、" +

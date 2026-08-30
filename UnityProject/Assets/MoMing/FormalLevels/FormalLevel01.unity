@@ -1980,7 +1980,7 @@ MonoBehaviour:
   requirement: 1
   onceOnly: 1
   advanceRouteOnOpen: 0
-  preloadRouteSuccessorOnOpen: 0
+  preloadRouteSuccessorOnOpen: 1
   unlockingEvent:
     idInternal: 0
     valueGuidInternal: 
@@ -2013,7 +2013,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &772000041
 Transform:
   m_ObjectHideFlags: 0
@@ -2057,7 +2057,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 772000040}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5a3e94b71c8f4d2489e0b6f3a71c25d8, type: 3}
   m_Name: 
@@ -3432,7 +3432,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1512480307}
   - component: {fileID: 1512480306}
-  - component: {fileID: 1512480308}
   m_Layer: 0
   m_Name: WwiseGlobal
   m_TagString: Untagged
@@ -3481,19 +3480,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1512480308
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1512480305}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed39f2b237e573f4f85990bb5d1440ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  InitBank: {fileID: 0}
 --- !u!1 &1573916567
 GameObject:
   m_ObjectHideFlags: 0

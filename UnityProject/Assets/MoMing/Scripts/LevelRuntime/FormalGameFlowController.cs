@@ -560,7 +560,7 @@ public class FormalGameFlowController : MonoBehaviour
     }
 
     /// <summary>
-    /// 调试用的跳下一关（小键盘 2）。走 LoadLevel 而不是 RequestRouteAdvance：
+    /// 调试用的跳下一关。走 LoadLevel 而不是 RequestRouteAdvance：
     /// 后者是"走过门"的无缝流程，不会传送角色、也保留上一关，
     /// 用调试键触发就会变成人狗还站在旧关卡、两关同时可见。
     /// 这里和 GoToPreviousLevel / JumpToLevel 保持一致，硬切并把两人都放到出生点。
@@ -705,8 +705,7 @@ public class FormalGameFlowController : MonoBehaviour
 
         OpenAllDoorsInCurrentLevelScope();
 
-        // 调试用的直接跳关接口：直接标记本关的完成状态，
-        // 不模拟玩家移动。
+        // 调试入口：直接标记本关的完成状态，不模拟玩家移动。
         foreach (FormalMechanismState state in FindInScene<FormalMechanismState>(current))
             state.Complete();
 
