@@ -1,0 +1,6 @@
+- [x] Record scope and preserve prior local iteration as baseline.
+- [x] Inspect formal art and animations and write evidence-backed cue matrix.
+- [x] Create or source cleared SFX and author Wwise.
+- [x] Implement visual-appropriate monster and level audio in Unity.
+- [x] Validate playback, lifecycle, source metrics and protected dog/UI/music.
+- [x] Deliver auditions, complete provenance, local diff and rollback.

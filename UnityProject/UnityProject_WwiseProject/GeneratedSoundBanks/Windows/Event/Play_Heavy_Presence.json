@@ -1,0 +1,73 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "622981241",
+    "Type": "Event",
+    "GUID": "{07819675-E348-44F9-B293-886463DBEFA0}",
+    "Language": "SFX",
+    "Hash": "{4016FEDE-1655-CD0B-6F71-CB1B181C6F90}",
+    "ObjectPath": "Play_Heavy_Presence",
+    "ShortName": "Play_Heavy_Presence",
+    "Path": "Event/Play_Heavy_Presence.bnk",
+    "Media": [
+     {
+      "Id": "331664628",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Heavy_Presence_01.wav",
+      "Path": "Media/331664628.wem",
+      "CachePath": "D8/{D803A2FA-30C4-63D4-C2D7-5CBD1BF496C7}.wem"
+     },
+     {
+      "Id": "453182760",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Heavy_Presence_02.wav",
+      "Path": "Media/453182760.wem",
+      "CachePath": "EA/{EABE7699-3F86-334E-9BB7-39437096F95C}.wem"
+     },
+     {
+      "Id": "471280174",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Heavy_Presence_03.wav",
+      "Path": "Media/471280174.wem",
+      "CachePath": "A5/{A5D7773A-AD73-26AF-1247-4D76BF33EBC8}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "622981241",
+      "Name": "Play_Heavy_Presence",
+      "ObjectPath": "\\Events\\Art SFX\\Play_Heavy_Presence",
+      "GUID": "{07819675-E348-44F9-B293-886463DBEFA0}",
+      "MaxAttenuation": "35",
+      "DurationType": "OneShot",
+      "DurationMin": "1.6",
+      "DurationMax": "1.6",
+      "MediaRefs": [
+       {
+        "Id": "331664628"
+       },
+       {
+        "Id": "453182760"
+       },
+       {
+        "Id": "471280174"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{2BA3A172-8F46-8B3F-AF68-69DE35560EB0}"
+ }
+}

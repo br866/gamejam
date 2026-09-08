@@ -13,16 +13,35 @@ namespace AK
 {
     namespace EVENTS
     {
+        static const AkUniqueID PLAY_ASYLUM_BED = 2052694387U;
+        static const AkUniqueID PLAY_ASYLUM_DRAFT = 2817440979U;
+        static const AkUniqueID PLAY_ASYLUM_GRILLE = 665121511U;
+        static const AkUniqueID PLAY_ASYLUM_PIPE = 125916922U;
+        static const AkUniqueID PLAY_ASYLUM_WINDOW = 1388606994U;
         static const AkUniqueID PLAY_CHECKPOINTSFX = 1671843005U;
         static const AkUniqueID PLAY_CRATE_PUSH = 470824146U;
         static const AkUniqueID PLAY_DEATHCAUSE_MUSIC = 2229278265U;
+        static const AkUniqueID PLAY_DOOR_CLOSE = 2292458263U;
         static const AkUniqueID PLAY_DOOR_LOCKED = 3779672947U;
+        static const AkUniqueID PLAY_DOOR_MOVE = 1057067298U;
         static const AkUniqueID PLAY_DOOR_UNLOCKING = 4191924555U;
+        static const AkUniqueID PLAY_DOORMETAL_CLOSE = 3517828402U;
+        static const AkUniqueID PLAY_DOORMETAL_MOVE = 2159134429U;
         static const AkUniqueID PLAY_FLUORESCENT_LIGHT = 3799125421U;
         static const AkUniqueID PLAY_FOOTSTEP_BRUTEDOC = 3546231729U;
         static const AkUniqueID PLAY_FOOTSTEP_DOG = 1441942263U;
         static const AkUniqueID PLAY_FOOTSTEP_HUMAN = 1846914642U;
+        static const AkUniqueID PLAY_FOOTSTEP_MONSTER2 = 2663604847U;
+        static const AkUniqueID PLAY_FOOTSTEP_MONSTERC = 2663604798U;
         static const AkUniqueID PLAY_GAMEPLAY_MUSIC = 1231987938U;
+        static const AkUniqueID PLAY_GATE_DRIVE = 2315424578U;
+        static const AkUniqueID PLAY_GATE_STOP = 3486875614U;
+        static const AkUniqueID PLAY_GAUNT_ATTACK = 3396757472U;
+        static const AkUniqueID PLAY_GAUNT_PRESENCE = 1272469451U;
+        static const AkUniqueID PLAY_HEAVY_ATTACK = 4203263974U;
+        static const AkUniqueID PLAY_HEAVY_PRESENCE = 622981241U;
+        static const AkUniqueID PLAY_HUMAN_LAND = 2726547087U;
+        static const AkUniqueID PLAY_HUMAN_TILE = 1566654948U;
         static const AkUniqueID PLAY_KEY_PICKUP = 2881789206U;
         static const AkUniqueID PLAY_LEVEL5_MUSIC = 3337214613U;
         static const AkUniqueID PLAY_PLAYERDEATH_STINGER = 2509310786U;
@@ -32,6 +51,8 @@ namespace AK
         static const AkUniqueID PLAY_UI_HOVER = 1339559671U;
         static const AkUniqueID PLAY_UI_PARCHMENT_CLOSE = 3581212516U;
         static const AkUniqueID PLAY_UI_PARCHMENT_OPEN = 1586167264U;
+        static const AkUniqueID PLAY_UNIFORM_ATTACK = 3659389381U;
+        static const AkUniqueID PLAY_UNIFORM_PRESENCE = 2854331858U;
         static const AkUniqueID STOP_CRATE_PUSH = 708504560U;
         static const AkUniqueID STOP_DEATHCAUSE_MUSIC = 1522432571U;
         static const AkUniqueID STOP_GAMEPLAY_MUSIC = 3536547992U;

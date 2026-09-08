@@ -1,0 +1,73 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "3396757472",
+    "Type": "Event",
+    "GUID": "{995DDAB3-0E6F-4DD8-A71C-E0C4860B72BB}",
+    "Language": "SFX",
+    "Hash": "{E2F1336B-5B77-95FB-7ADE-20940B96DE92}",
+    "ObjectPath": "Play_Gaunt_Attack",
+    "ShortName": "Play_Gaunt_Attack",
+    "Path": "Event/Play_Gaunt_Attack.bnk",
+    "Media": [
+     {
+      "Id": "186626315",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Gaunt_Attack_01.wav",
+      "Path": "Media/186626315.wem",
+      "CachePath": "24/{24221733-686E-6315-2637-54760FE45E47}.wem"
+     },
+     {
+      "Id": "467391419",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Gaunt_Attack_02.wav",
+      "Path": "Media/467391419.wem",
+      "CachePath": "74/{74389279-5DAC-3AD9-EFD8-42D50A6C85C9}.wem"
+     },
+     {
+      "Id": "613184189",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Gaunt_Attack_03.wav",
+      "Path": "Media/613184189.wem",
+      "CachePath": "B1/{B16BB2D4-F38E-F4EA-F4DF-AA9034D18A48}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "3396757472",
+      "Name": "Play_Gaunt_Attack",
+      "ObjectPath": "\\Events\\Art SFX\\Play_Gaunt_Attack",
+      "GUID": "{995DDAB3-0E6F-4DD8-A71C-E0C4860B72BB}",
+      "MaxAttenuation": "35",
+      "DurationType": "OneShot",
+      "DurationMin": "0.8",
+      "DurationMax": "0.8",
+      "MediaRefs": [
+       {
+        "Id": "186626315"
+       },
+       {
+        "Id": "467391419"
+       },
+       {
+        "Id": "613184189"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{A1EE702E-7024-36FB-0083-3FF6C32A3458}"
+ }
+}

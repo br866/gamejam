@@ -162,6 +162,8 @@ public class MonsterPatrol : MonoBehaviour
     private State currentState = State.Patrol;
     private Renderer visualRenderer;
 
+    public bool IsAttacking => currentState == State.Attack;
+
     public bool IsChasing
     {
         get { return currentState == State.Chase; }
@@ -178,7 +180,7 @@ public class MonsterPatrol : MonoBehaviour
     private float attackTimer;
     private float nextAttackTime;
     private float forcedRepathCooldown;
-    private Vector3 lastFootstepPosition;
+    private FootstepDistanceTracker footstepTracker;
     private bool hasWarnedMissingFootstepEvent;
     private FormalPlayerActor executionTarget;
 
@@ -193,7 +195,7 @@ public class MonsterPatrol : MonoBehaviour
         navigation = GetComponent<LevelMonsterNavigation>();
         animatorDriver = GetComponent<MonsterAnimatorDriver>();
         startPos = transform.position;
-        lastFootstepPosition = startPos;
+        footstepTracker.Reset(startPos);
         foreach (Renderer r in GetComponentsInChildren<Renderer>())
             if (r.enabled && r.gameObject.activeInHierarchy)
             {
@@ -245,6 +247,7 @@ public class MonsterPatrol : MonoBehaviour
     {
         if (currentState == State.Attack)
         {
+            footstepTracker.Reset(transform.position);
             UpdateAttack();
             return;
         }
@@ -272,18 +275,18 @@ public class MonsterPatrol : MonoBehaviour
 
     void HandleFootsteps()
     {
-        Vector3 current = transform.position;
-        Vector3 previous = lastFootstepPosition;
-        current.y = 0f;
-        previous.y = 0f;
-
+        var artAudio = GetComponent<FormalMonsterArtAudio>();
+        if (artAudio != null && artAudio.OwnsFootsteps)
+        {
+            footstepTracker.Reset(transform.position);
+            return;
+        }
         float requiredDistance = forcedChase || currentState == State.Chase
             ? chaseFootstepDistance
             : patrolFootstepDistance;
-        if ((current - previous).sqrMagnitude < requiredDistance * requiredDistance)
+        if (!footstepTracker.Tick(transform.position, requiredDistance,
+            FormalGameplayState.CanSimulate && currentState != State.Attack, Time.deltaTime))
             return;
-
-        lastFootstepPosition = transform.position;
         if (footstepEvent != null && footstepEvent.IsValid())
         {
             footstepEvent.Post(gameObject);
@@ -780,7 +783,7 @@ public class MonsterPatrol : MonoBehaviour
         chaseTarget = null;
         currentWaypoint = 0;
         transform.position = startPos;
-        lastFootstepPosition = startPos;
+        footstepTracker.Reset(startPos);
         attackTimer = 0f;
         nextAttackTime = 0f;
         ReleaseExecutionTarget();
