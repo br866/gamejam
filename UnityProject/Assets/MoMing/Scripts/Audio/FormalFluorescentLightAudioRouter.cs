@@ -1,103 +1,80 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-/// <summary>
-/// Installs spatial fluorescent-light audio on every pendant lamp in loaded formal levels.
-/// </summary>
+/// <summary>Only a few nearby physical lamps contribute to the room tone.</summary>
 public sealed class FormalFluorescentLightAudioRouter : MonoBehaviour
 {
-    private const string RouterObjectName = "[FormalFluorescentLightAudioRouter]";
-    private const string FormalScenePrefix = "FormalLevel";
-    private const string PendantLampName = "pendant_lamp";
-
+    private readonly List<FormalFluorescentLightAudioEmitter> emitters = new List<FormalFluorescentLightAudioEmitter>();
+    private readonly List<FormalFluorescentLightAudioEmitter> nearby = new List<FormalFluorescentLightAudioEmitter>();
     private WwiseUIFeedbackSettings settings;
-
+    private float nextRefresh;
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void InstallRouter()
     {
-        if (FindObjectOfType<FormalFluorescentLightAudioRouter>() != null)
-            return;
-
-        GameObject routerObject = new GameObject(RouterObjectName);
-        DontDestroyOnLoad(routerObject);
-        routerObject.AddComponent<FormalFluorescentLightAudioRouter>();
+        if (FindObjectOfType<FormalFluorescentLightAudioRouter>() != null) return;
+        var go = new GameObject("[FormalFluorescentLightAudioRouter]");
+        DontDestroyOnLoad(go);
+        go.AddComponent<FormalFluorescentLightAudioRouter>();
     }
-
     private void Awake()
     {
         settings = Resources.Load<WwiseUIFeedbackSettings>(WwiseUIFeedbackSettings.ResourcesPath);
-        SceneManager.sceneLoaded += OnSceneLoaded;
-        InstallOnAllLoadedScenes();
+        SceneManager.sceneLoaded += Loaded;
+        for (int i = 0; i < SceneManager.sceneCount; i++) InstallOnScene(SceneManager.GetSceneAt(i));
     }
-
-    private void OnDestroy()
+    private void Loaded(Scene scene, LoadSceneMode mode) => InstallOnScene(scene);
+    private void InstallOnScene(Scene scene)
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        InstallOnScene(scene);
-    }
-
-    private void InstallOnAllLoadedScenes()
-    {
-        int installedCount = 0;
-        for (int i = 0; i < SceneManager.sceneCount; i++)
-            installedCount += InstallOnScene(SceneManager.GetSceneAt(i));
-
-        if (installedCount > 0)
-        {
-            Debug.Log(
-                $"[FormalFluorescentLightAudio] Installed audio on {installedCount} pendant lamp(s).");
-        }
-    }
-
-    private int InstallOnScene(Scene scene)
-    {
-        if (!scene.IsValid()
-            || !scene.isLoaded
-            || !scene.name.StartsWith(FormalScenePrefix, StringComparison.OrdinalIgnoreCase))
-        {
-            return 0;
-        }
-
-        if (settings == null || !settings.HasValidFluorescentLightEvent)
-        {
-            Debug.LogWarning(
-                "[FormalFluorescentLightAudio] Play_Fluorescent_Light is not configured; lamps remain silent.",
-                this);
-            return 0;
-        }
-
-        int installedCount = 0;
+        if (!scene.isLoaded || !(scene.name.StartsWith("FormalLevel", StringComparison.Ordinal) || scene.name.StartsWith("FormalSharedArt", StringComparison.Ordinal))) return;
+        if (settings == null || !settings.HasValidFluorescentLightEvent) return;
         foreach (GameObject root in scene.GetRootGameObjects())
+        foreach (Transform t in root.GetComponentsInChildren<Transform>(true))
         {
-            Transform[] transforms = root.GetComponentsInChildren<Transform>(true);
-            foreach (Transform candidate in transforms)
-            {
-                if (!IsCeilingLampName(candidate.name))
-                    continue;
-
-                FormalFluorescentLightAudioEmitter emitter =
-                    candidate.GetComponent<FormalFluorescentLightAudioEmitter>();
-                if (emitter == null)
-                {
-                    emitter = candidate.gameObject.AddComponent<FormalFluorescentLightAudioEmitter>();
-                    installedCount++;
-                }
-
-                emitter.Initialize(settings.FluorescentLightEvent);
-            }
+            if (!IsCeilingLampName(t.name)) continue;
+            bool nested = false;
+            for (Transform p = t.parent; p != null; p = p.parent)
+                if (IsCeilingLampName(p.name)) { nested = true; break; }
+            if (nested) continue;
+            var emitter = t.GetComponent<FormalFluorescentLightAudioEmitter>();
+            if (emitter == null) emitter = t.gameObject.AddComponent<FormalFluorescentLightAudioEmitter>();
+            emitter.Initialize(settings.FluorescentLightEvent);
+            if (!emitters.Contains(emitter)) emitters.Add(emitter);
         }
-
-        return installedCount;
+        nextRefresh = 0;
     }
-
-    public static bool IsCeilingLampName(string objectName)
+    private void Update()
     {
-        return !string.IsNullOrEmpty(objectName)
-            && objectName.IndexOf(PendantLampName, StringComparison.OrdinalIgnoreCase) >= 0;
+        if (!FormalGameplayState.CanSimulate)
+        {
+            foreach (var emitter in emitters) if (emitter != null) emitter.SetAudible(false);
+            return;
+        }
+        if (Time.unscaledTime < nextRefresh) return;
+        nextRefresh = Time.unscaledTime + 0.5f;
+        emitters.RemoveAll(e => e == null);
+        nearby.Clear();
+        var camera = Camera.main;
+        if (camera != null)
+        {
+            Vector3 position = camera.transform.position;
+            float radius = FormalSfxMixProfile.Instance.lampRadius;
+            foreach (var emitter in emitters)
+                if (emitter.isActiveAndEnabled && (emitter.transform.position - position).sqrMagnitude < radius * radius)
+                    nearby.Add(emitter);
+            nearby.Sort((a, b) => ((a.transform.position - position).sqrMagnitude - (a.IsAudible ? 4f : 0f)).CompareTo(
+                (b.transform.position - position).sqrMagnitude - (b.IsAudible ? 4f : 0f)));
+        }
+        int count = Mathf.Min(nearby.Count, FormalSfxMixProfile.Instance.maximumNearbyLamps);
+        foreach (var emitter in emitters)
+        {
+            bool selected = false;
+            for (int i = 0; i < count; i++) if (nearby[i] == emitter) { selected = true; break; }
+            emitter.SetAudible(selected);
+        }
     }
+    public static bool IsCeilingLampName(string name) => !string.IsNullOrEmpty(name) && name.IndexOf("pendant_lamp", StringComparison.OrdinalIgnoreCase) >= 0;
+    private void OnDisable() { foreach (var e in emitters) if (e != null) e.SetAudible(false); }
+    private void OnDestroy() { SceneManager.sceneLoaded -= Loaded; OnDisable(); }
 }

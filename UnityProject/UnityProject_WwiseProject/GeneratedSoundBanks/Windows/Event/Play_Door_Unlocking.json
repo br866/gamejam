@@ -10,29 +10,11 @@
     "Type": "Event",
     "GUID": "{5C3B4078-75AC-4720-B0CF-83B0A0DCCC7A}",
     "Language": "SFX",
-    "Hash": "{02EB6F87-953E-C61F-A519-076287C7CD66}",
+    "Hash": "{F219C205-9CA4-6E69-4AA0-A4128806890E}",
     "ObjectPath": "Play_Door_Unlocking",
     "ShortName": "Play_Door_Unlocking",
     "Path": "Event/Play_Door_Unlocking.bnk",
     "Media": [
-     {
-      "Id": "379798709",
-      "Language": "SFX",
-      "Streaming": "false",
-      "Location": "Loose",
-      "ShortName": "Doorhinge2.wav",
-      "Path": "Media/379798709.wem",
-      "CachePath": "45/{455BC75F-4628-C9E9-C0D1-48A560127A48}.wem"
-     },
-     {
-      "Id": "408598900",
-      "Language": "SFX",
-      "Streaming": "false",
-      "Location": "Loose",
-      "ShortName": "Doorhinge1.wav",
-      "Path": "Media/408598900.wem",
-      "CachePath": "9C/{9CEAAB9F-6BFD-8BDB-6EB3-925E62F883C8}.wem"
-     },
      {
       "Id": "796660970",
       "Language": "SFX",
@@ -40,7 +22,7 @@
       "Location": "Loose",
       "ShortName": "Door_Unlocked.wav",
       "Path": "Media/796660970.wem",
-      "CachePath": "C3/{C3CAB969-ED68-EC91-D880-B2270BC633E9}.wem"
+      "CachePath": "26/{2699F810-095D-2DD2-60C0-72C2AC480D93}.wem"
      }
     ],
     "Events": [
@@ -49,16 +31,11 @@
       "Name": "Play_Door_Unlocking",
       "ObjectPath": "\\Events\\Default Work Unit\\SFX\\Puzzle\\Play_Door_Unlocking",
       "GUID": "{5C3B4078-75AC-4720-B0CF-83B0A0DCCC7A}",
+      "MaxAttenuation": "15",
       "DurationType": "OneShot",
-      "DurationMin": "1.1789219",
-      "DurationMax": "1.4344977",
+      "DurationMin": "0.48",
+      "DurationMax": "0.48",
       "MediaRefs": [
-       {
-        "Id": "379798709"
-       },
-       {
-        "Id": "408598900"
-       },
        {
         "Id": "796660970"
        }
@@ -67,6 +44,6 @@
     ]
    }
   ],
-  "FileHash": "{144331E7-85E6-7619-7180-3D3A3EB23A95}"
+  "FileHash": "{92F41647-EEE0-6460-FF8F-3AAA3C439B7D}"
  }
 }

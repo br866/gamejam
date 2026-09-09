@@ -1,59 +1,28 @@
 using UnityEngine;
 
-/// <summary>
-/// Owns the single Wwise playback instance emitted by one decorative ceiling lamp.
-/// </summary>
 [DisallowMultipleComponent]
 [RequireComponent(typeof(AkGameObj))]
 public sealed class FormalFluorescentLightAudioEmitter : MonoBehaviour
 {
     private AK.Wwise.Event lightEvent;
-    private uint playingId = AkUnitySoundEngine.AK_INVALID_PLAYING_ID;
-
-    public void Initialize(AK.Wwise.Event configuredEvent)
+    private uint playingId;
+    private bool audible;
+    public bool IsAudible => playingId != 0;
+    public void Initialize(AK.Wwise.Event configuredEvent) { lightEvent = configuredEvent; }
+    public void SetAudible(bool value)
     {
-        lightEvent = configuredEvent;
-        TryPost();
+        audible = value;
+        if (value) TryPost();
+        else FormalSfxEvents.Stop(ref playingId, 250);
     }
-
-    private void OnEnable()
-    {
-        TryPost();
-    }
-
-    private void OnDisable()
-    {
-        StopPlayback();
-    }
-
-    private void OnDestroy()
-    {
-        StopPlayback();
-    }
-
     private void TryPost()
     {
-        if (!isActiveAndEnabled
-            || playingId != AkUnitySoundEngine.AK_INVALID_PLAYING_ID
-            || lightEvent == null
-            || !lightEvent.IsValid())
-        {
-            return;
-        }
-
+        if (!audible || !isActiveAndEnabled || playingId != 0 || !FormalGameplayState.CanSimulate ||
+            !AkUnitySoundEngine.IsInitialized() || lightEvent == null || !lightEvent.IsValid() ||
+            !lightEvent.WwiseObjectReference.IsAutoBankLoaded) return;
         playingId = lightEvent.Post(gameObject);
     }
-
-    private void StopPlayback()
-    {
-        if (playingId == AkUnitySoundEngine.AK_INVALID_PLAYING_ID)
-            return;
-
-        AkUnitySoundEngine.ExecuteActionOnPlayingID(
-            AkActionOnEventType.AkActionOnEventType_Stop,
-            playingId,
-            100,
-            AkCurveInterpolation.AkCurveInterpolation_Linear);
-        playingId = AkUnitySoundEngine.AK_INVALID_PLAYING_ID;
-    }
+    private void OnEnable() => TryPost();
+    private void OnDisable() => FormalSfxEvents.Stop(ref playingId, 150);
+    private void OnDestroy() => FormalSfxEvents.Stop(ref playingId, 150);
 }

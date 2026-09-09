@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{EA163D4B-1E77-44DE-A0B3-25E285DA6071}" SchemaVersion="133">
+	<Events>
+		<WorkUnit Name="Asylum SFX" ID="{EA163D4B-1E77-44DE-A0B3-25E285DA6071}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="Play_Asylum_Draft" ID="{5755E9CE-74B5-4AB4-ACDA-9CDE883A2D00}">
+					<ChildrenList>
+						<Action Name="" ID="{DFA6BF9F-BA16-4309-8BB8-98125D7207F7}" ShortID="598133791">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SFX_Asylum_Draft" ID="{CA38656B-8CA8-49CD-BA3D-DD5763F23F78}" WorkUnitID="{EAB2CD93-0260-4FF7-81E2-13B8F6DAC2E2}" />
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asylum_Grille" ID="{40D52EAC-71AA-497B-A546-AC03DF6AAA79}">
+					<ChildrenList>
+						<Action Name="" ID="{D47EED1A-EC31-4A2B-A098-2A77B35CE572}" ShortID="227149081">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SFX_Asylum_Grille" ID="{44182089-171E-4E42-B3C0-62D1CD3B0E6A}" WorkUnitID="{EAB2CD93-0260-4FF7-81E2-13B8F6DAC2E2}" />
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asylum_Pipe" ID="{3D5C0C6D-65C7-4E75-ACEE-3111A2E85797}">
+					<ChildrenList>
+						<Action Name="" ID="{02489706-0350-4AF4-B4E6-0ABF8D821917}" ShortID="870178465">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SFX_Asylum_Pipe" ID="{11F23765-E14A-47B1-9B10-F7566BD2D037}" WorkUnitID="{EAB2CD93-0260-4FF7-81E2-13B8F6DAC2E2}" />
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

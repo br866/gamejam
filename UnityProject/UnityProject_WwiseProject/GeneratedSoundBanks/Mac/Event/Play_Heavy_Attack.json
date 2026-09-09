@@ -1,0 +1,73 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Mac",
+  "BasePlatform": "Mac",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "4203263974",
+    "Type": "Event",
+    "GUID": "{617F8E25-BA61-45F5-83AC-49B2FFA341F2}",
+    "Language": "SFX",
+    "Hash": "{4ACBEDE6-1711-0EA5-6D98-6F136236911D}",
+    "ObjectPath": "Play_Heavy_Attack",
+    "ShortName": "Play_Heavy_Attack",
+    "Path": "Event/Play_Heavy_Attack.bnk",
+    "Media": [
+     {
+      "Id": "206265839",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Heavy_Attack_03.wav",
+      "Path": "Media/206265839.wem",
+      "CachePath": "77/{771F634D-BD8A-A25E-9CE7-D1665DC86E8F}.wem"
+     },
+     {
+      "Id": "428090923",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Heavy_Attack_01.wav",
+      "Path": "Media/428090923.wem",
+      "CachePath": "FA/{FA016EDA-3C2E-AF37-D8EC-AEE808724AC5}.wem"
+     },
+     {
+      "Id": "861942885",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Heavy_Attack_02.wav",
+      "Path": "Media/861942885.wem",
+      "CachePath": "DB/{DBF2ADC9-E1AE-1BCA-E84C-0747F4B46839}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "4203263974",
+      "Name": "Play_Heavy_Attack",
+      "ObjectPath": "\\Events\\Art SFX\\Play_Heavy_Attack",
+      "GUID": "{617F8E25-BA61-45F5-83AC-49B2FFA341F2}",
+      "MaxAttenuation": "35",
+      "DurationType": "OneShot",
+      "DurationMin": "0.8",
+      "DurationMax": "0.8",
+      "MediaRefs": [
+       {
+        "Id": "206265839"
+       },
+       {
+        "Id": "428090923"
+       },
+       {
+        "Id": "861942885"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{DDBB2C42-AFFC-B72A-D370-6C12C3245844}"
+ }
+}

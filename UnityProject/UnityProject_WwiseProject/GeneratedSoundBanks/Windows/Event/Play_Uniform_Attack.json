@@ -1,0 +1,73 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "3659389381",
+    "Type": "Event",
+    "GUID": "{CF1CF01B-2AFE-4304-AF97-7BD2C704A627}",
+    "Language": "SFX",
+    "Hash": "{5C5C28B3-F637-ACA1-89F9-D095D53F3098}",
+    "ObjectPath": "Play_Uniform_Attack",
+    "ShortName": "Play_Uniform_Attack",
+    "Path": "Event/Play_Uniform_Attack.bnk",
+    "Media": [
+     {
+      "Id": "120351410",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Uniform_Attack_02.wav",
+      "Path": "Media/120351410.wem",
+      "CachePath": "8D/{8DC23385-DE37-D7CF-7C36-3DE9D8BB42DA}.wem"
+     },
+     {
+      "Id": "186993277",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Uniform_Attack_03.wav",
+      "Path": "Media/186993277.wem",
+      "CachePath": "39/{39C10D45-3AEC-5B90-FE99-695399073DD5}.wem"
+     },
+     {
+      "Id": "538833499",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Loose",
+      "ShortName": "Uniform_Attack_01.wav",
+      "Path": "Media/538833499.wem",
+      "CachePath": "8C/{8C941CBD-1443-CD33-6954-9A85EFC20A5B}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "3659389381",
+      "Name": "Play_Uniform_Attack",
+      "ObjectPath": "\\Events\\Art SFX\\Play_Uniform_Attack",
+      "GUID": "{CF1CF01B-2AFE-4304-AF97-7BD2C704A627}",
+      "MaxAttenuation": "35",
+      "DurationType": "OneShot",
+      "DurationMin": "0.8",
+      "DurationMax": "0.8",
+      "MediaRefs": [
+       {
+        "Id": "120351410"
+       },
+       {
+        "Id": "186993277"
+       },
+       {
+        "Id": "538833499"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{17483FC1-9FB1-BF28-AFF6-8418698B1B2A}"
+ }
+}

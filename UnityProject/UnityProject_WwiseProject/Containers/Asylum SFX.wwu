@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{EAB2CD93-0260-4FF7-81E2-13B8F6DAC2E2}" SchemaVersion="133">
+	<Containers>
+		<WorkUnit Name="Asylum SFX" ID="{EAB2CD93-0260-4FF7-81E2-13B8F6DAC2E2}" PersistMode="Standalone">
+			<ChildrenList>
+				<RandomSequenceContainer Name="SFX_Asylum_Draft" ID="{CA38656B-8CA8-49CD-BA3D-DD5763F23F78}" ShortID="467498966">
+					<PropertyList>
+						<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="1" />
+						<Property Name="3DSpatialization" Type="int16" Value="1" />
+						<Property Name="OverridePositioning" Type="bool" Value="True" />
+						<Property Name="OverrideOutput" Type="bool" Value="True" />
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}" />
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Ambience" ID="{F3F40D80-80BE-4705-BEB1-6F544B21EE1F}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}" />
+						</Reference>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="ATT_Player_Footstep_30m" ID="{3FAD2F03-FECB-46FC-B154-87C603CEA372}" WorkUnitID="{8392F477-03CE-437F-8EF8-77FCA8EE0CE0}" />
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<Sound Name="Asylum_Draft_01" ID="{048D8516-9C37-4C98-A49A-EA821C05F363}" ShortID="138938030">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}" />
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}" />
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Asylum_Draft_01" ID="{8505D3EE-4EF6-4203-999D-AEC06FE60DF2}">
+									<Language>SFX</Language>
+									<AudioFile>Asylum_Draft_01.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="358140005" />
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Asylum_Draft_01" ID="{8505D3EE-4EF6-4203-999D-AEC06FE60DF2}" Platform="Linked" />
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="Asylum_Draft_02" ID="{DE4379F6-9740-4930-ACE3-E4816D4D14AE}" ShortID="389849893">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}" />
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}" />
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Asylum_Draft_02" ID="{D10931B8-8D81-422E-8AB1-471F9D8DF884}">
+									<Language>SFX</Language>
+									<AudioFile>Asylum_Draft_02.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="696626107" />
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Asylum_Draft_02" ID="{D10931B8-8D81-422E-8AB1-471F9D8DF884}" Platform="Linked" />
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="Asylum_Draft_03" ID="{72BE9EA4-91E0-49EF-9316-810DC229FA4E}" ShortID="1008159050">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}" />
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}" />
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Asylum_Draft_03" ID="{64673A31-4C9D-4750-8945-020341B653F5}">
+									<Language>SFX</Language>
+									<AudioFile>Asylum_Draft_03.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="195455432" />
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Asylum_Draft_03" ID="{64673A31-4C9D-4750-8945-020341B653F5}" Platform="Linked" />
+							</ActiveSourceList>
+						</Sound>
+					</ChildrenList>
+				</RandomSequenceContainer>
+				<RandomSequenceContainer Name="SFX_Asylum_Grille" ID="{44182089-171E-4E42-B3C0-62D1CD3B0E6A}" ShortID="1024728065">
+					<PropertyList>
+						<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="1" />
+						<Property Name="3DSpatialization" Type="int16" Value="1" />
+						<Property Name="OverridePositioning" Type="bool" Value="True" />
+						<Property Name="OverrideOutput" Type="bool" Value="True" />
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}" />
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Ambience" ID="{F3F40D80-80BE-4705-BEB1-6F544B21EE1F}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}" />
+						</Reference>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="ATT_Player_Footstep_30m" ID="{3FAD2F03-FECB-46FC-B154-87C603CEA372}" WorkUnitID="{8392F477-03CE-437F-8EF8-77FCA8EE0CE0}" />
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<Sound Name="Asylum_Grille_01" ID="{779CAD76-7837-496D-AC9A-E5FE1B9A9BB0}" ShortID="793917105">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}" />
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}" />
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Asylum_Grille_01" ID="{5DFCF288-1354-4A14-82A6-B6E5EC57F8BA}">
+									<Language>SFX</Language>
+									<AudioFile>Asylum_Grille_01.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="928972134" />
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Asylum_Grille_01" ID="{5DFCF288-1354-4A14-82A6-B6E5EC57F8BA}" Platform="Linked" />
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="Asylum_Grille_02" ID="{D30D1634-1195-4526-8B84-DD4A488BF836}" ShortID="348287562">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}" />
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}" />
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Asylum_Grille_02" ID="{5115ED29-63C0-4A9C-9C62-9E76A2D92BB2}">
+									<Language>SFX</Language>
+									<AudioFile>Asylum_Grille_02.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="386805999" />
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Asylum_Grille_02" ID="{5115ED29-63C0-4A9C-9C62-9E76A2D92BB2}" Platform="Linked" />
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="Asylum_Grille_03" ID="{E18DB9AD-B469-4E59-BF0C-C3A4CDBEB64F}" ShortID="760147076">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}" />
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}" />
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Asylum_Grille_03" ID="{76A1936D-4409-4FCB-94CD-843E891DA2EF}">
+									<Language>SFX</Language>
+									<AudioFile>Asylum_Grille_03.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="651896101" />
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Asylum_Grille_03" ID="{76A1936D-4409-4FCB-94CD-843E891DA2EF}" Platform="Linked" />
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="Asylum_Grille_04" ID="{BD6E89D7-3A72-4825-96D7-4EA52432F6D6}" ShortID="151522741">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}" />
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}" />
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Asylum_Grille_04" ID="{A6E43A2E-2449-4FA7-BE9E-3D4F90FBCD33}">
+									<Language>SFX</Language>
+									<AudioFile>Asylum_Grille_04.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="174472754" />
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Asylum_Grille_04" ID="{A6E43A2E-2449-4FA7-BE9E-3D4F90FBCD33}" Platform="Linked" />
+							</ActiveSourceList>
+						</Sound>
+					</ChildrenList>
+				</RandomSequenceContainer>
+				<RandomSequenceContainer Name="SFX_Asylum_Pipe" ID="{11F23765-E14A-47B1-9B10-F7566BD2D037}" ShortID="101494358">
+					<PropertyList>
+						<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="1" />
+						<Property Name="3DSpatialization" Type="int16" Value="1" />
+						<Property Name="OverridePositioning" Type="bool" Value="True" />
+						<Property Name="OverrideOutput" Type="bool" Value="True" />
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}" />
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Ambience" ID="{F3F40D80-80BE-4705-BEB1-6F544B21EE1F}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}" />
+						</Reference>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="ATT_Player_Footstep_30m" ID="{3FAD2F03-FECB-46FC-B154-87C603CEA372}" WorkUnitID="{8392F477-03CE-437F-8EF8-77FCA8EE0CE0}" />
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<Sound Name="Asylum_Pipe_01" ID="{7CB6D81A-5A54-45A8-A045-DE3520980F93}" ShortID="343647767">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}" />
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}" />
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Asylum_Pipe_01" ID="{39EC19FF-4B17-420A-8A07-2D20422F28A2}">
+									<Language>SFX</Language>
+									<AudioFile>Asylum_Pipe_01.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="1045203574" />
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Asylum_Pipe_01" ID="{39EC19FF-4B17-420A-8A07-2D20422F28A2}" Platform="Linked" />
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="Asylum_Pipe_02" ID="{21B51825-138B-4A3C-9C9A-FBFF7B3BCDA8}" ShortID="905789068">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}" />
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}" />
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Asylum_Pipe_02" ID="{34400072-441E-4504-893A-434007AF209F}">
+									<Language>SFX</Language>
+									<AudioFile>Asylum_Pipe_02.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="724650115" />
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Asylum_Pipe_02" ID="{34400072-441E-4504-893A-434007AF209F}" Platform="Linked" />
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="Asylum_Pipe_03" ID="{094AEE24-217B-4F49-A4D2-2D5B8110C118}" ShortID="559475356">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1A32794B-BB73-4B32-9768-2B2DC9C392ED}" />
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A468CF8B-8C15-4258-807F-91E2C64D1A4F}" />
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Asylum_Pipe_03" ID="{0C93615B-72AB-4E24-B1D0-CD430D72CCEE}">
+									<Language>SFX</Language>
+									<AudioFile>Asylum_Pipe_03.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="763413331" />
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Asylum_Pipe_03" ID="{0C93615B-72AB-4E24-B1D0-CD430D72CCEE}" Platform="Linked" />
+							</ActiveSourceList>
+						</Sound>
+					</ChildrenList>
+				</RandomSequenceContainer>
+			</ChildrenList>
+		</WorkUnit>
+	</Containers>
+</WwiseDocument>
